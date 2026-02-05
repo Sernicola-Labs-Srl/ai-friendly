@@ -129,7 +129,9 @@ function ai_fr_can_serve_post( WP_Post $post, string $context = 'public' ): bool
     
     // Verifica capability solo per il contesto di serving diretto
     if ( $can && $context === 'serve' ) {
-        if ( ! current_user_can( 'read_post', $post->ID ) ) {
+        // I contenuti pubblicati devono essere accessibili anche agli utenti non loggati.
+        // La capability serve solo per contenuti non pubblici.
+        if ( $post->post_status !== 'publish' && ! current_user_can( 'read_post', $post->ID ) ) {
             $can = false;
         }
     }
