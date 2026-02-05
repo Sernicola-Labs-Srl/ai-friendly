@@ -1,6 +1,6 @@
 # AI Friendly — Documentazione Plugin
 
-**Versione:** 1.5.0  
+**Versione:** 1.5.1  
 **Autore:** Sernicola Labs  
 **Requisiti:** WordPress 6.0+, PHP 8.1+  
 **Licenza:** GPL v2 or later
@@ -21,8 +21,9 @@
 6. [Costanti configurabili](#costanti-configurabili)
 7. [Struttura output Markdown](#struttura-output-markdown)
 8. [Compatibilità](#compatibilità)
-9. [Hook e Filtri per sviluppatori](#hook-e-filtri-per-sviluppatori)
-10. [FAQ](#faq)
+9. [Struttura del plugin](#struttura-del-plugin)
+10. [Hook e Filtri per sviluppatori](#hook-e-filtri-per-sviluppatori)
+11. [FAQ](#faq)
 
 ---
 
@@ -430,6 +431,38 @@ Supporto completo per i prodotti WooCommerce (attivabile dalle impostazioni).
 
 ---
 
+## Struttura del plugin
+
+Il plugin è organizzato in moduli per rendere manutenzione e sviluppo più chiari.
+
+```
+ai-friendly.php
+includes/
+  boot.php
+  constants.php
+  options.php
+  activation.php
+  content-filter.php
+  versioning.php
+  scheduler.php
+  converter.php
+  metadata.php
+  intercept.php
+  llms.php
+  markdown.php
+  head.php
+  utils.php
+admin/
+  metabox.php
+  settings-page.php
+```
+
+- `ai-friendly.php` fa da bootstrap e carica `includes/boot.php`.
+- `includes/` contiene la logica core del plugin.
+- `admin/` contiene UI di admin, metabox e AJAX.
+
+---
+
 ## Hook e Filtri per sviluppatori
 
 ### Filtro: contenuto llms.txt
@@ -602,6 +635,12 @@ Sostituisci il file `ai-friendly.php` con la nuova versione. Le impostazioni ven
 
 ## Changelog
 
+### 1.5.1
+- Fix TypeError in meta cache invalidation (deleted_post_meta array)
+- Cache invalidation: meta hooks + filters
+- Filename whitelist per file .md statici
+- Access checks per .md/llms.txt con filtro per regole custom
+
 ### 1.5.0
 - Controllo granulare inclusioni/esclusioni (categorie, CPT, template, pattern URL, noindex)
 - Pannello admin con tab organizzati
@@ -631,4 +670,4 @@ https://sernicola-labs.com
 
 ---
 
-*Documentazione aggiornata alla versione 1.5.0*
+*Documentazione aggiornata alla versione 1.5.1*
