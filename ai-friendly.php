@@ -10,6 +10,11 @@
  * Requires at least:  6.0
  * Requires PHP:       8.1
  *
+ * Changelog 1.5.2:
+ *   - HTTP Link canonical header for .md responses
+ *   - X-Robots-Tag set to noindex, follow
+ *   - New filter ai_fr_md_canonical_url
+ *
  * Changelog 1.5.1:
  *   - Fix TypeError in meta cache invalidation (deleted_post_meta array)
  *   - Cache invalidation: meta hooks + filters

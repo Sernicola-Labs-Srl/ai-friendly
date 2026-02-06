@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'wp_head', function () {
 
-    echo '<link rel="llms-txt" type="text/plain" href="'
+    echo '<link rel="alternate" type="text/plain" title="LLM Instructions" href="'
        . esc_url( home_url( '/llms.txt' ) )
        . '" />' . "\n";
 

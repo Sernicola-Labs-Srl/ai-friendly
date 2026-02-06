@@ -106,7 +106,7 @@ function ai_fr_render_options_page(): void {
 
     ?>
     <div class="wrap">
-        <h1>AI Friendly — Impostazioni <small style="font-weight:normal; color:#666;">v1.5.1</small></h1>
+        <h1>AI Friendly — Impostazioni <small style="font-weight:normal; color:#666;">v1.5.2</small></h1>
 
         <form method="post">
             <?php wp_nonce_field( 'ai_fr_options_nonce' ); ?>
