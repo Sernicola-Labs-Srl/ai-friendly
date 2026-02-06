@@ -1,6 +1,6 @@
 # AI Friendly — Documentazione Plugin
 
-**Versione:** 1.5.1  
+**Versione:** 1.5.2  
 **Autore:** Sernicola Labs  
 **Requisiti:** WordPress 6.0+, PHP 8.1+  
 **Licenza:** GPL v2 or later
@@ -24,6 +24,7 @@
 9. [Struttura del plugin](#struttura-del-plugin)
 10. [Hook e Filtri per sviluppatori](#hook-e-filtri-per-sviluppatori)
 11. [FAQ](#faq)
+12. [Changelog](#changelog)
 
 ---
 
@@ -484,6 +485,15 @@ add_filter( 'ai_fr_md_cache_ttl', function( int $ttl, int $post_id, WP_Post $pos
 }, 10, 3 );
 ```
 
+### Filtro: canonical URL per .md
+
+```php
+add_filter( 'ai_fr_md_canonical_url', function( string $canonical, int $post_id, WP_Post $post ) {
+    // Sovrascrivi il canonical per la versione .md
+    return 'https://tuosito.com/canonical-custom/';
+}, 10, 3 );
+```
+
 ### Filtro: meta che invalidano la cache
 
 ```php
@@ -635,29 +645,7 @@ Sostituisci il file `ai-friendly.php` con la nuova versione. Le impostazioni ven
 
 ## Changelog
 
-### 1.5.1
-- Fix TypeError in meta cache invalidation (deleted_post_meta array)
-- Cache invalidation: meta hooks + filters
-- Filename whitelist per file .md statici
-- Access checks per .md/llms.txt con filtro per regole custom
-
-### 1.5.0
-- Controllo granulare inclusioni/esclusioni (categorie, CPT, template, pattern URL, noindex)
-- Pannello admin con tab organizzati
-- Salvataggio versioni MD statiche su disco
-- Scheduler per rigenerazione automatica (cron, on-save, checksum)
-
-### 1.4.0
-- Frontmatter YAML con metadati
-- Normalizzazione heading (H1 unico)
-- Rimozione shortcode intelligente
-- Pulizia HTML avanzata
-- Filtro immagini senza alt text
-
-### 1.3.0
-- Supporto page builder (Elementor, Breakdance, YOOtheme, ecc.)
-- Metabox per esclusione singoli contenuti
-- Pagina opzioni admin
+Il changelog completo è in `CHANGELOG.md`.
 
 ---
 
@@ -670,4 +658,4 @@ https://sernicola-labs.com
 
 ---
 
-*Documentazione aggiornata alla versione 1.5.1*
+*Documentazione aggiornata alla versione 1.5.2*

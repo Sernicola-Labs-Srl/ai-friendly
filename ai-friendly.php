@@ -2,7 +2,8 @@
 /**
  * Plugin Name:        Sernicola Labs | AI Friendly — llms.txt & Markdown
  * Description:        Genera /llms.txt e versioni .md di post e pagine.
- * Version:            1.5.1
+ * Version:            1.5.2
+ * Changelog:          CHANGELOG.md
  * Author:             Sernicola Labs
  * Author URI:         https://sernicola-labs.com
  * License:            GPL v2 or later

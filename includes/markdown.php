@@ -36,6 +36,9 @@ function ai_fr_serve_markdown( string $rel_path ): void {
             ai_fr_404();
         }
 
+        $canonical = get_permalink( $post_id );
+        $canonical = apply_filters( 'ai_fr_md_canonical_url', $canonical, $post_id, $post );
+
         // Prova a servire versione statica se abilitato
         if ( ! empty( $options['static_md_files'] ) && ! $debug_mode ) {
             $static_content = AiFrVersioning::getVersion( $post_id );
@@ -44,7 +47,8 @@ function ai_fr_serve_markdown( string $rel_path ): void {
                 
                 status_header( 200 );
                 header( 'Content-Type: text/markdown; charset=UTF-8' );
-                header( 'X-Robots-Tag: noindex, nofollow' );
+                header( 'X-Robots-Tag: noindex, follow' );
+                header( 'Link: <' . $canonical . '>; rel="canonical"', false );
                 header( 'Cache-Control: public, max-age=3600' );
                 header( 'X-AI-Friendly-Source: static' );
                 
@@ -94,7 +98,8 @@ function ai_fr_serve_markdown( string $rel_path ): void {
 
         status_header( 200 );
         header( 'Content-Type: text/markdown; charset=UTF-8' );
-        header( 'X-Robots-Tag: noindex, nofollow' );
+        header( 'X-Robots-Tag: noindex, follow' );
+        header( 'Link: <' . $canonical . '>; rel="canonical"', false );
         header( 'Cache-Control: public, max-age=3600' );
         header( 'X-AI-Friendly-Source: dynamic' );
 
