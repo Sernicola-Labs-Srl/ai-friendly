@@ -50,12 +50,17 @@ add_filter( 'cron_schedules', function( $schedules ) {
 } );
 
 // Hook per cron
-add_action( 'ai_fr_cron_regenerate', 'ai_fr_regenerate_all' );
+add_action(
+    'ai_fr_cron_regenerate',
+    function (): void {
+        ai_fr_regenerate_all( false, 'cron' );
+    }
+);
 
 /**
  * Rigenera tutte le versioni MD.
  */
-function ai_fr_regenerate_all( bool $force = false ): array {
+function ai_fr_regenerate_all( bool $force = false, string $trigger = 'manual' ): array {
     $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
     $filter = new AiFrContentFilter();
     
@@ -132,6 +137,18 @@ function ai_fr_regenerate_all( bool $force = false ): array {
         'time'  => current_time( 'mysql' ),
         'stats' => $stats,
     ] );
+
+    if ( function_exists( 'ai_fr_add_event' ) ) {
+        ai_fr_add_event(
+            'regenerate_all',
+            [
+                'trigger' => sanitize_key( $trigger ),
+                'force'   => $force ? 1 : 0,
+                'stats'   => $stats,
+            ],
+            $stats['errors'] > 0 ? 'warning' : 'info'
+        );
+    }
     
     return $stats;
 }
@@ -209,7 +226,16 @@ add_action( 'save_post', function( int $post_id, WP_Post $post, bool $update ): 
     try {
         $md_content = ai_fr_generate_markdown( $post );
         if ( ! empty( $md_content ) ) {
-            AiFrVersioning::saveVersion( $post_id, $md_content );
+            $result = AiFrVersioning::saveVersion( $post_id, $md_content );
+            if ( ! empty( $result['saved'] ) && ! empty( $result['changed'] ) && function_exists( 'ai_fr_add_event' ) ) {
+                ai_fr_add_event(
+                    'save_post_regenerate',
+                    [
+                        'post_id'   => $post_id,
+                        'post_type' => $post->post_type,
+                    ]
+                );
+            }
         }
     } catch ( Throwable $e ) {
         error_log( 'AI Friendly save_post error for ' . $post_id . ': ' . $e->getMessage() );

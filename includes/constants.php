@@ -17,3 +17,7 @@ if ( ! defined( 'AI_FR_NORMALIZE_HEADINGS' ) )  define( 'AI_FR_NORMALIZE_HEADING
 define( 'AI_FR_VERSIONS_DIR', WP_CONTENT_DIR . '/uploads/ai-friendly/versions' );
 define( 'AI_FR_VERSIONS_URL', WP_CONTENT_URL . '/uploads/ai-friendly/versions' );
 
+// Directory per snapshot llms.txt (R2)
+define( 'AI_FR_LLMS_HISTORY_DIR', WP_CONTENT_DIR . '/uploads/ai-friendly/llms-history' );
+define( 'AI_FR_LLMS_HISTORY_URL', WP_CONTENT_URL . '/uploads/ai-friendly/llms-history' );
+

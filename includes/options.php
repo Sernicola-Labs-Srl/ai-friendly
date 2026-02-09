@@ -31,5 +31,9 @@ function ai_fr_get_default_options(): array {
         'regenerate_interval'   => 24,      // Ore tra rigenerazioni
         'regenerate_on_save'    => '1',     // Rigenera quando un contenuto viene salvato
         'regenerate_on_change'  => '1',     // Rigenera solo se checksum cambiato
+
+        // UI Hub
+        'onboarding_done'       => '',
+        'ui_version'            => 'hub-v1',
     ];
 }

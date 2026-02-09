@@ -119,7 +119,12 @@ Il plugin aggiunge automaticamente riferimenti nel codice HTML:
 
 Accedi alle impostazioni da **Impostazioni → AI Friendly**.
 
-Il pannello è organizzato in 4 tab:
+Il pannello e organizzato come **AI Content Hub** in 4 macro-sezioni:
+
+- **Overview**: stato llms.txt, stato Markdown Pack, avvisi rapidi, quick actions.
+- **Content**: editor llms.txt, preview live, snapshot/versioning llms, content manager con filtri e toggle.
+- **Rules**: inclusioni/esclusioni (tipi contenuto, tassonomie, template, pattern URL, noindex/password).
+- **Automation**: opzioni cron/on-save, azioni manuali e timeline eventi.
 
 ---
 

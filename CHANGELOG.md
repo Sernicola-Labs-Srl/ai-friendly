@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.0
+- Nuova UI admin "AI Content Hub" con macro-sezioni: Overview, Content, Rules, Automation
+- Dashboard overview con stato llms.txt, stato Markdown Pack e warning diagnostici
+- Nuovi endpoint AJAX: overview stats, content items, toggle exclusion, timeline, diagnostics, preview, snapshot, restore, simulation
+- Telemetry eventi su option `ai_fr_event_log` (ring buffer max 200)
+- Snapshot llms in `wp-content/uploads/ai-friendly/llms-history/`
+- Refactor `admin/settings-page.php` con asset separati CSS/JS
+
 ## 1.5.2
 - Header HTTP `Link` canonical per le versioni .md (non sovrascrive altri Link header)
 - `X-Robots-Tag` aggiornato a `noindex, follow`
