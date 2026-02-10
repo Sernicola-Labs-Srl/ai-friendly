@@ -149,6 +149,10 @@ function ai_fr_regenerate_all( bool $force = false, string $trigger = 'manual' )
             $stats['errors'] > 0 ? 'warning' : 'info'
         );
     }
+
+    if ( function_exists( 'ai_fr_maybe_notify_regeneration_errors' ) ) {
+        ai_fr_maybe_notify_regeneration_errors( $stats, $trigger );
+    }
     
     return $stats;
 }

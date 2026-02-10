@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.6.2
+- Editor llms con syntax highlighting via CodeMirror (core WordPress)
+- Diff snapshot completo line-by-line affiancato con numerazione righe
+- Paginazione tabella contenuti in Content Manager
+- Notifiche errori rigenerazione: admin notice e email configurabile
+- Diagnostica sitemap/robots estesa in Overview
+
+## 1.6.1
+- Wizard iniziale a 3 step: tipo sito, inclusioni iniziali, generazione bozza llms
+- Diff snapshot llms a due colonne con confronto di 2 snapshot selezionati
+- Validazione link markdown in preview live
+- Note automatiche snapshot con delta linee/token rispetto allo snapshot precedente
+- Nuovo endpoint AJAX: `ai_fr_compare_llms_snapshots`
+
 ## 1.6.0
 - Nuova UI admin "AI Content Hub" con macro-sezioni: Overview, Content, Rules, Automation
 - Dashboard overview con stato llms.txt, stato Markdown Pack e warning diagnostici

@@ -72,9 +72,32 @@ function ai_fr_run_diagnostics(): array {
         ];
     }
 
+    $sitemap_url = home_url( '/sitemap.xml' );
+    $robots_url  = home_url( '/robots.txt' );
+    $blog_public = get_option( 'blog_public', '1' );
+    if ( $blog_public !== '1' ) {
+        $warnings[] = [
+            'code'    => 'discourage_search',
+            'message' => 'Il sito scoraggia l\'indicizzazione (Impostazioni > Lettura).',
+        ];
+    }
+
+    $robots_txt = (string) apply_filters( 'robots_txt', '', ( $blog_public === '1' ) );
+    if ( stripos( $robots_txt, 'Disallow: /' ) !== false ) {
+        $warnings[] = [
+            'code'    => 'robots_disallow_all',
+            'message' => 'robots.txt sembra bloccare tutto il sito (Disallow: /).',
+        ];
+    }
+
     return [
         'warnings'       => $warnings,
         'errors'         => $errors,
         'included_count' => $included_count,
+        'sitemap_robots' => [
+            'sitemap_url' => $sitemap_url,
+            'robots_url'  => $robots_url,
+            'blog_public' => $blog_public === '1',
+        ],
     ];
 }

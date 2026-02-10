@@ -35,5 +35,10 @@ function ai_fr_get_default_options(): array {
         // UI Hub
         'onboarding_done'       => '',
         'ui_version'            => 'hub-v1',
+
+        // Notifiche
+        'notify_admin_notice'   => '1',
+        'notify_email'          => '',
+        'notify_email_to'       => '',
     ];
 }

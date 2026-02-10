@@ -27,16 +27,27 @@ add_action(
             'ai-fr-admin',
             plugins_url( 'admin/assets/ai-fr-admin.css', AI_FR_PLUGIN_FILE ),
             [],
-            '1.6.0'
+            '1.6.2'
         );
 
         wp_enqueue_script(
             'ai-fr-admin',
             plugins_url( 'admin/assets/ai-fr-admin.js', AI_FR_PLUGIN_FILE ),
             [ 'jquery' ],
-            '1.6.0',
+            '1.6.2',
             true
         );
+
+        $editor = wp_enqueue_code_editor( [ 'type' => 'text/x-markdown' ] );
+        if ( $editor ) {
+            wp_enqueue_script( 'wp-theme-plugin-editor' );
+            wp_enqueue_style( 'wp-codemirror' );
+            wp_localize_script(
+                'ai-fr-admin',
+                'AiFrCodeEditor',
+                [ 'settings' => $editor ]
+            );
+        }
 
         wp_localize_script(
             'ai-fr-admin',
@@ -173,6 +184,7 @@ add_action(
                 'tokens'     => ai_fr_estimate_tokens( $content ),
                 'chars'      => strlen( $content ),
                 'simulation' => ai_fr_run_ai_simulation( $content ),
+                'validation' => ai_fr_validate_llms_links( $content ),
             ]
         );
     }
@@ -226,6 +238,53 @@ add_action(
 );
 
 add_action(
+    'wp_ajax_ai_fr_compare_llms_snapshots',
+    function (): void {
+        ai_fr_admin_require_permissions();
+        $left_id  = sanitize_text_field( wp_unslash( $_POST['left_id'] ?? '' ) );
+        $right_id = sanitize_text_field( wp_unslash( $_POST['right_id'] ?? '' ) );
+
+        if ( $left_id === '' || $right_id === '' ) {
+            wp_send_json_error( 'Seleziona due snapshot da confrontare.' );
+        }
+
+        $left_content  = ai_fr_get_llms_snapshot_content( $left_id );
+        $right_content = ai_fr_get_llms_snapshot_content( $right_id );
+        if ( ! is_string( $left_content ) || ! is_string( $right_content ) ) {
+            wp_send_json_error( 'Uno o entrambi gli snapshot non sono disponibili.' );
+        }
+
+        wp_send_json_success( ai_fr_diff_llms_content( $left_content, $right_content ) );
+    }
+);
+
+add_action(
+    'wp_ajax_ai_fr_set_onboarding_status',
+    function (): void {
+        ai_fr_admin_require_permissions();
+        $done = ! empty( $_POST['done'] ) ? '1' : '';
+
+        $options                    = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
+        $options['onboarding_done'] = $done;
+        update_option( 'ai_fr_options', $options );
+        update_option( 'ai_fr_onboarding_done', $done, false );
+
+        ai_fr_add_event(
+            'onboarding_status',
+            [
+                'done' => $done === '1' ? 1 : 0,
+            ]
+        );
+
+        wp_send_json_success(
+            [
+                'done' => $done,
+            ]
+        );
+    }
+);
+
+add_action(
     'wp_ajax_ai_fr_run_ai_simulation',
     function (): void {
         ai_fr_admin_require_permissions();
@@ -262,6 +321,9 @@ function ai_fr_render_options_page(): void {
         $options['regenerate_on_change'] = ! empty( $_POST['regenerate_on_change'] ) ? '1' : '';
         $options['onboarding_done']      = ! empty( $_POST['onboarding_done'] ) ? '1' : '';
         $options['ui_version']           = 'hub-v1';
+        $options['notify_admin_notice']  = ! empty( $_POST['notify_admin_notice'] ) ? '1' : '';
+        $options['notify_email']         = ! empty( $_POST['notify_email'] ) ? '1' : '';
+        $options['notify_email_to']      = sanitize_email( wp_unslash( $_POST['notify_email_to'] ?? '' ) );
 
         update_option( 'ai_fr_options', $options );
         update_option( 'ai_fr_onboarding_done', $options['onboarding_done'], false );
@@ -286,17 +348,35 @@ function ai_fr_render_options_page(): void {
 
     ?>
     <div class="wrap ai-fr-wrap">
-        <h1>AI Friendly - AI Content Hub <small class="ai-fr-version">v1.6.0</small></h1>
+        <div class="ai-fr-header">
+            <h1>AI Friendly - AI Content Hub <small class="ai-fr-version">v1.6.2</small></h1>
+            <button type="button" class="button button-secondary" id="ai-fr-reopen-wizard">Riapri Wizard</button>
+        </div>
 
         <?php if ( ! $onboarding_done ) : ?>
             <div class="ai-fr-onboarding">
-                <strong>Setup rapido</strong>
-                <p>Imposta il tipo di sito e genera una prima base per llms.txt.</p>
-                <div class="ai-fr-onboarding-actions">
-                    <button type="button" class="button" data-ai-fr-preset="blog">Preset Blog</button>
-                    <button type="button" class="button" data-ai-fr-preset="azienda">Preset Azienda</button>
-                    <button type="button" class="button" data-ai-fr-preset="ecommerce">Preset E-commerce</button>
-                    <button type="button" class="button button-secondary" id="ai-fr-onboarding-dismiss">Completa e nascondi</button>
+                <strong>Wizard iniziale</strong>
+                <div class="ai-fr-wizard-step" data-step="1">
+                    <p><strong>Step 1:</strong> Seleziona tipo di sito</p>
+                    <div class="ai-fr-onboarding-actions">
+                        <button type="button" class="button" data-ai-fr-preset="blog">Blog</button>
+                        <button type="button" class="button" data-ai-fr-preset="azienda">Azienda</button>
+                        <button type="button" class="button" data-ai-fr-preset="ecommerce">E-commerce</button>
+                    </div>
+                </div>
+                <div class="ai-fr-wizard-step" data-step="2">
+                    <p><strong>Step 2:</strong> Scegli inclusioni iniziali</p>
+                    <div class="ai-fr-onboarding-actions">
+                        <button type="button" class="button" id="ai-fr-wizard-include-base">Pagine + Post</button>
+                        <button type="button" class="button" id="ai-fr-wizard-include-all">Tutti i contenuti</button>
+                    </div>
+                </div>
+                <div class="ai-fr-wizard-step" data-step="3">
+                    <p><strong>Step 3:</strong> Genera bozza e apri editor/anteprima</p>
+                    <div class="ai-fr-onboarding-actions">
+                        <button type="button" class="button button-primary" id="ai-fr-wizard-generate">Genera bozza</button>
+                        <button type="button" class="button button-secondary" id="ai-fr-onboarding-dismiss">Completa e nascondi</button>
+                    </div>
                 </div>
             </div>
         <?php endif; ?>
@@ -304,6 +384,7 @@ function ai_fr_render_options_page(): void {
         <form method="post" id="ai-fr-main-form">
             <?php wp_nonce_field( 'ai_fr_options_nonce' ); ?>
             <input type="hidden" name="onboarding_done" id="onboarding_done" value="<?php echo ! empty( $options['onboarding_done'] ) ? '1' : ''; ?>">
+            <input type="hidden" id="ai-fr-wizard-step" value="1">
 
             <nav class="ai-fr-nav">
                 <button type="button" class="ai-fr-nav-item is-active" data-section="overview">Overview</button>
@@ -343,6 +424,7 @@ function ai_fr_render_options_page(): void {
                             <?php endforeach; ?>
                         </ul>
                         <button type="button" id="ai-fr-refresh-diagnostics" class="button">Aggiorna diagnostica</button>
+                        <p class="description" id="ai-fr-sr-info"></p>
                     </article>
                 </div>
 
@@ -383,6 +465,7 @@ function ai_fr_render_options_page(): void {
                     <aside class="ai-fr-panel ai-fr-panel-right">
                         <h3>Helper</h3>
                         <p>Token stimati: <strong id="ai-fr-token-count">0</strong></p>
+                        <p>Validazione link: <strong id="ai-fr-link-validation">0 issue</strong></p>
                         <ul class="ai-fr-list">
                             <li><button type="button" class="button-link ai-fr-insert-snippet" data-snippet="# Chi siamo">+ Heading</button></li>
                             <li><button type="button" class="button-link ai-fr-insert-snippet" data-snippet="<?php echo esc_attr( '- [Servizi](' . $services_md_url . ')' ); ?>">+ Link sezione</button></li>
@@ -404,8 +487,26 @@ function ai_fr_render_options_page(): void {
                     <div class="ai-fr-history-actions">
                         <button type="button" id="ai-fr-create-snapshot" class="button">Crea snapshot</button>
                         <button type="button" id="ai-fr-load-snapshots" class="button button-secondary">Aggiorna lista</button>
+                        <button type="button" id="ai-fr-compare-snapshots" class="button">Confronta selezionati</button>
                     </div>
                     <ul id="ai-fr-snapshot-list" class="ai-fr-list"></ul>
+                    <div class="ai-fr-diff-wrap">
+                        <div class="ai-fr-diff-summary" id="ai-fr-diff-summary"></div>
+                        <div class="ai-fr-diff-columns">
+                            <div>
+                                <h4>Diff affiancato</h4>
+                                <table class="widefat striped ai-fr-diff-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Sinistra</th>
+                                            <th>Destra</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ai-fr-diff-rows"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="ai-fr-content-manager">
@@ -440,6 +541,11 @@ function ai_fr_render_options_page(): void {
                         </thead>
                         <tbody id="ai-fr-content-tbody"></tbody>
                     </table>
+                    <div class="ai-fr-pagination">
+                        <button type="button" class="button" id="ai-fr-prev-page">Precedente</button>
+                        <span id="ai-fr-page-info">Pagina 1</span>
+                        <button type="button" class="button" id="ai-fr-next-page">Successiva</button>
+                    </div>
                 </div>
             </section>
 
@@ -590,6 +696,23 @@ function ai_fr_render_options_page(): void {
                             <label style="display:block; margin-bottom:8px;">
                                 <input type="checkbox" name="regenerate_on_change" value="1" <?php checked( $options['regenerate_on_change'] ); ?>>
                                 Rigenera solo se il contenuto e cambiato (checksum)
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Notifiche</th>
+                        <td>
+                            <label style="display:block; margin-bottom:8px;">
+                                <input type="checkbox" name="notify_admin_notice" value="1" <?php checked( $options['notify_admin_notice'] ?? '' ); ?>>
+                                Mostra notice admin quando una rigenerazione ha errori
+                            </label>
+                            <label style="display:block; margin-bottom:8px;">
+                                <input type="checkbox" name="notify_email" value="1" <?php checked( $options['notify_email'] ?? '' ); ?>>
+                                Invia email in caso di errori rigenerazione
+                            </label>
+                            <label style="display:block;">
+                                Email destinatario:
+                                <input type="email" name="notify_email_to" value="<?php echo esc_attr( $options['notify_email_to'] ?? '' ); ?>" placeholder="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" style="min-width:280px;">
                             </label>
                         </td>
                     </tr>

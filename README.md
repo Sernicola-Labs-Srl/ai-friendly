@@ -1,6 +1,6 @@
 # AI Friendly — Documentazione Plugin
 
-**Versione:** 1.5.2  
+**Versione:** 1.6.2  
 **Autore:** Sernicola Labs  
 **Requisiti:** WordPress 6.0+, PHP 8.1+  
 **Licenza:** GPL v2 or later
@@ -13,10 +13,10 @@
 2. [Installazione](#installazione)
 3. [Come funziona](#come-funziona)
 4. [Pannello di Controllo](#pannello-di-controllo)
-   - [Contenuto llms.txt](#tab-contenuto-llmstxt)
-   - [Filtri & Esclusioni](#tab-filtri--esclusioni)
-   - [Versioning MD](#tab-versioning-md)
-   - [Scheduler](#tab-scheduler)
+   - [Overview](#overview)
+   - [Content](#content)
+   - [Rules](#rules)
+   - [Automation](#automation)
 5. [Metabox per singoli contenuti](#metabox-per-singoli-contenuti)
 6. [Costanti configurabili](#costanti-configurabili)
 7. [Struttura output Markdown](#struttura-output-markdown)
@@ -128,177 +128,64 @@ Il pannello e organizzato come **AI Content Hub** in 4 macro-sezioni:
 
 ---
 
-### Tab: Contenuto llms.txt
+### Overview
 
-#### Contenuto personalizzato
+Sezione di controllo rapido con:
+- stato `llms.txt` (URL, caratteri, righe, ultima rigenerazione)
+- stato Markdown Pack (static mode, numero file, spazio)
+- avvisi diagnostici (scope vuoto, cron disattivo, errori rigenerazione, warning robots/index)
+- quick actions (`Rigenera`, `Apri Editor`, `Esegui ora`, `Riapri Wizard`)
 
-Puoi scrivere manualmente il contenuto del file `llms.txt` in formato Markdown:
+### Content
 
-```markdown
-# La Mia Azienda
+Contiene editor, versioning `llms.txt` e file manager contenuti.
 
-> Siamo leader nel settore XYZ dal 1990.
+#### Editor llms.txt
+- editor Markdown con syntax highlighting (CodeMirror di WordPress)
+- TOC automatico da heading
+- anteprima live
+- token count
+- validazione link
+- AI Simulation locale (heuristics)
 
-## Chi siamo
+#### Wizard iniziale
+- Step 1: tipo sito (Blog/Azienda/E-commerce)
+- Step 2: inclusioni iniziali
+- Step 3: generazione bozza
+- `Completa e nascondi` persistente
+- `Riapri Wizard` sempre disponibile
 
-Descrizione dettagliata dell'azienda, mission, valori...
+#### Snapshot e Diff llms
+- creazione snapshot manuale
+- lista snapshot con note automatiche (delta linee/token)
+- ripristino snapshot
+- confronto di 2 snapshot con diff line-by-line affiancato
 
-## Servizi principali
+#### Content Manager
+- tabella filtrabile per tipo/stato/ricerca
+- colonne: inclusa/esclusa, titolo, tipo, lingua, stato, token
+- toggle include/esclude via AJAX
+- paginazione (`Precedente` / `Successiva`)
 
-- Consulenza strategica
-- Sviluppo software
-- Formazione
-```
+### Rules
 
-Se lasci il campo vuoto, il plugin genera automaticamente l'indice basandosi sui contenuti pubblicati.
+Controllo granulare inclusioni/esclusioni:
+- tipi contenuto (pagine, post, prodotti, CPT)
+- esclusione per categorie/tag/template
+- pattern URL con wildcard/regex
+- esclusione noindex e contenuti protetti da password
 
-#### Lista automatica
+### Automation
 
-**☑️ Aggiungi lista automatica dopo il contenuto custom**
-
-Se attivato, il plugin aggiunge automaticamente le sezioni `## Pagine`, `## Post`, `## Prodotti` dopo il tuo contenuto personalizzato.
-
-Utile se vuoi scrivere un'introduzione custom ma mantenere l'indice aggiornato automaticamente.
-
----
-
-### Tab: Filtri & Esclusioni
-
-Controllo granulare su quali contenuti includere nell'output AI Friendly.
-
-#### Tipi di contenuto da includere
-
-| Opzione | Descrizione |
-|---------|-------------|
-| ☑️ Pagine | Include le pagine WordPress standard |
-| ☑️ Articoli (Post) | Include i post del blog |
-| ☐ Prodotti WooCommerce | Include i prodotti (visibile solo se WooCommerce è attivo) |
-| ☐ Custom Post Types | Lista dinamica di tutti i CPT registrati nel sito |
-
-#### Esclusioni
-
-##### Opzioni generali
-
-| Opzione | Descrizione |
-|---------|-------------|
-| ☑️ Escludi pagine con meta `noindex` | Esclude contenuti marcati come noindex dai plugin SEO (Yoast, Rank Math, AIOSEO, SEOPress) |
-| ☑️ Escludi contenuti protetti da password | Esclude pagine/post con password |
-
-##### Escludi categorie
-
-Seleziona una o più categorie da escludere completamente. Tutti i post appartenenti a queste categorie non appariranno in `llms.txt` e non avranno versione `.md`.
-
-**Casi d'uso:**
-- Categoria "Bozze" o "Draft"
-- Categoria "Area riservata"
-- Categoria "Landing temporanee"
-
-##### Escludi tag
-
-Stesso funzionamento delle categorie, ma per i tag.
-
-##### Escludi template
-
-Seleziona template di pagina da escludere:
-- Landing Page
-- Full Width
-- Blank Template
-- ecc.
-
-##### Escludi pattern URL
-
-Inserisci pattern URL (uno per riga) per escludere contenuti in base al loro permalink:
-
-```
-/landing/*
-/promo-*
-/test/
-/temp/*
-```
-
-**Sintassi supportata:**
-- `*` — Wildcard (qualsiasi sequenza di caratteri)
-- `?` — Singolo carattere
-- `/regex/` — Espressione regolare (racchiusa tra slash)
-
-**Esempi:**
-
-| Pattern | Esclude |
-|---------|---------|
-| `/landing/*` | Tutte le pagine sotto `/landing/` |
-| `/promo-*` | URL che iniziano con `/promo-` |
-| `*-test` | URL che finiscono con `-test` |
-| `/^\/temp\//` | Regex: tutto ciò che inizia con `/temp/` |
-
----
-
-### Tab: Versioning MD
-
-Gestione dei file Markdown statici.
-
-#### File MD statici
-
-**☑️ Salva e servi file MD statici (più veloce)**
-
-| Stato | Comportamento |
-|-------|---------------|
-| ☐ Disattivo | I file `.md` vengono generati dinamicamente ad ogni richiesta |
-| ☑️ Attivo | I file `.md` vengono salvati su disco e serviti direttamente |
-
-**Vantaggi della modalità statica:**
-- ⚡ Più veloce (nessuna elaborazione PHP ad ogni richiesta)
-- 💾 Cache automatica
-- 📊 Possibilità di analizzare i file generati
-
-**Directory di salvataggio:**
-```
-wp-content/uploads/ai-friendly/versions/
-```
-
-**Nota sicurezza (whitelist file):**  
-I file serviti dal plugin devono rispettare il formato `a-z0-9._-` + estensione `.md`.  
-Qualsiasi filename diverso viene scartato per evitare path traversal.
-
-#### Statistiche
-
-Il pannello mostra:
-- **File salvati:** Numero totale di file `.md` generati
-- **Spazio utilizzato:** Dimensione totale su disco
-- **Ultima rigenerazione:** Data/ora con statistiche dettagliate
-
-#### Azioni manuali
-
-| Pulsante | Azione |
-|----------|--------|
-| 🔄 **Rigenera tutti i file MD** | Rigenera i file, ma solo se il contenuto è cambiato (checksum) |
-| ⚡ **Forza rigenerazione** | Rigenera tutti i file ignorando il checksum |
-| 🗑️ **Elimina tutti i file** | Rimuove tutti i file `.md` dalla directory |
-
----
-
-### Tab: Scheduler
-
-Automazione della rigenerazione dei file MD.
-
-#### Rigenerazione automatica
-
-**☑️ Attiva rigenerazione automatica via cron**
-
-Quando attivo, WordPress eseguirà la rigenerazione di tutti i file MD ad intervalli regolari.
-
-**Intervallo:** Configurabile da 1 a 168 ore (1 settimana)
-
-Il pannello mostra la data/ora della prossima esecuzione programmata.
-
-#### Trigger su eventi
-
-| Opzione | Descrizione |
-|---------|-------------|
-| ☑️ **Rigenera quando un contenuto viene salvato** | Ogni volta che salvi/aggiorni un post o una pagina, il file `.md` corrispondente viene rigenerato |
-| ☑️ **Rigenera solo se il contenuto è cambiato** | Usa un checksum MD5 per verificare se il contenuto è effettivamente cambiato prima di riscrivere il file |
-
-**Nota:** L'opzione checksum è consigliata per evitare scritture inutili su disco e ridurre il carico del server.
-
+Gestione generazione Markdown e monitoraggio:
+- file MD statici on/off
+- cron con intervallo configurabile
+- trigger su save e checksum
+- azioni manuali (`Rigenera`, `Forza`, `Elimina`)
+- timeline eventi (rigenerazioni, restore snapshot, toggle esclusioni, ecc.)
+- notifiche errori rigenerazione:
+  - admin notice
+  - email (destinatario configurabile)
 ---
 
 ## Metabox per singoli contenuti
@@ -663,4 +550,5 @@ https://sernicola-labs.com
 
 ---
 
-*Documentazione aggiornata alla versione 1.5.2*
+*Documentazione aggiornata alla versione 1.6.2*
+

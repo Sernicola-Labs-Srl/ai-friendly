@@ -28,5 +28,6 @@ require_once AI_FR_PLUGIN_DIR . '/includes/admin-diagnostics.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/admin-dashboard.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/admin-content-table.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/llms-history.php';
+require_once AI_FR_PLUGIN_DIR . '/includes/admin-notifications.php';
 require_once AI_FR_PLUGIN_DIR . '/admin/metabox.php';
 require_once AI_FR_PLUGIN_DIR . '/admin/settings-page.php';
