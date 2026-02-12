@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.6.3
+- Fix robustezza serving `.md` per CPT pubblici con resolver URL piu affidabile
+- Supporto archivio CPT in Markdown (es. `/podcast.md`) quando `has_archive` e attivo
+- Estrazione contenuti migliorata per contenuti ACF (inclusi repeater/flexible content)
+- Filtro anti-rumore su metadati media ACF (slug file, mime, status, timestamp tecnici)
+- Gestione versioni statiche vuote/BOM: non vengono servite come output valido
+- Hardening output HTTP su `.md` con no-cache e header diagnostici:
+  - `X-AI-Friendly-Source`
+  - `X-AI-Friendly-Version`
+  - `X-AI-Friendly-MD-Length`
+  - `X-AI-Friendly-Debug-Requested`
+  - `X-AI-Friendly-Debug-Admin`
+- Invalidation cache estesa a chiavi meta ACF
+- Aggiornata label versione in pagina opzioni da valore hardcoded a costante plugin
+
 ## 1.6.2
 - Editor llms con syntax highlighting via CodeMirror (core WordPress)
 - Diff snapshot completo line-by-line affiancato con numerazione righe

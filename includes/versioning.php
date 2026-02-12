@@ -76,8 +76,14 @@ class AiFrVersioning {
         if ( ! $filepath || ! file_exists( $filepath ) ) {
             return null;
         }
-        
-        return file_get_contents( $filepath );
+
+        $content = file_get_contents( $filepath );
+        if ( ! is_string( $content ) ) {
+            return null;
+        }
+
+        // Empty or BOM-only payload should not shadow dynamic generation.
+        return self::hasVisibleContent( $content ) ? $content : null;
     }
     
     /**
@@ -89,8 +95,12 @@ class AiFrVersioning {
             return false;
         }
         $filepath = self::getSafeFilepath( $filename );
-        
-        return $filepath ? file_exists( $filepath ) : false;
+        if ( ! $filepath || ! file_exists( $filepath ) ) {
+            return false;
+        }
+
+        $content = file_get_contents( $filepath );
+        return is_string( $content ) && self::hasVisibleContent( $content );
     }
     
     /**
@@ -148,6 +158,11 @@ class AiFrVersioning {
         }
         
         return str_starts_with( $real, $base ) ? $filepath : null;
+    }
+
+    private static function hasVisibleContent( string $content ): bool {
+        $probe = preg_replace( '/^\xEF\xBB\xBF/', '', $content ) ?? $content;
+        return trim( $probe ) !== '';
     }
     
     /**

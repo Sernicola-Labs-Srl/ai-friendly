@@ -27,14 +27,14 @@ add_action(
             'ai-fr-admin',
             plugins_url( 'admin/assets/ai-fr-admin.css', AI_FR_PLUGIN_FILE ),
             [],
-            '1.6.2'
+            AI_FR_VERSION
         );
 
         wp_enqueue_script(
             'ai-fr-admin',
             plugins_url( 'admin/assets/ai-fr-admin.js', AI_FR_PLUGIN_FILE ),
             [ 'jquery' ],
-            '1.6.2',
+            AI_FR_VERSION,
             true
         );
 
@@ -349,7 +349,7 @@ function ai_fr_render_options_page(): void {
     ?>
     <div class="wrap ai-fr-wrap">
         <div class="ai-fr-header">
-            <h1>AI Friendly - AI Content Hub <small class="ai-fr-version">v1.6.2</small></h1>
+            <h1>AI Friendly - AI Content Hub <small class="ai-fr-version">v<?php echo esc_html( AI_FR_VERSION ); ?></small></h1>
             <button type="button" class="button button-secondary" id="ai-fr-reopen-wizard">Riapri Wizard</button>
         </div>
 
