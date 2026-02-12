@@ -1,6 +1,6 @@
-# AI Friendly — Documentazione Plugin
+# AI Friendly - Documentazione Plugin
 
-**Versione:** 1.6.2  
+**Versione:** 1.6.3  
 **Autore:** Sernicola Labs  
 **Requisiti:** WordPress 6.0+, PHP 8.1+  
 **Licenza:** GPL v2 or later
@@ -9,546 +9,307 @@
 
 ## Indice
 
-1. [Introduzione](#introduzione)
-2. [Installazione](#installazione)
-3. [Come funziona](#come-funziona)
-4. [Pannello di Controllo](#pannello-di-controllo)
-   - [Overview](#overview)
-   - [Content](#content)
-   - [Rules](#rules)
-   - [Automation](#automation)
-5. [Metabox per singoli contenuti](#metabox-per-singoli-contenuti)
-6. [Costanti configurabili](#costanti-configurabili)
-7. [Struttura output Markdown](#struttura-output-markdown)
-8. [Compatibilità](#compatibilità)
-9. [Struttura del plugin](#struttura-del-plugin)
-10. [Hook e Filtri per sviluppatori](#hook-e-filtri-per-sviluppatori)
-11. [FAQ](#faq)
-12. [Changelog](#changelog)
+1. Introduzione
+2. Installazione e aggiornamento
+3. Come funziona
+4. AI Content Hub (admin)
+5. Regole di inclusione/esclusione
+6. Output Markdown
+7. Compatibilita
+8. Debug e diagnostica
+9. Hook e filtri
+10. FAQ
+11. Release checklist
+12. Changelog
 
 ---
 
 ## Introduzione
 
-**AI Friendly** è un plugin WordPress che rende i contenuti del tuo sito facilmente accessibili e interpretabili dai modelli di intelligenza artificiale (LLM).
+AI Friendly espone contenuti WordPress in un formato piu leggibile per sistemi AI/LLM:
 
-### Cosa fa il plugin
+- `/llms.txt` con indice dei contenuti
+- endpoint `.md` per singoli contenuti pubblici
+- (se disponibile) endpoint `.md` per archive CPT pubblici, ad esempio `/podcast.md`
 
-1. **Genera `/llms.txt`** — Un file di testo che elenca e descrive tutti i contenuti del sito, pensato per essere letto da crawler AI e assistenti virtuali.
-
-2. **Genera versioni `.md`** — Ogni pagina e articolo diventa accessibile in formato Markdown aggiungendo `.md` all'URL (es. `tuosito.com/chi-siamo.md`).
-
-### Perché è utile
-
-- **Migliora la visibilità AI** — I modelli di linguaggio possono comprendere meglio la struttura e i contenuti del tuo sito.
-- **Contenuto pulito** — L'output Markdown è privo di elementi UI, form, script e altri "rumori" che confondono gli LLM.
-- **Standard emergente** — Il formato `llms.txt` sta diventando uno standard de facto per l'indicizzazione AI, simile a `robots.txt` per i motori di ricerca tradizionali.
+Il plugin include anche un pannello admin (AI Content Hub) per gestire regole, rigenerazione, snapshot e diagnostica.
 
 ---
 
-## Installazione
+## Installazione e aggiornamento
 
-### Metodo 1: Upload manuale
+### Installazione
 
-1. Scarica il file `ai-friendly.php`
-2. Caricalo nella cartella `wp-content/plugins/ai-friendly/`
-3. Attiva il plugin da **WordPress → Plugin**
+1. Carica lo zip del plugin da WordPress (`Plugin > Aggiungi nuovo > Carica plugin`)
+2. Attiva il plugin
+3. Apri `Impostazioni > Sernicola Labs | AI Friendly`
 
-### Metodo 2: Upload da admin
+### Aggiornamento
 
-1. Vai su **Plugin → Aggiungi nuovo → Carica plugin**
-2. Seleziona il file `.zip` del plugin
-3. Clicca **Installa ora** e poi **Attiva**
+1. Aggiorna lo zip del plugin
+2. Verifica in admin la versione mostrata in alto (deve combaciare con il package)
+3. Se usi file statici `.md`, esegui `Forza rigenerazione`
 
-### Verifica installazione
-
-Dopo l'attivazione, visita:
-- `tuosito.com/llms.txt` — Dovresti vedere l'indice dei contenuti
-- `tuosito.com/qualsiasi-pagina.md` — Dovresti vedere la versione Markdown
+Note:
+- Le opzioni restano nel database (`ai_fr_options`)
+- In hosting con OPcache/FPM puo servire un reload del pool PHP dopo update manuali
 
 ---
 
 ## Come funziona
 
-### File llms.txt
+### 1) `llms.txt`
 
-Il file `/llms.txt` viene generato dinamicamente e contiene:
+`/llms.txt` viene generato dinamicamente e puo combinare:
 
-```markdown
-# Nome del Sito
+- contenuto custom scritto in admin
+- lista automatica dei contenuti inclusi
 
-> Descrizione del sito (tagline WordPress)
+### 2) Endpoint `.md`
 
-## Pagine
+Per i contenuti pubblici inclusi dalle regole:
 
-- [Home](https://tuosito.com/home.md): Descrizione breve...
-- [Chi siamo](https://tuosito.com/chi-siamo.md): La nostra storia...
-- [Servizi](https://tuosito.com/servizi.md): I nostri servizi...
+- `https://sito.tld/pagina/` -> `https://sito.tld/pagina.md`
+- `https://sito.tld/cpt/slug/` -> `https://sito.tld/cpt/slug.md`
 
-## Post
+Per CPT con archive pubblico (`has_archive`), se abilitati:
 
-- [Articolo recente](https://tuosito.com/articolo.md): Estratto...
-```
+- `https://sito.tld/podcast/` -> `https://sito.tld/podcast.md`
 
-### Versioni Markdown (.md)
+### 3) Modalita statica (opzionale)
 
-Ogni contenuto pubblicato è accessibile in Markdown:
+Se attivi "File MD statici":
 
-| URL originale | URL Markdown |
-|---------------|--------------|
-| `tuosito.com/chi-siamo/` | `tuosito.com/chi-siamo.md` |
-| `tuosito.com/blog/articolo/` | `tuosito.com/blog/articolo.md` |
-| `tuosito.com/prodotto/nome/` | `tuosito.com/prodotto/nome.md` |
-
-### Tag HTML nel `<head>`
-
-Il plugin aggiunge automaticamente riferimenti nel codice HTML:
-
-```html
-<!-- Su tutte le pagine -->
-<link rel="llms-txt" type="text/plain" href="https://tuosito.com/llms.txt" />
-
-<!-- Su singole pagine/post -->
-<link rel="alternate" type="text/markdown" title="Versione Markdown" 
-      href="https://tuosito.com/pagina.md" />
-```
+- il plugin salva versioni `.md` in `wp-content/uploads/ai-friendly/versions/`
+- le richieste possono essere servite dal file salvato
+- file vuoti/non validi non vengono considerati validi in serving
 
 ---
 
-## Pannello di Controllo
+## AI Content Hub (admin)
 
-Accedi alle impostazioni da **Impostazioni → AI Friendly**.
+Il pannello e diviso in 4 sezioni:
 
-Il pannello e organizzato come **AI Content Hub** in 4 macro-sezioni:
-
-- **Overview**: stato llms.txt, stato Markdown Pack, avvisi rapidi, quick actions.
-- **Content**: editor llms.txt, preview live, snapshot/versioning llms, content manager con filtri e toggle.
-- **Rules**: inclusioni/esclusioni (tipi contenuto, tassonomie, template, pattern URL, noindex/password).
-- **Automation**: opzioni cron/on-save, azioni manuali e timeline eventi.
-
----
-
-### Overview
-
-Sezione di controllo rapido con:
-- stato `llms.txt` (URL, caratteri, righe, ultima rigenerazione)
-- stato Markdown Pack (static mode, numero file, spazio)
-- avvisi diagnostici (scope vuoto, cron disattivo, errori rigenerazione, warning robots/index)
-- quick actions (`Rigenera`, `Apri Editor`, `Esegui ora`, `Riapri Wizard`)
-
-### Content
-
-Contiene editor, versioning `llms.txt` e file manager contenuti.
-
-#### Editor llms.txt
-- editor Markdown con syntax highlighting (CodeMirror di WordPress)
-- TOC automatico da heading
-- anteprima live
-- token count
-- validazione link
-- AI Simulation locale (heuristics)
-
-#### Wizard iniziale
-- Step 1: tipo sito (Blog/Azienda/E-commerce)
-- Step 2: inclusioni iniziali
-- Step 3: generazione bozza
-- `Completa e nascondi` persistente
-- `Riapri Wizard` sempre disponibile
-
-#### Snapshot e Diff llms
-- creazione snapshot manuale
-- lista snapshot con note automatiche (delta linee/token)
-- ripristino snapshot
-- confronto di 2 snapshot con diff line-by-line affiancato
-
-#### Content Manager
-- tabella filtrabile per tipo/stato/ricerca
-- colonne: inclusa/esclusa, titolo, tipo, lingua, stato, token
-- toggle include/esclude via AJAX
-- paginazione (`Precedente` / `Successiva`)
-
-### Rules
-
-Controllo granulare inclusioni/esclusioni:
-- tipi contenuto (pagine, post, prodotti, CPT)
-- esclusione per categorie/tag/template
-- pattern URL con wildcard/regex
-- esclusione noindex e contenuti protetti da password
-
-### Automation
-
-Gestione generazione Markdown e monitoraggio:
-- file MD statici on/off
-- cron con intervallo configurabile
-- trigger su save e checksum
-- azioni manuali (`Rigenera`, `Forza`, `Elimina`)
-- timeline eventi (rigenerazioni, restore snapshot, toggle esclusioni, ecc.)
-- notifiche errori rigenerazione:
-  - admin notice
-  - email (destinatario configurabile)
----
-
-## Metabox per singoli contenuti
-
-In ogni pagina, post o prodotto, troverai un metabox "AI Friendly" nella sidebar:
-
-```
-┌─────────────────────────────────┐
-│ AI Friendly                     │
-├─────────────────────────────────┤
-│ ☐ Escludi da llms.txt e        │
-│   versione .md                  │
-│                                 │
-│ Ultima generazione MD:          │
-│ 2025-01-15 14:30:22            │
-└─────────────────────────────────┘
-```
-
-Questo permette di escludere singoli contenuti senza dover modificare le regole globali.
+- **Overview**
+  - stato `llms.txt`
+  - stato Markdown Pack
+  - warning diagnostici
+  - quick actions
+- **Content**
+  - editor `llms.txt` con CodeMirror
+  - anteprima live
+  - snapshot + diff
+  - content manager con filtri e toggle esclusione
+- **Rules**
+  - inclusioni per page/post/product/CPT
+  - esclusioni per categoria/tag/template/pattern URL/noindex/password
+- **Automation**
+  - static md on/off
+  - cron rigenerazione
+  - trigger su save
+  - timeline eventi
+  - notifiche errore rigenerazione
 
 ---
 
-## Costanti configurabili
+## Regole di inclusione/esclusione
 
-Puoi sovrascrivere le impostazioni di default aggiungendo queste costanti nel file `wp-config.php`:
+La pipeline controlla:
 
-```php
-// Limiti per la lista automatica in llms.txt
-define( 'AI_FR_PAGES_LIMIT', 50 );   // Max pagine (default: 50)
-define( 'AI_FR_POSTS_LIMIT', 30 );   // Max post (default: 30)
-define( 'AI_FR_EXCERPT_LEN', 160 );  // Lunghezza excerpt in caratteri (default: 160)
+1. esclusione manuale (`_ai_fr_exclude`)
+2. contenuto protetto da password
+3. tipo contenuto abilitato
+4. esclusioni tassonomiche/template/pattern URL
+5. contenuti marcati `noindex` (se opzione attiva)
 
-// Output Markdown
-define( 'AI_FR_INCLUDE_METADATA', true );     // Includi frontmatter YAML (default: true)
-define( 'AI_FR_NORMALIZE_HEADINGS', true );   // Normalizza heading H1 unico (default: true)
-```
+Questo vale sia per `llms.txt` sia per `.md`.
 
 ---
 
-## Struttura output Markdown
+## Output Markdown
 
-Ogni file `.md` generato ha questa struttura:
+Formato tipico:
 
-### 1. Frontmatter YAML (metadati)
+1. frontmatter YAML (titolo, date, autore, url, metadati disponibili)
+2. `#` titolo documento
+3. contenuto convertito in markdown
 
-```yaml
----
-title: Titolo della pagina
-description: Meta description o estratto del contenuto
-featured_image: https://tuosito.com/wp-content/uploads/immagine.jpg
-date: 2025-01-15
-modified: 2025-01-20
-author: Nome Autore
-url: https://tuosito.com/pagina/
-categories: [Categoria 1, Categoria 2]
-tags: [Tag1, Tag2, Tag3]
----
-```
+Se il contenuto principale e scarso, il plugin usa fallback:
 
-### 2. Titolo H1
+- testo builder supportati
+- estrazione campi ACF
+- excerpt/contenuto raw
+- fallback minimo "_Contenuto non disponibile._"
 
-```markdown
-# Titolo della pagina
-```
+### Estrazione ACF
 
-### 3. Immagine in evidenza
+Per CPT creati/gestiti con ACF:
 
-```markdown
-![Titolo della pagina](https://tuosito.com/featured-image.jpg)
-```
-
-### 4. Contenuto convertito
-
-Il contenuto HTML viene convertito in Markdown pulito:
-
-| Elemento HTML | Conversione Markdown |
-|---------------|----------------------|
-| `<h1>`...`<h6>` | `#` ... `######` (con normalizzazione) |
-| `<p>` | Paragrafi separati da righe vuote |
-| `<strong>`, `<b>` | `**testo**` |
-| `<em>`, `<i>` | `*testo*` |
-| `<a href="...">` | `[testo](url)` |
-| `<img>` | `![alt](src)` (solo se ha alt text) |
-| `<ul>`, `<ol>` | Liste con `-` |
-| `<blockquote>` | `> citazione` |
-| `<pre><code>` | Blocchi ``` fenced ``` |
-| `<code>` inline | `` `codice` `` |
-| `<table>` | Tabelle Markdown |
-| `<hr>` | `---` |
-
-### Cosa viene rimosso automaticamente
-
-- Script, style, SVG, iframe
-- Form e tutti gli elementi di input
-- Elementi di navigazione (`<nav>`, `<aside>`, `<footer>`)
-- Elementi nascosti (`hidden`, `display:none`, `aria-hidden`)
-- Shortcode di form (Contact Form 7, WPForms, ecc.)
-- Shortcode di slider, gallery, ads
-- Link anchor interni (`#sezione`)
-- Bottoni e CTA non informativi ("Scopri di più", "Invia", "Avanti", ecc.)
-- Immagini senza alt text o con alt generico ("image", "foto", "banner")
-- Commenti HTML (inclusi quelli di Gutenberg)
+- il plugin scansiona ricorsivamente i campi (`get_fields`)
+- include testo utile (headline, paragrafi, descrizioni)
+- esclude metadati media tecnici (filename, mime, status, timestamp, ecc.)
 
 ---
 
-## Compatibilità
+## Compatibilita
 
-### Page Builder supportati
+### Editor/Page builder
 
-Il plugin estrae correttamente il contenuto da:
+Supporto estrazione contenuti per:
 
-- ✅ Gutenberg (editor a blocchi)
-- ✅ Classic Editor
-- ✅ Elementor
-- ✅ Breakdance
-- ✅ YOOtheme
-- ✅ Oxygen
-- ✅ Bricks
-- ✅ Divi (parziale)
-- ✅ WPBakery (parziale)
+- Gutenberg
+- Classic Editor
+- Elementor
+- Breakdance
+- YOOtheme
+- Oxygen
+- Bricks
+- ACF (fallback testuale da field values)
 
-### Plugin SEO supportati
+### SEO plugin (metadati/noindex)
 
-Per l'estrazione di metadati (title, description) e rilevamento noindex:
-
-- ✅ Yoast SEO
-- ✅ Rank Math
-- ✅ All in One SEO
-- ✅ SEOPress
-
-**Nota:** Il plugin funziona perfettamente anche SENZA alcun plugin SEO installato. In quel caso usa semplicemente il titolo WordPress standard e genera l'excerpt dal contenuto.
+- Yoast SEO
+- Rank Math
+- All in One SEO
+- SEOPress
 
 ### WooCommerce
 
-Supporto completo per i prodotti WooCommerce (attivabile dalle impostazioni).
+Supporto prodotti `product` se WooCommerce e attivo e abilitato nelle regole.
 
 ---
 
-## Struttura del plugin
+## Debug e diagnostica
 
-Il plugin è organizzato in moduli per rendere manutenzione e sviluppo più chiari.
+### Header risposta `.md`
 
-```
-ai-friendly.php
-includes/
-  boot.php
-  constants.php
-  options.php
-  activation.php
-  content-filter.php
-  versioning.php
-  scheduler.php
-  converter.php
-  metadata.php
-  intercept.php
-  llms.php
-  markdown.php
-  head.php
-  utils.php
-admin/
-  metabox.php
-  settings-page.php
-```
+Il plugin espone header utili:
 
-- `ai-friendly.php` fa da bootstrap e carica `includes/boot.php`.
-- `includes/` contiene la logica core del plugin.
-- `admin/` contiene UI di admin, metabox e AJAX.
+- `X-AI-Friendly-Source`: `dynamic` | `static` | `archive`
+- `X-AI-Friendly-Version`: versione plugin
+- `X-AI-Friendly-MD-Length`: lunghezza markdown calcolato
+- `X-AI-Friendly-Debug-Requested`: `1/0`
+- `X-AI-Friendly-Debug-Admin`: `1/0`
+- `X-Robots-Tag`: `noindex, follow`
+
+### `?debug=1`
+
+Con `?debug=1`:
+
+- viene richiesta modalita debug
+- le informazioni debug nel body vengono mostrate solo ad admin
+- la risposta HTTP resta no-cache per facilitare troubleshooting
 
 ---
 
-## Hook e Filtri per sviluppatori
+## Hook e filtri
 
-### Filtro: contenuto llms.txt
+### `ai_fr_llms_txt_content`
 
-```php
-add_filter( 'ai_fr_llms_txt_content', function( $content ) {
-    // Modifica il contenuto di llms.txt
-    $content .= "\n\n## Sezione personalizzata\n";
-    $content .= "Contenuto aggiuntivo...";
-    return $content;
-} );
-```
+Permette di modificare il contenuto finale di `llms.txt`.
 
-### Filtro: TTL cache Markdown
+### `ai_fr_md_cache_ttl`
 
-```php
-add_filter( 'ai_fr_md_cache_ttl', function( int $ttl, int $post_id, WP_Post $post ) {
-    return 6 * HOUR_IN_SECONDS; // es. 6 ore
-}, 10, 3 );
-```
+Permette di modificare TTL cache markdown dinamica.
 
-### Filtro: canonical URL per .md
+### `ai_fr_md_canonical_url`
 
-```php
-add_filter( 'ai_fr_md_canonical_url', function( string $canonical, int $post_id, WP_Post $post ) {
-    // Sovrascrivi il canonical per la versione .md
-    return 'https://tuosito.com/canonical-custom/';
-}, 10, 3 );
-```
+Override del canonical header per endpoint `.md`.
 
-### Filtro: meta che invalidano la cache
+### `ai_fr_md_cache_meta_keys`
 
-```php
-add_filter( 'ai_fr_md_cache_meta_keys', function( array $keys, int $post_id, string $meta_key ) {
-    $keys[] = '_my_custom_meta';
-    return $keys;
-}, 10, 3 );
-```
+Aggiunge chiavi meta che invalidano la cache markdown.
 
-### Filtro: accesso contenuti (.md / llms.txt)
+### `ai_fr_can_serve_post`
 
-```php
-add_filter( 'ai_fr_can_serve_post', function( bool $can, WP_Post $post, string $context ) {
-    // Esempio: blocca tutti i contenuti "private"
-    if ( $post->post_status === 'private' ) {
-        return false;
-    }
-
-    return $can;
-}, 10, 3 );
-```
-
-#### Integrazioni membership (esempi pronti)
-
-```php
-// MemberPress
-add_filter( 'ai_fr_can_serve_post', function( bool $can, WP_Post $post, string $context ) {
-    if ( function_exists( 'mepr_is_protected' ) && mepr_is_protected( $post->ID ) ) {
-        return false;
-    }
-    return $can;
-}, 10, 3 );
-
-// Restrict Content Pro
-add_filter( 'ai_fr_can_serve_post', function( bool $can, WP_Post $post, string $context ) {
-    if ( function_exists( 'rcp_is_restricted_content' ) && rcp_is_restricted_content( $post->ID ) ) {
-        return false;
-    }
-    return $can;
-}, 10, 3 );
-
-// Paid Memberships Pro
-add_filter( 'ai_fr_can_serve_post', function( bool $can, WP_Post $post, string $context ) {
-    if ( function_exists( 'pmpro_has_membership_access' )
-      && ! pmpro_has_membership_access( $post->ID, null, false ) ) {
-        return false;
-    }
-    return $can;
-}, 10, 3 );
-```
-
-### Verifica inclusione post
-
-```php
-// Verifica se un post sarà incluso
-$filter = new AiFrContentFilter();
-$post = get_post( 123 );
-
-if ( $filter->shouldInclude( $post ) ) {
-    // Il post sarà incluso in AI Friendly
-}
-```
-
-### Genera Markdown programmaticamente
-
-```php
-// Genera il markdown di un post
-$post = get_post( 123 );
-$markdown = ai_fr_generate_markdown( $post );
-```
-
-### Gestione versioni
-
-```php
-// Salva versione MD
-$result = AiFrVersioning::saveVersion( $post_id, $md_content );
-// Ritorna: ['saved' => bool, 'path' => string, 'checksum' => string, 'changed' => bool]
-
-// Leggi versione salvata
-$content = AiFrVersioning::getVersion( $post_id );
-
-// Verifica se esiste versione valida
-$exists = AiFrVersioning::hasValidVersion( $post_id );
-
-// Elimina versione
-AiFrVersioning::deleteVersion( $post_id );
-
-// Statistiche
-$stats = AiFrVersioning::getStats();
-// Ritorna: ['count' => int, 'size' => int, 'files' => array]
-
-// Pulisci tutto
-$deleted_count = AiFrVersioning::clearAll();
-```
-
-### Rigenera tutti i file
-
-```php
-// Rigenera rispettando checksum
-$stats = ai_fr_regenerate_all( false );
-
-// Forza rigenerazione
-$stats = ai_fr_regenerate_all( true );
-
-// Ritorna: ['processed' => int, 'regenerated' => int, 'skipped' => int, 'errors' => int]
-```
+Controllo finale sulla possibilita di esporre un contenuto via `.md` / `llms.txt`.
 
 ---
 
 ## FAQ
 
-### Il plugin rallenta il sito?
+### I file `.md` vengono indicizzati dai motori?
 
-No. Il file `llms.txt` e le versioni `.md` vengono generati solo quando richiesti. Con la modalità "file statici" attiva, vengono serviti direttamente da disco senza elaborazione PHP.
+Di default viene inviato `X-Robots-Tag: noindex, follow`.
 
-### Posso escludere singole pagine?
+### Posso escludere singoli contenuti?
 
-Sì, in due modi:
-1. Usa il metabox "AI Friendly" nel singolo post/pagina
-2. Configura le esclusioni globali (categorie, tag, template, pattern URL)
+Si, con metabox per singolo contenuto o con regole globali nel tab Rules.
 
-### I file .md vengono indicizzati da Google?
+### Posso usare solo contenuto custom per `llms.txt`?
 
-No. Il plugin aggiunge automaticamente l'header `X-Robots-Tag: noindex, nofollow` per evitare contenuti duplicati.
+Si. Compila l'editor `llms.txt` e disattiva "Aggiungi lista automatica".
 
-### Funziona con siti multilingua?
+### Ho aggiornato il plugin ma il comportamento non cambia
 
-Sì. Ogni versione linguistica della pagina avrà la sua versione `.md` corrispondente.
+Controlla:
 
-### Posso personalizzare completamente llms.txt?
+1. versione mostrata in pagina opzioni
+2. header `X-AI-Friendly-Version` in risposta `.md`
+3. cache server/CDN/OPcache
 
-Sì. Scrivi il contenuto nel campo "Contenuto llms.txt" nelle impostazioni. Se vuoi anche la lista automatica, attiva l'opzione corrispondente.
+### Funziona su CPT creati con ACF?
 
-### Come verifico che funzioni?
+Si. Sia in risoluzione URL `.md` sia in estrazione contenuto testuale.
 
-1. Visita `tuosito.com/llms.txt`
-2. Visita `tuosito.com/una-pagina-qualsiasi.md`
-3. Aggiungi `?debug=1` all'URL `.md` (da admin) per vedere informazioni di debug
+---
 
-### Il plugin ha dipendenze?
+## Release checklist
 
-No. AI Friendly è completamente standalone e non richiede altri plugin. L'integrazione con plugin SEO è opzionale e funziona in loro assenza.
+Usa questa checklist ad ogni nuova release.
 
-### Come aggiorno il plugin?
+1. **Versioning**
+- Aggiorna `Version:` in `ai-friendly.php`
+- Aggiorna `AI_FR_VERSION` in `ai-friendly.php`
+- Aggiorna `CHANGELOG.md`
 
-Sostituisci il file `ai-friendly.php` con la nuova versione. Le impostazioni vengono mantenute.
+2. **Documentazione**
+- Verifica coerenza `README.md` con feature reali
+- Aggiorna eventuali note su header/debug/compatibilita
+
+3. **Packaging**
+- Crea zip release includendo `ai-friendly.php`, `includes/`, `admin/`, `README.md`, `CHANGELOG.md`
+- Escludi file non necessari al runtime (es. `.git`, file locali IDE)
+
+4. **Deploy**
+- Aggiorna plugin su ambiente test/staging
+- Verifica versione mostrata in `Impostazioni > Sernicola Labs | AI Friendly`
+- Se necessario, riavvia PHP-FPM/OPcache
+
+5. **Post-deploy**
+- Esegui `Forza rigenerazione` da tab Automation
+- Verifica `llms.txt` (`/llms.txt`)
+- Verifica almeno:
+  - una pagina standard `.md`
+  - un contenuto CPT `.md`
+  - un archive CPT `.md` (se `has_archive` attivo)
+
+6. **Header smoke test (`.md`)**
+- Controlla presenza:
+  - `X-AI-Friendly-Version`
+  - `X-AI-Friendly-Source`
+  - `X-AI-Friendly-MD-Length`
+  - `X-Robots-Tag: noindex, follow`
+
+7. **Debug smoke test**
+- Richiama endpoint con `?debug=1`
+- Controlla:
+  - `X-AI-Friendly-Debug-Requested: 1`
+  - `X-AI-Friendly-Debug-Admin: 1` (solo admin loggato)
+
+8. **Cache**
+- Se output inatteso: svuota cache plugin/CDN/reverse proxy
+- Se comportamento invariato dopo update: verifica OPcache/FPM e header `X-AI-Friendly-Version`
 
 ---
 
 ## Changelog
 
-Il changelog completo è in `CHANGELOG.md`.
+Vedi `CHANGELOG.md`.
 
 ---
 
 ## Supporto
 
-Per segnalare bug o richiedere funzionalità:
-
-**Sernicola Labs**  
+Sernicola Labs  
 https://sernicola-labs.com
-
----
-
-*Documentazione aggiornata alla versione 1.6.2*
-

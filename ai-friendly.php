@@ -2,13 +2,18 @@
 /**
  * Plugin Name:        Sernicola Labs | AI Friendly — llms.txt & Markdown
  * Description:        Genera /llms.txt e versioni .md di post e pagine.
- * Version:            1.6.2
+ * Version:            1.6.3
  * Changelog:          CHANGELOG.md
  * Author:             Sernicola Labs
  * Author URI:         https://sernicola-labs.com
  * License:            GPL v2 or later
  * Requires at least:  6.0
  * Requires PHP:       8.1
+ *
+ * Changelog 1.6.3:
+ *   - Fix robustezza rendering .md per CPT/ACF (fallback contenuto + archive markdown)
+ *   - Harden output: evita risposte body vuoto e aggiunge header diagnostici
+ *   - Migliorata invalidazione cache su meta ACF e versioni statiche vuote
  *
  * Changelog 1.6.2:
  *   - Editor llms con syntax highlighting (CodeMirror WP)
@@ -73,6 +78,9 @@ if ( ! defined( 'AI_FR_PLUGIN_FILE' ) ) {
 }
 if ( ! defined( 'AI_FR_PLUGIN_DIR' ) ) {
     define( 'AI_FR_PLUGIN_DIR', __DIR__ );
+}
+if ( ! defined( 'AI_FR_VERSION' ) ) {
+    define( 'AI_FR_VERSION', '1.6.3' );
 }
 
 require_once AI_FR_PLUGIN_DIR . '/includes/boot.php';

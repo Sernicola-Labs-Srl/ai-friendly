@@ -98,6 +98,7 @@ function ai_fr_regenerate_all( bool $force = false, string $trigger = 'manual' )
             $md_content = ai_fr_generate_markdown( $post );
             
             if ( empty( $md_content ) ) {
+                AiFrVersioning::deleteVersion( $post->ID );
                 $stats['skipped']++;
                 continue;
             }
@@ -166,9 +167,10 @@ function ai_fr_generate_markdown( WP_Post $post ): string {
     
     // Ottieni contenuto HTML
     $html = ai_fr_get_rendered_content_safe( $post, false );
-    
-    if ( empty( trim( strip_tags( $html ) ) ) ) {
-        return '';
+    $text_html = trim( strip_tags( $html ) );
+    $fallback_plain = trim( wp_strip_all_tags( (string) $post->post_excerpt ) );
+    if ( $fallback_plain === '' ) {
+        $fallback_plain = ai_fr_extract_text_from_raw( (string) $post->post_content );
     }
     
     // Converter
@@ -188,7 +190,13 @@ function ai_fr_generate_markdown( WP_Post $post ): string {
         }
     }
     
-    $md .= $converter->convert( $html ) . "\n";
+    if ( $text_html !== '' ) {
+        $md .= $converter->convert( $html ) . "\n";
+    } elseif ( $fallback_plain !== '' ) {
+        $md .= $fallback_plain . "\n";
+    } else {
+        $md .= "_Contenuto non disponibile._\n";
+    }
     
     return $md;
 }
@@ -240,6 +248,8 @@ add_action( 'save_post', function( int $post_id, WP_Post $post, bool $update ): 
                     ]
                 );
             }
+        } else {
+            AiFrVersioning::deleteVersion( $post_id );
         }
     } catch ( Throwable $e ) {
         error_log( 'AI Friendly save_post error for ' . $post_id . ': ' . $e->getMessage() );
@@ -305,7 +315,26 @@ function ai_fr_maybe_invalidate_cache_on_meta( $meta_id, int $post_id, string $m
     
     if ( in_array( $meta_key, $keys, true ) ) {
         ai_fr_invalidate_md_cache( $post_id );
+        return;
     }
+
+    // ACF fields are stored in arbitrary meta keys and companion _key refs.
+    if ( ai_fr_is_acf_meta_key( $post_id, $meta_key, $meta_value ) ) {
+        ai_fr_invalidate_md_cache( $post_id );
+    }
+}
+
+function ai_fr_is_acf_meta_key( int $post_id, string $meta_key, $meta_value ): bool {
+    if ( $meta_key === '' ) {
+        return false;
+    }
+
+    if ( str_starts_with( $meta_key, '_' ) ) {
+        return is_string( $meta_value ) && str_starts_with( $meta_value, 'field_' );
+    }
+
+    $acf_ref = get_post_meta( $post_id, '_' . $meta_key, true );
+    return is_string( $acf_ref ) && str_starts_with( $acf_ref, 'field_' );
 }
 
 
