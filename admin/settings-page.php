@@ -76,7 +76,14 @@ add_action(
     function (): void {
         ai_fr_admin_require_permissions();
         $force = ! empty( $_POST['force'] );
-        $stats = ai_fr_regenerate_all( $force, 'manual_ajax' );
+        $mode  = sanitize_key( wp_unslash( $_POST['mode'] ?? 'full' ) );
+        if ( $mode === 'batch' ) {
+            $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
+            $batch_size = min( 1000, max( 10, intval( $options['regenerate_batch_size'] ?? 100 ) ) );
+            $stats = ai_fr_regenerate_batch( $batch_size, $force, 'manual_ajax_batch' );
+        } else {
+            $stats = ai_fr_regenerate_all( $force, 'manual_ajax' );
+        }
         wp_send_json_success( $stats );
     }
 );
@@ -316,7 +323,12 @@ function ai_fr_render_options_page(): void {
         $options['exclude_password']     = ! empty( $_POST['exclude_password'] ) ? '1' : '';
         $options['static_md_files']      = ! empty( $_POST['static_md_files'] ) ? '1' : '';
         $options['auto_regenerate']      = ! empty( $_POST['auto_regenerate'] ) ? '1' : '';
+        if ( ! empty( $options['auto_regenerate'] ) ) {
+            // La rigenerazione a intervallo richiede i file statici attivi.
+            $options['static_md_files'] = '1';
+        }
         $options['regenerate_interval']  = max( 1, intval( $_POST['regenerate_interval'] ?? 24 ) );
+        $options['regenerate_batch_size'] = min( 1000, max( 10, intval( $_POST['regenerate_batch_size'] ?? 100 ) ) );
         $options['regenerate_on_save']   = ! empty( $_POST['regenerate_on_save'] ) ? '1' : '';
         $options['regenerate_on_change'] = ! empty( $_POST['regenerate_on_change'] ) ? '1' : '';
         $options['onboarding_done']      = ! empty( $_POST['onboarding_done'] ) ? '1' : '';
@@ -326,6 +338,7 @@ function ai_fr_render_options_page(): void {
         $options['notify_email_to']      = sanitize_email( wp_unslash( $_POST['notify_email_to'] ?? '' ) );
 
         update_option( 'ai_fr_options', $options );
+        delete_option( 'ai_fr_regeneration_cursor' );
         update_option( 'ai_fr_onboarding_done', $options['onboarding_done'], false );
         update_option( 'ai_fr_ui_version', 'hub-v1', false );
 
@@ -429,9 +442,9 @@ function ai_fr_render_options_page(): void {
                 </div>
 
                 <div class="ai-fr-quick-actions">
-                    <button type="button" class="button button-primary" data-section-jump="content">Apri Editor</button>
+                    <button type="button" class="button button-primary" data-section-jump="content">Modifica llms.txt</button>
                     <button type="button" class="button" id="ai-fr-refresh-overview">Aggiorna Overview</button>
-                    <button type="button" class="button" id="ai-fr-run-now">Esegui ora</button>
+                    <button type="button" class="button" id="ai-fr-run-now">Rigenera adesso</button>
                 </div>
             </section>
 
@@ -660,7 +673,7 @@ function ai_fr_render_options_page(): void {
                         <th>File MD statici</th>
                         <td>
                             <label>
-                                <input type="checkbox" name="static_md_files" value="1" <?php checked( $options['static_md_files'] ); ?>>
+                                <input type="checkbox" id="ai-fr-static-md-files" name="static_md_files" value="1" <?php checked( $options['static_md_files'] ); ?>>
                                 Salva e servi file MD statici
                             </label>
                             <p class="description">
@@ -673,14 +686,19 @@ function ai_fr_render_options_page(): void {
                         <th>Rigenerazione automatica</th>
                         <td>
                             <label style="display:block; margin-bottom:8px;">
-                                <input type="checkbox" name="auto_regenerate" value="1" <?php checked( $options['auto_regenerate'] ); ?>>
-                                Attiva rigenerazione automatica via cron
+                                <input type="checkbox" id="ai-fr-auto-regenerate" name="auto_regenerate" value="1" <?php checked( $options['auto_regenerate'] ); ?>>
+                                Rigenera i file .md ad intervallo su tutto il sito (cron)
                             </label>
                             <label style="display:block;">
                                 Intervallo:
                                 <input type="number" name="regenerate_interval" min="1" max="168" value="<?php echo esc_attr( $options['regenerate_interval'] ); ?>" style="width:60px;">
                                 ore
                             </label>
+                            <label style="display:block; margin-top:8px;">
+                                Contenuti per esecuzione:
+                                <input type="number" name="regenerate_batch_size" min="10" max="1000" value="<?php echo esc_attr( intval( $options['regenerate_batch_size'] ?? 100 ) ); ?>" style="width:80px;">
+                            </label>
+                            <p class="description">Per siti molto grandi, il cron processa solo questo numero di contenuti per run e continua dal successivo.</p>
                             <?php if ( $next_cron ) : ?>
                                 <p class="description">Prossima esecuzione: <?php echo esc_html( date_i18n( 'Y-m-d H:i:s', $next_cron ) ); ?></p>
                             <?php endif; ?>
@@ -742,7 +760,7 @@ function ai_fr_render_options_page(): void {
                 </div>
             </section>
 
-            <p class="submit">
+            <p class="submit ai-fr-submit-wrap" id="ai-fr-submit-wrap">
                 <input type="submit" name="ai_fr_save" class="button button-primary" value="Salva impostazioni">
             </p>
         </form>

@@ -111,6 +111,17 @@
     color: var(--ai-fr-muted);
 }
 
+.ai-fr-panel-right .ai-fr-list li,
+.ai-fr-panel-right .ai-fr-list code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.ai-fr-panel-right .button-link {
+    white-space: normal;
+    text-align: left;
+}
+
 .ai-fr-quick-actions {
     margin-top: 14px;
     display: flex;

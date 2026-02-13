@@ -19,6 +19,7 @@
         $('.ai-fr-nav-item[data-section="' + section + '"]').addClass('is-active');
         $('.ai-fr-section').removeClass('is-active');
         $('#ai-fr-section-' + section).addClass('is-active');
+        $('#ai-fr-submit-wrap').toggle(section !== 'overview');
         if (section === 'content' && markdownEditor && markdownEditor.codemirror) {
             setTimeout(function () {
                 markdownEditor.codemirror.refresh();
@@ -219,8 +220,22 @@
             ajax('ai_fr_run_diagnostics', {}).done(refreshOverview);
         });
 
-        $('#ai-fr-regenerate-overview,#ai-fr-run-now,#ai-fr-regenerate').on('click', function () {
-            ajax('ai_fr_regenerate_all', { force: 0 }).done(function (res) {
+        $('#ai-fr-regenerate-overview,#ai-fr-run-now').on('click', function () {
+            ajax('ai_fr_regenerate_all', { force: 0, mode: 'batch' }).done(function (res) {
+                if (!res || !res.success) return;
+                var d = res.data || {};
+                var processed = d.processed || 0;
+                var regenerated = d.regenerated || 0;
+                $('#ai-fr-action-status').text(
+                    'Batch completato. Processati: ' + processed + ', rigenerati: ' + regenerated + '.'
+                );
+                refreshOverview();
+                refreshTimeline();
+            });
+        });
+
+        $('#ai-fr-regenerate').on('click', function () {
+            ajax('ai_fr_regenerate_all', { force: 0, mode: 'full' }).done(function (res) {
                 if (!res || !res.success) return;
                 $('#ai-fr-action-status').text('Rigenerazione completata.');
                 refreshOverview();
@@ -229,7 +244,7 @@
         });
 
         $('#ai-fr-regenerate-force').on('click', function () {
-            ajax('ai_fr_regenerate_all', { force: 1 }).done(function () {
+            ajax('ai_fr_regenerate_all', { force: 1, mode: 'full' }).done(function () {
                 $('#ai-fr-action-status').text('Rigenerazione forzata completata.');
                 refreshOverview();
                 refreshTimeline();
@@ -310,6 +325,12 @@
 
         $('#ai-fr-run-simulation').on('click', runSimulation);
 
+        $('#ai-fr-auto-regenerate').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('#ai-fr-static-md-files').prop('checked', true);
+            }
+        });
+
         $('[data-ai-fr-preset]').on('click', function () {
             var preset = $(this).data('ai-fr-preset');
             var base = '# ' + document.title + '\n\n';
@@ -373,6 +394,7 @@
             });
         });
 
+        switchSection('overview');
         updateTocFromEditor();
         refreshPreview();
         refreshOverview();

@@ -29,6 +29,7 @@ function ai_fr_get_default_options(): array {
         // Scheduler
         'auto_regenerate'       => '',      // Attiva rigenerazione automatica
         'regenerate_interval'   => 24,      // Ore tra rigenerazioni
+        'regenerate_batch_size' => 100,     // Numero max contenuti processati per singolo run cron
         'regenerate_on_save'    => '1',     // Rigenera quando un contenuto viene salvato
         'regenerate_on_change'  => '1',     // Rigenera solo se checksum cambiato
 

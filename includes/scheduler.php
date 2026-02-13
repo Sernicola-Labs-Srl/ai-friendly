@@ -13,11 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 function ai_fr_schedule_cron(): void {
     $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
     
-    // Rimuovi cron esistente
-    $timestamp = wp_next_scheduled( 'ai_fr_cron_regenerate' );
-    if ( $timestamp ) {
-        wp_unschedule_event( $timestamp, 'ai_fr_cron_regenerate' );
-    }
+    // Rimuovi eventuali cron esistenti (tutti) per evitare duplicati.
+    wp_clear_scheduled_hook( 'ai_fr_cron_regenerate' );
     
     // Schedula nuovo cron se abilitato
     if ( ! empty( $options['auto_regenerate'] ) && ! empty( $options['static_md_files'] ) ) {
@@ -32,7 +29,9 @@ function ai_fr_schedule_cron(): void {
             return $schedules;
         } );
         
-        wp_schedule_event( time(), 'ai_fr_interval', 'ai_fr_cron_regenerate' );
+        if ( ! wp_next_scheduled( 'ai_fr_cron_regenerate' ) ) {
+            wp_schedule_event( time(), 'ai_fr_interval', 'ai_fr_cron_regenerate' );
+        }
     }
 }
 
@@ -53,72 +52,207 @@ add_filter( 'cron_schedules', function( $schedules ) {
 add_action(
     'ai_fr_cron_regenerate',
     function (): void {
-        ai_fr_regenerate_all( false, 'cron' );
+        $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
+        $batch_size = min( 1000, max( 10, intval( $options['regenerate_batch_size'] ?? 100 ) ) );
+        ai_fr_regenerate_batch( $batch_size, false, 'cron' );
     }
 );
 
+/**
+ * Rigenera un batch di versioni MD e mantiene un cursore persistente.
+ */
+function ai_fr_regenerate_batch( int $batch_size = 100, bool $force = false, string $trigger = 'cron' ): array {
+    $batch_size = min( 1000, max( 10, $batch_size ) );
+    $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
+    $filter = new AiFrContentFilter();
+    $post_types = $filter->getEnabledPostTypes();
+
+    $stats = [
+        'processed' => 0,
+        'regenerated' => 0,
+        'skipped' => 0,
+        'errors' => 0,
+        'batch_size' => $batch_size,
+        'mode' => 'batch',
+    ];
+
+    if ( empty( $post_types ) ) {
+        ai_fr_finalize_regeneration_stats( $stats, $trigger, $force );
+        return $stats;
+    }
+
+    $state = get_option( 'ai_fr_regeneration_cursor', [] );
+    $last_id = max( 0, intval( $state['last_id'] ?? 0 ) );
+
+    $ids = ai_fr_get_regeneration_batch_post_ids( $post_types, $last_id, $batch_size );
+    if ( empty( $ids ) && $last_id > 0 ) {
+        // Nuovo ciclo completo: riparte dall'inizio all'esecuzione successiva.
+        update_option( 'ai_fr_regeneration_cursor', [ 'last_id' => 0 ], false );
+        $stats['cycle_reset'] = 1;
+        ai_fr_finalize_regeneration_stats( $stats, $trigger, $force );
+        return $stats;
+    }
+
+    if ( empty( $ids ) ) {
+        ai_fr_finalize_regeneration_stats( $stats, $trigger, $force );
+        return $stats;
+    }
+
+    $posts = get_posts(
+        [
+            'post_type'      => $post_types,
+            'post_status'    => 'publish',
+            'post__in'       => $ids,
+            'orderby'        => 'post__in',
+            'posts_per_page' => count( $ids ),
+            'no_found_rows'  => true,
+        ]
+    );
+
+    $new_last_id = ai_fr_process_regeneration_posts( $posts, $filter, $options, $force, $stats );
+    update_option( 'ai_fr_regeneration_cursor', [ 'last_id' => $new_last_id ], false );
+
+    ai_fr_finalize_regeneration_stats( $stats, $trigger, $force );
+    return $stats;
+}
+
+/**
+ * Restituisce gli ID del prossimo blocco di post da processare.
+ *
+ * @param string[] $post_types
+ * @return int[]
+ */
+function ai_fr_get_regeneration_batch_post_ids( array $post_types, int $last_id, int $batch_size ): array {
+    global $wpdb;
+
+    $post_types = array_values( array_filter( array_map( 'sanitize_key', $post_types ) ) );
+    if ( empty( $post_types ) ) {
+        return [];
+    }
+
+    $type_placeholders = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+    $query = "
+        SELECT ID
+        FROM {$wpdb->posts}
+        WHERE post_status = 'publish'
+          AND post_type IN ($type_placeholders)
+          AND ID > %d
+        ORDER BY ID ASC
+        LIMIT %d
+    ";
+
+    $params = array_merge( $post_types, [ $last_id, $batch_size ] );
+    $prepared = $wpdb->prepare( $query, ...$params );
+    if ( ! is_string( $prepared ) || $prepared === '' ) {
+        return [];
+    }
+
+    $ids = $wpdb->get_col( $prepared );
+    return array_map( 'intval', $ids );
+}
+
+/**
+ * Rigenera tutte le versioni MD processando in chunk per ridurre il carico memoria.
+ */
 /**
  * Rigenera tutte le versioni MD.
  */
 function ai_fr_regenerate_all( bool $force = false, string $trigger = 'manual' ): array {
     $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
     $filter = new AiFrContentFilter();
-    
+
     $stats = [
         'processed' => 0,
         'regenerated' => 0,
         'skipped' => 0,
         'errors' => 0,
+        'mode' => 'full',
     ];
-    
+
     // Ottieni tutti i post dei tipi abilitati
     $post_types = $filter->getEnabledPostTypes();
     if ( empty( $post_types ) ) {
+        ai_fr_finalize_regeneration_stats( $stats, $trigger, $force );
         return $stats;
     }
-    
-    $posts = get_posts( [
-        'post_type'      => $post_types,
-        'post_status'    => 'publish',
-        'posts_per_page' => -1,
-        'no_found_rows'  => true,
-    ] );
-    
+
+    $last_id = 0;
+    $full_chunk_size = 300;
+    while ( true ) {
+        $ids = ai_fr_get_regeneration_batch_post_ids( $post_types, $last_id, $full_chunk_size );
+        if ( empty( $ids ) ) {
+            break;
+        }
+
+        $posts = get_posts(
+            [
+                'post_type'      => $post_types,
+                'post_status'    => 'publish',
+                'post__in'       => $ids,
+                'orderby'        => 'post__in',
+                'posts_per_page' => count( $ids ),
+                'no_found_rows'  => true,
+            ]
+        );
+
+        $next_last_id = ai_fr_process_regeneration_posts( $posts, $filter, $options, $force, $stats );
+        if ( $next_last_id <= $last_id ) {
+            break;
+        }
+        $last_id = $next_last_id;
+    }
+
+    delete_option( 'ai_fr_regeneration_cursor' );
+
+    ai_fr_finalize_regeneration_stats( $stats, $trigger, $force );
+    return $stats;
+}
+
+/**
+ * Processa una lista di post e aggiorna le statistiche aggregate.
+ *
+ * @param WP_Post[] $posts
+ */
+function ai_fr_process_regeneration_posts( array $posts, AiFrContentFilter $filter, array $options, bool $force, array &$stats ): int {
+    $last_processed_id = 0;
+
     foreach ( $posts as $post ) {
+        if ( ! $post instanceof WP_Post ) {
+            continue;
+        }
+
+        $last_processed_id = max( $last_processed_id, intval( $post->ID ) );
         $stats['processed']++;
-        
-        // Verifica se deve essere incluso
+
+        // Verifica se deve essere incluso.
         if ( ! $filter->shouldInclude( $post ) ) {
             $stats['skipped']++;
             continue;
         }
-        
+
         try {
-            // Genera MD
             $md_content = ai_fr_generate_markdown( $post );
-            
+
             if ( empty( $md_content ) ) {
                 AiFrVersioning::deleteVersion( $post->ID );
                 $stats['skipped']++;
                 continue;
             }
-            
-            // Verifica checksum se non forzato
+
+            // Verifica checksum se non forzato.
             if ( ! $force && ! empty( $options['regenerate_on_change'] ) ) {
                 $current_checksum = md5( $md_content );
                 $saved_checksum = get_post_meta( $post->ID, '_ai_fr_md_checksum', true );
-                
+
                 if ( $current_checksum === $saved_checksum && AiFrVersioning::hasValidVersion( $post->ID ) ) {
                     $stats['skipped']++;
                     continue;
                 }
             }
-            
-            // Salva versione
+
             $result = AiFrVersioning::saveVersion( $post->ID, $md_content );
-            
-            if ( $result['saved'] ) {
-                if ( $result['changed'] ) {
+            if ( ! empty( $result['saved'] ) ) {
+                if ( ! empty( $result['changed'] ) ) {
                     $stats['regenerated']++;
                 } else {
                     $stats['skipped']++;
@@ -126,18 +260,26 @@ function ai_fr_regenerate_all( bool $force = false, string $trigger = 'manual' )
             } else {
                 $stats['errors']++;
             }
-            
         } catch ( Throwable $e ) {
             $stats['errors']++;
             error_log( 'AI Friendly regeneration error for post ' . $post->ID . ': ' . $e->getMessage() );
         }
     }
-    
-    // Salva timestamp ultima rigenerazione
-    update_option( 'ai_fr_last_regeneration', [
-        'time'  => current_time( 'mysql' ),
-        'stats' => $stats,
-    ] );
+
+    return $last_processed_id;
+}
+
+/**
+ * Salva timestamp ultima rigenerazione, log evento e notifiche.
+ */
+function ai_fr_finalize_regeneration_stats( array $stats, string $trigger, bool $force ): void {
+    update_option(
+        'ai_fr_last_regeneration',
+        [
+            'time'  => current_time( 'mysql' ),
+            'stats' => $stats,
+        ]
+    );
 
     if ( function_exists( 'ai_fr_add_event' ) ) {
         ai_fr_add_event(
@@ -154,8 +296,6 @@ function ai_fr_regenerate_all( bool $force = false, string $trigger = 'manual' )
     if ( function_exists( 'ai_fr_maybe_notify_regeneration_errors' ) ) {
         ai_fr_maybe_notify_regeneration_errors( $stats, $trigger );
     }
-    
-    return $stats;
 }
 
 /**
