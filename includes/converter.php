@@ -3,18 +3,18 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  CONVERTER v2  |  HTML → Markdown
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  CONVERTER v2  |  HTML â†’ Markdown
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 class AiFrConverter {
 
     private const NOISE_PATTERNS = [
         'previous step', 'next step', 'avanti', 'indietro',
         'step 1', 'step 2', 'step 3', 'step 4', 'step 5',
-        'mostra di più', 'mostra meno', 'leggi di più', 'read more',
+        'mostra di piÃ¹', 'mostra meno', 'leggi di piÃ¹', 'read more',
         'show more', 'show less', 'load more', 'carica altro',
-        'scopri di più', 'learn more', 'click here', 'clicca qui',
+        'scopri di piÃ¹', 'learn more', 'click here', 'clicca qui',
         'invia', 'submit', 'send', 'reset',
         'menu', 'skip to content', 'vai al contenuto',
     ];
@@ -69,7 +69,7 @@ class AiFrConverter {
         $s = $this->marks( $s );
         $s = $this->breaks( $s );
         $s = $this->paragraphs( $s );
-        $s = strip_tags( $s );
+        $s = wp_strip_all_tags( $s );
         $s = $this->removeNoiseText( $s );
         $s = $this->cleanup( $s );
 
@@ -150,7 +150,7 @@ class AiFrConverter {
             '/<pre[^>]*>(?:<code[^>]*(?:class=["\'][^"\']*language-([a-z]+)[^"\']*["\'])?[^>]*>)?(.*?)(?:<\/code>)?<\/pre>/si',
             function( $m ) {
                 $lang = $m[1] ?? '';
-                $code = html_entity_decode( strip_tags( $m[2] ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+                $code = html_entity_decode( wp_strip_all_tags( $m[2] ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
                 return "\n```{$lang}\n" . trim( $code ) . "\n```\n";
             },
             $s
@@ -163,7 +163,7 @@ class AiFrConverter {
             function( $m ) {
                 $level = (int) $m[1] + $this->headingShift;
                 $level = min( $level, 6 );
-                $text = trim( strip_tags( $m[2] ) );
+                $text = trim( wp_strip_all_tags( $m[2] ) );
                 if ( $text === '' ) {
                     return '';
                 }
@@ -177,7 +177,7 @@ class AiFrConverter {
         return preg_replace_callback(
             '/<blockquote[^>]*>(.*?)<\/blockquote>/si',
             function ( $m ) {
-                $content = trim( strip_tags( $m[1] ) );
+                $content = trim( wp_strip_all_tags( $m[1] ) );
                 if ( $content === '' ) return '';
                 $lines = explode( "\n", $content );
                 $quoted = array_map( fn( $l ) => '> ' . trim( $l ), $lines );
@@ -200,7 +200,7 @@ class AiFrConverter {
                 preg_match_all( '/<tr[^>]*>(.*?)<\/tr>/si', $tableHtml, $trMatches );
                 foreach ( $trMatches[1] as $i => $tr ) {
                     preg_match_all( '/<(th|td)[^>]*>(.*?)<\/\1>/si', $tr, $cellMatches );
-                    $cells = array_map( fn( $c ) => trim( strip_tags( $c ) ), $cellMatches[2] );
+                    $cells = array_map( fn( $c ) => trim( wp_strip_all_tags( $c ) ), $cellMatches[2] );
                     if ( ! empty( $cells ) ) {
                         $rows[] = '| ' . implode( ' | ', $cells ) . ' |';
                         if ( $i === 0 ) {
@@ -218,7 +218,7 @@ class AiFrConverter {
         $s = preg_replace_callback(
             '/<li[^>]*>(.*?)<\/li>/si',
             function( $m ) {
-                $content = trim( strip_tags( $m[1] ) );
+                $content = trim( wp_strip_all_tags( $m[1] ) );
                 return $content !== '' ? "\n- " . $content : '';
             },
             $s
@@ -274,7 +274,7 @@ class AiFrConverter {
         return preg_replace_callback(
             '/<figcaption[^>]*>(.*?)<\/figcaption>/si',
             function( $m ) {
-                $caption = trim( strip_tags( $m[1] ) );
+                $caption = trim( wp_strip_all_tags( $m[1] ) );
                 return $caption !== '' ? "\n*{$caption}*\n" : '';
             },
             $s
@@ -286,7 +286,7 @@ class AiFrConverter {
             '/<a\s[^>]*href=["\']([^"\']*)["\'][^>]*>(.*?)<\/a>/si',
             function ( $m ) {
                 $url  = trim( $m[1] );
-                $text = trim( strip_tags( $m[2] ) );
+                $text = trim( wp_strip_all_tags( $m[2] ) );
 
                 if ( $text === '' && $url === '' ) {
                     return '';

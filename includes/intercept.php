@@ -3,25 +3,27 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  1 — INTERCEPT
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  1 â€” INTERCEPT
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 add_action( 'template_redirect', function () {
 
-    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $request_uri = isset( $_SERVER['REQUEST_URI'] )
+        ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) )
+        : '';
     if ( empty( $request_uri ) ) {
         return;
     }
 
-    $parsed = parse_url( $request_uri, PHP_URL_PATH );
+    $parsed = wp_parse_url( $request_uri, PHP_URL_PATH );
     if ( $parsed === false || $parsed === null ) {
         return;
     }
 
     $full = rawurldecode( $parsed );
 
-    $wp_base = rtrim( parse_url( home_url(), PHP_URL_PATH ) ?? '', '/' );
+    $wp_base = rtrim( wp_parse_url( home_url(), PHP_URL_PATH ) ?? '', '/' );
     $rel     = ( $wp_base !== '' && str_starts_with( $full, $wp_base ) )
              ? substr( $full, strlen( $wp_base ) )
              : $full;

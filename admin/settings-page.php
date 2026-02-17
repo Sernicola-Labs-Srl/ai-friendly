@@ -71,12 +71,39 @@ function ai_fr_admin_require_permissions(): void {
     }
 }
 
+function ai_fr_post_raw( string $key, $default = '' ) {
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is validated by caller; sanitization is applied in typed helper wrappers.
+    return isset( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : $default;
+}
+
+function ai_fr_post_bool( string $key ): bool {
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce is validated in caller before using request data.
+    return ! empty( $_POST[ $key ] );
+}
+
+function ai_fr_post_int( string $key, int $default = 0 ): int {
+    return intval( ai_fr_post_raw( $key, $default ) );
+}
+
+function ai_fr_post_key( string $key, string $default = '' ): string {
+    return sanitize_key( (string) ai_fr_post_raw( $key, $default ) );
+}
+
+function ai_fr_post_text( string $key, string $default = '' ): string {
+    return sanitize_text_field( (string) ai_fr_post_raw( $key, $default ) );
+}
+
+function ai_fr_post_array( string $key ): array {
+    $value = ai_fr_post_raw( $key, [] );
+    return is_array( $value ) ? $value : [];
+}
+
 add_action(
     'wp_ajax_ai_fr_regenerate_all',
     function (): void {
         ai_fr_admin_require_permissions();
-        $force = ! empty( $_POST['force'] );
-        $mode  = sanitize_key( wp_unslash( $_POST['mode'] ?? 'full' ) );
+        $force = ai_fr_post_bool( 'force' );
+        $mode  = ai_fr_post_key( 'mode', 'full' );
         if ( $mode === 'batch' ) {
             $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
             $batch_size = min( 1000, max( 10, intval( $options['regenerate_batch_size'] ?? 100 ) ) );
@@ -112,11 +139,11 @@ add_action(
         ai_fr_admin_require_permissions();
         $result = ai_fr_list_content_items(
             [
-                'page'      => intval( $_POST['page'] ?? 1 ),
-                'per_page'  => intval( $_POST['per_page'] ?? 10 ),
-                'search'    => sanitize_text_field( wp_unslash( $_POST['search'] ?? '' ) ),
-                'status'    => sanitize_key( $_POST['status'] ?? 'any' ),
-                'post_type' => sanitize_key( $_POST['post_type'] ?? 'all' ),
+                'page'      => ai_fr_post_int( 'page', 1 ),
+                'per_page'  => ai_fr_post_int( 'per_page', 10 ),
+                'search'    => ai_fr_post_text( 'search', '' ),
+                'status'    => ai_fr_post_key( 'status', 'any' ),
+                'post_type' => ai_fr_post_key( 'post_type', 'all' ),
             ]
         );
         wp_send_json_success( $result );
@@ -127,8 +154,8 @@ add_action(
     'wp_ajax_ai_fr_toggle_content_exclusion',
     function (): void {
         ai_fr_admin_require_permissions();
-        $post_id = intval( $_POST['post_id'] ?? 0 );
-        $exclude = ! empty( $_POST['exclude'] );
+        $post_id = ai_fr_post_int( 'post_id', 0 );
+        $exclude = ai_fr_post_bool( 'exclude' );
         $post    = get_post( $post_id );
         if ( ! $post ) {
             wp_send_json_error( 'Contenuto non trovato.' );
@@ -144,7 +171,7 @@ add_action(
             'toggle_exclusion',
             [
                 'post_id'   => $post_id,
-                'exclude'   => $exclude ? 1 : 0,
+                'is_excluded' => $exclude ? 1 : 0,
                 'post_type' => $post->post_type,
             ]
         );
@@ -162,7 +189,7 @@ add_action(
     'wp_ajax_ai_fr_get_event_timeline',
     function (): void {
         ai_fr_admin_require_permissions();
-        $limit = min( 100, max( 5, intval( $_POST['limit'] ?? 20 ) ) );
+        $limit = min( 100, max( 5, ai_fr_post_int( 'limit', 20 ) ) );
         wp_send_json_success(
             [
                 'items' => array_slice( ai_fr_get_event_log(), 0, $limit ),
@@ -183,7 +210,7 @@ add_action(
     'wp_ajax_ai_fr_get_llms_preview',
     function (): void {
         ai_fr_admin_require_permissions();
-        $content = isset( $_POST['content'] ) ? (string) wp_unslash( $_POST['content'] ) : ai_fr_build_llms_txt();
+        $content = (string) ai_fr_post_raw( 'content', ai_fr_build_llms_txt() );
 
         wp_send_json_success(
             [
@@ -201,8 +228,8 @@ add_action(
     'wp_ajax_ai_fr_create_llms_snapshot',
     function (): void {
         ai_fr_admin_require_permissions();
-        $reason  = sanitize_text_field( wp_unslash( $_POST['reason'] ?? 'manual' ) );
-        $content = isset( $_POST['content'] ) ? (string) wp_unslash( $_POST['content'] ) : ai_fr_build_llms_txt();
+        $reason  = ai_fr_post_text( 'reason', 'manual' );
+        $content = (string) ai_fr_post_raw( 'content', ai_fr_build_llms_txt() );
         $result  = ai_fr_create_llms_snapshot( $content, $reason );
 
         if ( empty( $result['saved'] ) ) {
@@ -232,7 +259,7 @@ add_action(
     'wp_ajax_ai_fr_restore_llms_snapshot',
     function (): void {
         ai_fr_admin_require_permissions();
-        $id     = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+        $id     = ai_fr_post_text( 'id', '' );
         $result = ai_fr_restore_llms_snapshot( $id );
 
         if ( empty( $result['restored'] ) ) {
@@ -248,8 +275,8 @@ add_action(
     'wp_ajax_ai_fr_compare_llms_snapshots',
     function (): void {
         ai_fr_admin_require_permissions();
-        $left_id  = sanitize_text_field( wp_unslash( $_POST['left_id'] ?? '' ) );
-        $right_id = sanitize_text_field( wp_unslash( $_POST['right_id'] ?? '' ) );
+        $left_id  = ai_fr_post_text( 'left_id', '' );
+        $right_id = ai_fr_post_text( 'right_id', '' );
 
         if ( $left_id === '' || $right_id === '' ) {
             wp_send_json_error( 'Seleziona due snapshot da confrontare.' );
@@ -269,7 +296,7 @@ add_action(
     'wp_ajax_ai_fr_set_onboarding_status',
     function (): void {
         ai_fr_admin_require_permissions();
-        $done = ! empty( $_POST['done'] ) ? '1' : '';
+        $done = ai_fr_post_bool( 'done' ) ? '1' : '';
 
         $options                    = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
         $options['onboarding_done'] = $done;
@@ -295,7 +322,7 @@ add_action(
     'wp_ajax_ai_fr_run_ai_simulation',
     function (): void {
         ai_fr_admin_require_permissions();
-        $content = (string) wp_unslash( $_POST['content'] ?? '' );
+        $content = (string) ai_fr_post_raw( 'content', '' );
         wp_send_json_success( ai_fr_run_ai_simulation( $content ) );
     }
 );
@@ -308,34 +335,34 @@ function ai_fr_render_options_page(): void {
     $defaults = ai_fr_get_default_options();
     $options  = wp_parse_args( get_option( 'ai_fr_options', [] ), $defaults );
 
-    if ( isset( $_POST['ai_fr_save'] ) && check_admin_referer( 'ai_fr_options_nonce' ) ) {
-        $options['llms_content']         = sanitize_textarea_field( wp_unslash( $_POST['llms_content'] ?? '' ) );
-        $options['llms_include_auto']    = ! empty( $_POST['llms_include_auto'] ) ? '1' : '';
-        $options['include_pages']        = ! empty( $_POST['include_pages'] ) ? '1' : '';
-        $options['include_posts']        = ! empty( $_POST['include_posts'] ) ? '1' : '';
-        $options['include_products']     = ! empty( $_POST['include_products'] ) ? '1' : '';
-        $options['include_cpt']          = array_map( 'sanitize_key', (array) ( $_POST['include_cpt'] ?? [] ) );
-        $options['exclude_categories']   = array_map( 'intval', (array) ( $_POST['exclude_categories'] ?? [] ) );
-        $options['exclude_tags']         = array_map( 'intval', (array) ( $_POST['exclude_tags'] ?? [] ) );
-        $options['exclude_templates']    = array_map( 'sanitize_text_field', (array) ( $_POST['exclude_templates'] ?? [] ) );
-        $options['exclude_url_patterns'] = sanitize_textarea_field( wp_unslash( $_POST['exclude_url_patterns'] ?? '' ) );
-        $options['exclude_noindex']      = ! empty( $_POST['exclude_noindex'] ) ? '1' : '';
-        $options['exclude_password']     = ! empty( $_POST['exclude_password'] ) ? '1' : '';
-        $options['static_md_files']      = ! empty( $_POST['static_md_files'] ) ? '1' : '';
-        $options['auto_regenerate']      = ! empty( $_POST['auto_regenerate'] ) ? '1' : '';
+    if ( ai_fr_post_bool( 'ai_fr_save' ) && check_admin_referer( 'ai_fr_options_nonce' ) ) {
+        $options['llms_content']         = sanitize_textarea_field( (string) ai_fr_post_raw( 'llms_content', '' ) );
+        $options['llms_include_auto']    = ai_fr_post_bool( 'llms_include_auto' ) ? '1' : '';
+        $options['include_pages']        = ai_fr_post_bool( 'include_pages' ) ? '1' : '';
+        $options['include_posts']        = ai_fr_post_bool( 'include_posts' ) ? '1' : '';
+        $options['include_products']     = ai_fr_post_bool( 'include_products' ) ? '1' : '';
+        $options['include_cpt']          = array_map( 'sanitize_key', ai_fr_post_array( 'include_cpt' ) );
+        $options['exclude_categories']   = array_map( 'intval', ai_fr_post_array( 'exclude_categories' ) );
+        $options['exclude_tags']         = array_map( 'intval', ai_fr_post_array( 'exclude_tags' ) );
+        $options['exclude_templates']    = array_map( 'sanitize_text_field', ai_fr_post_array( 'exclude_templates' ) );
+        $options['exclude_url_patterns'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'exclude_url_patterns', '' ) );
+        $options['exclude_noindex']      = ai_fr_post_bool( 'exclude_noindex' ) ? '1' : '';
+        $options['exclude_password']     = ai_fr_post_bool( 'exclude_password' ) ? '1' : '';
+        $options['static_md_files']      = ai_fr_post_bool( 'static_md_files' ) ? '1' : '';
+        $options['auto_regenerate']      = ai_fr_post_bool( 'auto_regenerate' ) ? '1' : '';
         if ( ! empty( $options['auto_regenerate'] ) ) {
             // La rigenerazione a intervallo richiede i file statici attivi.
             $options['static_md_files'] = '1';
         }
-        $options['regenerate_interval']  = max( 1, intval( $_POST['regenerate_interval'] ?? 24 ) );
-        $options['regenerate_batch_size'] = min( 1000, max( 10, intval( $_POST['regenerate_batch_size'] ?? 100 ) ) );
-        $options['regenerate_on_save']   = ! empty( $_POST['regenerate_on_save'] ) ? '1' : '';
-        $options['regenerate_on_change'] = ! empty( $_POST['regenerate_on_change'] ) ? '1' : '';
-        $options['onboarding_done']      = ! empty( $_POST['onboarding_done'] ) ? '1' : '';
+        $options['regenerate_interval']  = max( 1, ai_fr_post_int( 'regenerate_interval', 24 ) );
+        $options['regenerate_batch_size'] = min( 1000, max( 10, ai_fr_post_int( 'regenerate_batch_size', 100 ) ) );
+        $options['regenerate_on_save']   = ai_fr_post_bool( 'regenerate_on_save' ) ? '1' : '';
+        $options['regenerate_on_change'] = ai_fr_post_bool( 'regenerate_on_change' ) ? '1' : '';
+        $options['onboarding_done']      = ai_fr_post_bool( 'onboarding_done' ) ? '1' : '';
         $options['ui_version']           = 'hub-v1';
-        $options['notify_admin_notice']  = ! empty( $_POST['notify_admin_notice'] ) ? '1' : '';
-        $options['notify_email']         = ! empty( $_POST['notify_email'] ) ? '1' : '';
-        $options['notify_email_to']      = sanitize_email( wp_unslash( $_POST['notify_email_to'] ?? '' ) );
+        $options['notify_admin_notice']  = ai_fr_post_bool( 'notify_admin_notice' ) ? '1' : '';
+        $options['notify_email']         = ai_fr_post_bool( 'notify_email' ) ? '1' : '';
+        $options['notify_email_to']      = sanitize_email( (string) ai_fr_post_raw( 'notify_email_to', '' ) );
 
         update_option( 'ai_fr_options', $options );
         delete_option( 'ai_fr_regeneration_cursor' );

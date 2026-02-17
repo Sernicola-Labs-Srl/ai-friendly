@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6.4
+- Compliance hardening per Plugin Check / WordPress Coding Standards
+- Protezione accesso diretto nel file principale plugin (`ABSPATH` guard)
+- Miglioramenti i18n su stringhe scheduler con placeholders e commento translators
+- Pulizia warning su query preparate e metadata eventi admin
+- Allineamento metadati release (`readme.txt`, versioni interne)
+
 ## 1.6.3
 - Fix robustezza serving `.md` per CPT pubblici con resolver URL piu affidabile
 - Supporto archivio CPT in Markdown (es. `/podcast.md`) quando `has_archive` e attivo

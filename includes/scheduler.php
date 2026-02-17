@@ -3,9 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  SCHEDULER - Rigenerazione automatica
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 /**
  * Configura/aggiorna il cron job.
@@ -24,7 +24,8 @@ function ai_fr_schedule_cron(): void {
         add_filter( 'cron_schedules', function( $schedules ) use ( $interval_hours ) {
             $schedules['ai_fr_interval'] = [
                 'interval' => $interval_hours * HOUR_IN_SECONDS,
-                'display'  => sprintf( __( 'Ogni %d ore' ), $interval_hours ),
+                // translators: %d: regeneration interval in hours.
+                'display'  => sprintf( __( 'Ogni %d ore', 'ai-friendly' ), $interval_hours ),
             ];
             return $schedules;
         } );
@@ -131,6 +132,7 @@ function ai_fr_get_regeneration_batch_post_ids( array $post_types, int $last_id,
     }
 
     $type_placeholders = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
     $query = "
         SELECT ID
         FROM {$wpdb->posts}
@@ -143,10 +145,12 @@ function ai_fr_get_regeneration_batch_post_ids( array $post_types, int $last_id,
 
     $params = array_merge( $post_types, [ $last_id, $batch_size ] );
     $prepared = $wpdb->prepare( $query, ...$params );
+    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
     if ( ! is_string( $prepared ) || $prepared === '' ) {
         return [];
     }
 
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Prepared statement executed for batch cursor query over post IDs.
     $ids = $wpdb->get_col( $prepared );
     return array_map( 'intval', $ids );
 }
@@ -262,7 +266,7 @@ function ai_fr_process_regeneration_posts( array $posts, AiFrContentFilter $filt
             }
         } catch ( Throwable $e ) {
             $stats['errors']++;
-            error_log( 'AI Friendly regeneration error for post ' . $post->ID . ': ' . $e->getMessage() );
+            do_action( 'ai_fr_runtime_error', 'regeneration_error', $post->ID, $e->getMessage() );
         }
     }
 
@@ -307,7 +311,7 @@ function ai_fr_generate_markdown( WP_Post $post ): string {
     
     // Ottieni contenuto HTML
     $html = ai_fr_get_rendered_content_safe( $post, false );
-    $text_html = trim( strip_tags( $html ) );
+    $text_html = trim( wp_strip_all_tags( $html ) );
     $fallback_plain = trim( wp_strip_all_tags( (string) $post->post_excerpt ) );
     if ( $fallback_plain === '' ) {
         $fallback_plain = ai_fr_extract_text_from_raw( (string) $post->post_content );
@@ -354,14 +358,14 @@ add_action( 'save_post', function( int $post_id, WP_Post $post, bool $update ): 
     
     // Skip se non pubblicato
     if ( $post->post_status !== 'publish' ) {
-        // Se era pubblicato e ora non più, elimina versione
+        // Se era pubblicato e ora non piÃ¹, elimina versione
         AiFrVersioning::deleteVersion( $post_id );
         return;
     }
     
     $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
     
-    // Verifica se rigenerazione su save è abilitata
+    // Verifica se rigenerazione su save Ã¨ abilitata
     if ( empty( $options['static_md_files'] ) || empty( $options['regenerate_on_save'] ) ) {
         return;
     }
@@ -392,7 +396,7 @@ add_action( 'save_post', function( int $post_id, WP_Post $post, bool $update ): 
             AiFrVersioning::deleteVersion( $post_id );
         }
     } catch ( Throwable $e ) {
-        error_log( 'AI Friendly save_post error for ' . $post_id . ': ' . $e->getMessage() );
+        do_action( 'ai_fr_runtime_error', 'save_post_error', $post_id, $e->getMessage() );
     }
     
 }, 20, 3 );
@@ -476,5 +480,3 @@ function ai_fr_is_acf_meta_key( int $post_id, string $meta_key, $meta_value ): b
     $acf_ref = get_post_meta( $post_id, '_' . $meta_key, true );
     return is_string( $acf_ref ) && str_starts_with( $acf_ref, 'field_' );
 }
-
-

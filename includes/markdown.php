@@ -3,16 +3,13 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  3 — *.md
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  3 â€” *.md
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function ai_fr_serve_markdown( string $rel_path ): void {
-
-    $display_errors = ini_get( 'display_errors' );
-    ini_set( 'display_errors', '0' );
-
-    $debug_requested = isset( $_GET['debug'] );
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public debug flag, restricted to admins before enabling debug mode.
+    $debug_requested = isset( $_GET['debug'] ) && sanitize_text_field( wp_unslash( $_GET['debug'] ) ) !== '';
     $debug_mode = $debug_requested && current_user_can( 'manage_options' );
     $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
     $normalized_rel_path = ai_fr_normalize_relative_path( $rel_path );
@@ -58,7 +55,6 @@ function ai_fr_serve_markdown( string $rel_path ): void {
         if ( ! empty( $options['static_md_files'] ) && ! $debug_mode ) {
             $static_content = AiFrVersioning::getVersion( $post_id );
             if ( is_string( $static_content ) && ai_fr_markdown_has_visible_content( $static_content ) ) {
-                ini_set( 'display_errors', $display_errors );
                 ai_fr_reset_output_buffers();
                 
                 status_header( 200 );
@@ -72,7 +68,7 @@ function ai_fr_serve_markdown( string $rel_path ): void {
                 header( 'X-AI-Friendly-MD-Length: ' . strlen( $static_content ) );
                 header( 'X-AI-Friendly-Version: ' . AI_FR_VERSION );
                 
-                echo $static_content;
+                echo esc_html( $static_content );
                 exit;
             }
         }
@@ -123,7 +119,6 @@ function ai_fr_serve_markdown( string $rel_path ): void {
             $md = ai_fr_fallback_markdown( $post );
         }
 
-        ini_set( 'display_errors', $display_errors );
         ai_fr_reset_output_buffers();
 
         status_header( 200 );
@@ -139,25 +134,21 @@ function ai_fr_serve_markdown( string $rel_path ): void {
         header( 'X-AI-Friendly-Debug-Requested: ' . ( $debug_requested ? '1' : '0' ) );
         header( 'X-AI-Friendly-Debug-Admin: ' . ( $debug_mode ? '1' : '0' ) );
 
-        echo $md;
+        echo esc_html( $md );
         exit;
 
     } catch ( Throwable $e ) {
-        ini_set( 'display_errors', $display_errors );
-
-        error_log( 'AI Friendly MD Error: ' . $e->getMessage() );
-
         status_header( 500 );
         header( 'Content-Type: text/plain; charset=UTF-8' );
-        echo $debug_mode 
-            ? "Errore: " . $e->getMessage() 
+        echo $debug_mode
+            ? "Errore: " . esc_html( $e->getMessage() )
             : "Errore nella generazione del contenuto Markdown.";
         exit;
     }
 }
 
 /**
- * Verifica se un post può essere servito pubblicamente (llms.txt o .md).
+ * Verifica se un post puÃ² essere servito pubblicamente (llms.txt o .md).
  * Consente override tramite filtro.
  */
 function ai_fr_can_serve_post( WP_Post $post, string $context = 'public' ): bool {
@@ -178,9 +169,9 @@ function ai_fr_can_serve_post( WP_Post $post, string $context = 'public' ): bool
     }
     
     /**
-     * Filtra la possibilità di servire un contenuto.
+     * Filtra la possibilitÃ  di servire un contenuto.
      *
-     * @param bool    $can     True se il contenuto può essere servito.
+     * @param bool    $can     True se il contenuto puÃ² essere servito.
      * @param WP_Post $post    Il post in esame.
      * @param string  $context Contesto: 'llms', 'serve', o altro.
      */
@@ -192,7 +183,7 @@ function ai_fr_get_rendered_content_safe( WP_Post $source_post, bool $debug = fa
     $post_id = $source_post->ID;
 
     $builder_content = ai_fr_try_page_builders( $post_id, $content, $debug );
-    if ( ! empty( trim( strip_tags( $builder_content ) ) ) ) {
+    if ( ! empty( trim( wp_strip_all_tags( $builder_content ) ) ) ) {
         return $builder_content;
     }
 
@@ -212,7 +203,7 @@ function ai_fr_get_rendered_content_safe( WP_Post $source_post, bool $debug = fa
         $html = wpautop( $html );
     }
 
-    $text_check = trim( strip_tags( $html ) );
+    $text_check = trim( wp_strip_all_tags( $html ) );
     if ( strlen( $text_check ) > 50 ) {
         return $html;
     }
@@ -237,7 +228,7 @@ function ai_fr_get_rendered_content_safe( WP_Post $source_post, bool $debug = fa
         }
     }
 
-    if ( strlen( trim( strip_tags( $filtered ) ) ) > 50 ) {
+    if ( strlen( trim( wp_strip_all_tags( $filtered ) ) ) > 50 ) {
         return $filtered;
     }
 
@@ -358,7 +349,7 @@ function ai_fr_recursive_mixed_text_extract( $value, int $depth = 0, string $res
     }
 
     if ( is_string( $value ) ) {
-        $clean = trim( strip_tags( html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+        $clean = trim( wp_strip_all_tags( html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
         if (
             $clean !== ''
             && strlen( $clean ) > 2
@@ -495,7 +486,7 @@ function ai_fr_is_media_like_array( array $value ): bool {
 function ai_fr_recursive_text_extract( array $data, array $keys, string $result = '' ): string {
     foreach ( $data as $key => $value ) {
         if ( is_string( $value ) && in_array( $key, $keys, true ) ) {
-            $clean = trim( strip_tags( html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+            $clean = trim( wp_strip_all_tags( html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
             if ( ! empty( $clean ) && strlen( $clean ) > 2 ) {
                 $result .= $clean . "\n\n";
             }
@@ -585,26 +576,6 @@ function ai_fr_resolve_post( string $path ): int {
             // Evita match ambigui: fallback solo se c'e un candidato unico.
             if ( count( $posts ) === 1 ) {
                 return (int) $posts[0]->ID;
-            }
-        }
-    }
-
-    global $wpdb;
-    $slug_sanitized = sanitize_title( $slug );
-
-    $post_id = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND post_status = 'publish' LIMIT 1",
-            $slug_sanitized
-        )
-    );
-
-    if ( $post_id ) {
-        $candidate = get_post( (int) $post_id );
-        if ( $candidate instanceof WP_Post && in_array( $candidate->post_type, $public_types, true ) ) {
-            $permalink = get_permalink( $candidate->ID );
-            if ( is_string( $permalink ) && ai_fr_relative_path_from_url( $permalink ) === $path ) {
-                return (int) $candidate->ID;
             }
         }
     }
@@ -716,18 +687,18 @@ function ai_fr_serve_archive_markdown( string $post_type, bool $debug_mode = fal
     header( 'X-AI-Friendly-Version: ' . AI_FR_VERSION );
     header( 'X-AI-Friendly-Debug-Requested: ' . ( $debug_requested ? '1' : '0' ) );
     header( 'X-AI-Friendly-Debug-Admin: ' . ( $debug_mode ? '1' : '0' ) );
-    echo $md;
+    echo esc_html( $md );
     exit;
 }
 
 function ai_fr_relative_path_from_url( string $url ): string {
-    $parsed_path = parse_url( $url, PHP_URL_PATH );
+    $parsed_path = wp_parse_url( $url, PHP_URL_PATH );
     if ( ! is_string( $parsed_path ) || $parsed_path === '' ) {
         return '';
     }
 
     $parsed_path = rawurldecode( $parsed_path );
-    $wp_base = rtrim( parse_url( home_url(), PHP_URL_PATH ) ?? '', '/' );
+    $wp_base = rtrim( wp_parse_url( home_url(), PHP_URL_PATH ) ?? '', '/' );
 
     if ( $wp_base !== '' && str_starts_with( $parsed_path, $wp_base ) ) {
         $parsed_path = substr( $parsed_path, strlen( $wp_base ) );

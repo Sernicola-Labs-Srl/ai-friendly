@@ -24,7 +24,7 @@ function ai_fr_get_default_options(): array {
         'exclude_password'      => '1',     // Escludi contenuti protetti da password
         
         // Versioning MD
-        'static_md_files'       => '',      // Salva e servi file MD statici (più veloce)
+        'static_md_files'       => '',      // Salva e servi file MD statici (piÃ¹ veloce)
         
         // Scheduler
         'auto_regenerate'       => '',      // Attiva rigenerazione automatica

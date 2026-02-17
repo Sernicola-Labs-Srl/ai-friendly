@@ -3,9 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  VERSIONING MD - Salvataggio e gestione file statici
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 class AiFrVersioning {
     
@@ -33,7 +33,7 @@ class AiFrVersioning {
         // Calcola checksum nuovo contenuto
         $new_checksum = md5( $md_content );
         
-        // Verifica se il contenuto è cambiato
+        // Verifica se il contenuto Ã¨ cambiato
         $old_checksum = get_post_meta( $post_id, '_ai_fr_md_checksum', true );
         $changed = ( $old_checksum !== $new_checksum );
         
@@ -113,7 +113,7 @@ class AiFrVersioning {
         }
         $filepath = self::getSafeFilepath( $filename );
         if ( $filepath && file_exists( $filepath ) ) {
-            unlink( $filepath );
+            wp_delete_file( $filepath );
         }
         
         delete_post_meta( $post_id, '_ai_fr_md_checksum' );
@@ -199,16 +199,15 @@ class AiFrVersioning {
         $count = 0;
         
         foreach ( $files as $file ) {
-            if ( unlink( $file ) ) {
+            if ( wp_delete_file( $file ) ) {
                 $count++;
             }
         }
         
         // Pulisci anche i meta
-        global $wpdb;
-        $wpdb->delete( $wpdb->postmeta, [ 'meta_key' => '_ai_fr_md_checksum' ] );
-        $wpdb->delete( $wpdb->postmeta, [ 'meta_key' => '_ai_fr_md_generated' ] );
-        $wpdb->delete( $wpdb->postmeta, [ 'meta_key' => '_ai_fr_md_filename' ] );
+        delete_metadata( 'post', 0, '_ai_fr_md_checksum', '', true );
+        delete_metadata( 'post', 0, '_ai_fr_md_generated', '', true );
+        delete_metadata( 'post', 0, '_ai_fr_md_filename', '', true );
         
         return $count;
     }

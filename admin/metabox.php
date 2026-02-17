@@ -3,9 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  5 — Metabox
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  5 â€” Metabox
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 add_action( 'add_meta_boxes', function () {
 
@@ -56,10 +56,12 @@ add_action( 'save_post', function ( int $post_id ): void {
 
     if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) return;
     if ( ! current_user_can( 'edit_post', $post_id ) ) return;
-    if ( ! isset( $_POST['ai_fr_nonce'] )
-      || ! wp_verify_nonce( $_POST['ai_fr_nonce'], 'ai_fr_save_meta' ) ) return;
+    $nonce = isset( $_POST['ai_fr_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['ai_fr_nonce'] ) ) : '';
+    if ( ! wp_verify_nonce( $nonce, 'ai_fr_save_meta' ) ) return;
 
-    isset( $_POST['_ai_fr_exclude'] )
+    $exclude_raw = isset( $_POST['_ai_fr_exclude'] ) ? sanitize_text_field( (string) wp_unslash( $_POST['_ai_fr_exclude'] ) ) : '';
+    $exclude     = $exclude_raw !== '';
+    $exclude
         ? update_post_meta( $post_id, '_ai_fr_exclude', '1' )
         : delete_post_meta( $post_id, '_ai_fr_exclude' );
 } );

@@ -1,9 +1,9 @@
-# AI Friendly - Documentazione Plugin
+﻿# Sernicola Labs | AI Friendly - llms.txt & Markdown
 
-**Versione:** 1.6.3  
-**Autore:** Sernicola Labs  
-**Requisiti:** WordPress 6.0+, PHP 8.1+  
-**Licenza:** GPL v2 or later
+**Version:** 1.6.4  
+**Author:** Sernicola Labs  
+**Requirements:** WordPress 6.0+, PHP 8.1+  
+**License:** GPL v2 or later
 
 ---
 
@@ -268,7 +268,7 @@ Usa questa checklist ad ogni nuova release.
 - Aggiorna eventuali note su header/debug/compatibilita
 
 3. **Packaging**
-- Crea zip release includendo `ai-friendly.php`, `includes/`, `admin/`, `README.md`, `CHANGELOG.md`
+- Crea zip release includendo `ai-friendly.php`, `includes/`, `admin/`, `README.md`, `readme.txt`, `CHANGELOG.md`
 - Escludi file non necessari al runtime (es. `.git`, file locali IDE)
 
 4. **Deploy**
