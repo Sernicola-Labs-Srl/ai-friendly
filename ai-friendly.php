@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Plugin Name:        Sernicola Labs | AI Friendly - llms.txt & Markdown
  * Description:        Genera /llms.txt e versioni .md di post e pagine.
