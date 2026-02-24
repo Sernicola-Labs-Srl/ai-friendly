@@ -27,6 +27,7 @@ class AiFrVersioning {
         }
         
         // Genera nome file basato su slug
+        $previous_filename = (string) get_post_meta( $post_id, '_ai_fr_md_filename', true );
         $filename = self::getFilename( $post );
         $filepath = AI_FR_VERSIONS_DIR . '/' . $filename;
         
@@ -42,6 +43,8 @@ class AiFrVersioning {
             $saved = file_put_contents( $filepath, $md_content ) !== false;
             
             if ( $saved ) {
+                self::cleanupObsoleteFileReference( $post_id, $previous_filename, $filename );
+
                 // Aggiorna meta con checksum e timestamp
                 update_post_meta( $post_id, '_ai_fr_md_checksum', $new_checksum );
                 update_post_meta( $post_id, '_ai_fr_md_generated', current_time( 'mysql' ) );
@@ -127,9 +130,52 @@ class AiFrVersioning {
      * Genera il nome file per un post.
      */
     private static function getFilename( WP_Post $post ): string {
-        // Usa post_type/slug.md per organizzazione
+        // Include l'ID per evitare collisioni tra traduzioni con lo stesso slug (WPML/Polylang).
         $slug = $post->post_name ?: 'post-' . $post->ID;
-        return basename( sanitize_file_name( $post->post_type . '-' . $slug . '.md' ) );
+        return basename( sanitize_file_name( $post->post_type . '-' . $post->ID . '-' . $slug . '.md' ) );
+    }
+
+    /**
+     * Rimuove il vecchio file statico solo se non e piu referenziato da altri post.
+     */
+    private static function cleanupObsoleteFileReference( int $post_id, string $old_filename, string $new_filename ): void {
+        $old_filename = basename( trim( $old_filename ) );
+        $new_filename = basename( trim( $new_filename ) );
+
+        if ( $old_filename === '' || $old_filename === $new_filename ) {
+            return;
+        }
+
+        if ( self::isFilenameReferencedByOtherPosts( $post_id, $old_filename ) ) {
+            return;
+        }
+
+        $old_filepath = self::getSafeFilepath( $old_filename );
+        if ( $old_filepath && file_exists( $old_filepath ) ) {
+            wp_delete_file( $old_filepath );
+        }
+    }
+
+    /**
+     * Verifica se un filename e ancora usato da altri post.
+     */
+    private static function isFilenameReferencedByOtherPosts( int $post_id, string $filename ): bool {
+        global $wpdb;
+
+        if ( ! isset( $wpdb->postmeta ) ) {
+            return false;
+        }
+
+        $count = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s AND post_id <> %d",
+                '_ai_fr_md_filename',
+                $filename,
+                $post_id
+            )
+        );
+
+        return $count > 0;
     }
     
     /**

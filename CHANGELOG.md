@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.7.0
+- Estrazione contenuti piu robusta per builder/ACF con selezione a punteggio tra candidati (`builder`, `rendered`, `the_content`, `fallback`) e debug esteso in `?debug=1`
+- Merge deduplicato migliorato (`builder_merged`) per recuperare testo distribuito tra ACF/builder/WooCommerce ed evitare duplicati quasi-identici
+- Supporto WooCommerce prodotti: descrizione breve, descrizione e attributi visibili valorizzati inclusi nell'estrazione
+- Fix multilingua WPML/Polylang:
+  - risoluzione `.md` allineata alla traduzione con permalink corrispondente alla path richiesta
+  - generazione markdown in contesto lingua del post (anche per rigenerazioni statiche)
+  - trace debug della risoluzione lingua/permalink
+- Fix collisione file statici `.md` tra traduzioni con stesso slug (filename statico ora include `post_id`) con cleanup legacy sicuro del vecchio file condiviso
+- Output `.md` servito come markdown raw (rimozione `esc_html()` sull'intero payload) per evitare entita HTML indesiderate
+- Diagnostica `robots.txt` migliorata:
+  - rilevazione reale di `Disallow: /` per `User-agent:*`
+  - warning soft per restrizioni parziali senza falso positivo "blocca tutto il sito"
+- UI admin:
+  - severita visiva per warning/error diagnostici (`Critico`, `Attenzione`, `Info`)
+  - stato/progresso rigenerazione visibile in Overview e sezione Markdown con pulsanti disabilitati durante il run
+
 ## 1.6.4
 - Compliance hardening per Plugin Check / WordPress Coding Standards
 - Protezione accesso diretto nel file principale plugin (`ABSPATH` guard)

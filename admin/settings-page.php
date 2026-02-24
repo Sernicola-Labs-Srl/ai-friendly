@@ -454,14 +454,64 @@ function ai_fr_render_options_page(): void {
                         <p>File: <strong><?php echo intval( $overview['markdown']['count'] ); ?></strong></p>
                         <p>Spazio: <strong><?php echo esc_html( size_format( intval( $overview['markdown']['size'] ) ) ); ?></strong></p>
                         <button type="button" id="ai-fr-regenerate-overview" class="button button-primary">Rigenera llms/MD</button>
+                        <div id="ai-fr-regen-progress-overview" class="ai-fr-job-status" hidden>
+                            <div class="ai-fr-job-status-row">
+                                <span class="ai-fr-alert-label is-info">Info</span>
+                                <strong class="ai-fr-job-status-title">Rigenerazione</strong>
+                                <span class="ai-fr-job-status-state">In attesa</span>
+                            </div>
+                            <div class="ai-fr-job-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                <div class="ai-fr-job-progress-bar"></div>
+                            </div>
+                            <p class="ai-fr-job-status-meta"></p>
+                        </div>
                     </article>
 
                     <article class="ai-fr-card">
                         <h3>Avvisi rapidi</h3>
                         <ul id="ai-fr-overview-warnings" class="ai-fr-list">
-                            <?php foreach ( $overview['diagnostics']['warnings'] as $warning ) : ?>
-                                <li><?php echo esc_html( $warning['message'] ?? '' ); ?></li>
-                            <?php endforeach; ?>
+                            <?php
+                            $diag_errors = $overview['diagnostics']['errors'] ?? [];
+                            $diag_warnings = $overview['diagnostics']['warnings'] ?? [];
+                            $diag_items = [];
+                            foreach ( $diag_errors as $err ) {
+                                if ( ! is_array( $err ) ) {
+                                    continue;
+                                }
+                                if ( empty( $err['severity'] ) ) {
+                                    $err['severity'] = 'critical';
+                                }
+                                $diag_items[] = $err;
+                            }
+                            foreach ( $diag_warnings as $warning ) {
+                                if ( ! is_array( $warning ) ) {
+                                    continue;
+                                }
+                                if ( empty( $warning['severity'] ) ) {
+                                    $warning['severity'] = 'warning';
+                                }
+                                $diag_items[] = $warning;
+                            }
+                            $severity_labels = [
+                                'critical' => 'Critico',
+                                'warning'  => 'Attenzione',
+                                'info'     => 'Info',
+                            ];
+                            ?>
+                            <?php if ( empty( $diag_items ) ) : ?>
+                                <li>Nessun avviso.</li>
+                            <?php else : ?>
+                                <?php foreach ( $diag_items as $item ) : ?>
+                                    <?php
+                                    $severity = strtolower( (string) ( $item['severity'] ?? 'warning' ) );
+                                    $label = $severity_labels[ $severity ] ?? 'Avviso';
+                                    ?>
+                                    <li>
+                                        <span class="ai-fr-alert-label is-<?php echo esc_attr( $severity ); ?>"><?php echo esc_html( $label ); ?></span>
+                                        <?php echo esc_html( $item['message'] ?? '' ); ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </ul>
                         <button type="button" id="ai-fr-refresh-diagnostics" class="button">Aggiorna diagnostica</button>
                         <p class="description" id="ai-fr-sr-info"></p>
@@ -768,6 +818,17 @@ function ai_fr_render_options_page(): void {
                             <button type="button" id="ai-fr-regenerate-force" class="button">Forza rigenerazione</button>
                             <button type="button" id="ai-fr-clear-versions" class="button">Elimina tutti i file</button>
                             <p id="ai-fr-action-status"></p>
+                            <div id="ai-fr-regen-progress-md" class="ai-fr-job-status" hidden>
+                                <div class="ai-fr-job-status-row">
+                                    <span class="ai-fr-alert-label is-info">Info</span>
+                                    <strong class="ai-fr-job-status-title">Rigenerazione</strong>
+                                    <span class="ai-fr-job-status-state">In attesa</span>
+                                </div>
+                                <div class="ai-fr-job-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                    <div class="ai-fr-job-progress-bar"></div>
+                                </div>
+                                <p class="ai-fr-job-status-meta"></p>
+                            </div>
                             <?php if ( ! empty( $last_regen['stats'] ) ) : ?>
                                 <p class="description">
                                     Ultimo run: Processati <?php echo intval( $last_regen['stats']['processed'] ?? 0 ); ?>,

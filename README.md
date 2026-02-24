@@ -1,6 +1,6 @@
 ﻿# Sernicola Labs | AI Friendly - llms.txt & Markdown
 
-**Version:** 1.6.4  
+**Version:** 1.7.0  
 **Author:** Sernicola Labs  
 **Requirements:** WordPress 6.0+, PHP 8.1+  
 **License:** GPL v2 or later

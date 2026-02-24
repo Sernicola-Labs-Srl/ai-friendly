@@ -2,6 +2,11 @@
     'use strict';
     var contentState = { page: 1, perPage: 12, total: 0 };
     var markdownEditor = null;
+    var regenUi = {
+        timer: null,
+        startedAt: 0,
+        running: false
+    };
 
     function ajax(action, data) {
         return $.post(AiFrAdmin.ajaxUrl, $.extend({}, data || {}, {
@@ -61,12 +66,210 @@
     }
 
     function renderWarnings(stats) {
-        var warnings = ((stats || {}).diagnostics || {}).warnings || [];
+        var diagnostics = ((stats || {}).diagnostics || {});
+        var warnings = diagnostics.warnings || [];
+        var errors = diagnostics.errors || [];
         var html = '';
-        warnings.forEach(function (w) {
-            html += '<li>' + esc(w.message) + '</li>';
+        var labels = {
+            critical: 'Critico',
+            warning: 'Attenzione',
+            info: 'Info'
+        };
+        var items = [];
+        (errors || []).forEach(function (e) {
+            if (!e) return;
+            if (!e.severity) e.severity = 'critical';
+            items.push(e);
+        });
+        (warnings || []).forEach(function (w) {
+            if (!w) return;
+            if (!w.severity) w.severity = 'warning';
+            items.push(w);
+        });
+
+        items.forEach(function (w) {
+            var severity = (w && w.severity) ? String(w.severity).toLowerCase() : 'warning';
+            var label = labels[severity] || 'Avviso';
+            html += '<li><span class="ai-fr-alert-label is-' + esc(severity) + '">' + esc(label) + '</span> ' + esc(w.message) + '</li>';
         });
         $('#ai-fr-overview-warnings').html(html || '<li>Nessun avviso.</li>');
+    }
+
+    function formatElapsed(ms) {
+        var secs = Math.max(0, Math.floor(ms / 1000));
+        var m = Math.floor(secs / 60);
+        var s = secs % 60;
+        return (m > 0 ? (m + 'm ') : '') + s + 's';
+    }
+
+    function getRegenPanels() {
+        return $('#ai-fr-regen-progress-overview, #ai-fr-regen-progress-md');
+    }
+
+    function setRegenButtonsDisabled(disabled) {
+        $('#ai-fr-regenerate-overview, #ai-fr-run-now, #ai-fr-regenerate, #ai-fr-regenerate-force, #ai-fr-clear-versions')
+            .prop('disabled', !!disabled);
+    }
+
+    function setRegenPanelState(opts) {
+        var o = opts || {};
+        var panels = getRegenPanels();
+        if (!panels.length) return;
+
+        var severity = String(o.severity || 'info').toLowerCase();
+        var labelMap = { critical: 'Critico', warning: 'Attenzione', info: 'Info', success: 'OK' };
+        var stateClass = o.stateClass || '';
+        var progress = (typeof o.progress === 'number') ? Math.max(0, Math.min(100, o.progress)) : null;
+        var indeterminate = !!o.indeterminate;
+
+        panels.prop('hidden', false)
+            .removeClass('is-running is-success is-error');
+
+        if (stateClass) {
+            panels.addClass(stateClass);
+        }
+
+        panels.find('.ai-fr-alert-label')
+            .removeClass('is-critical is-warning is-info')
+            .addClass('is-' + (severity === 'success' ? 'info' : severity))
+            .text(labelMap[severity] || 'Info');
+
+        if (o.title) {
+            panels.find('.ai-fr-job-status-title').text(o.title);
+        }
+        if (o.stateText) {
+            panels.find('.ai-fr-job-status-state').text(o.stateText);
+        }
+        if (typeof o.metaText !== 'undefined') {
+            panels.find('.ai-fr-job-status-meta').text(o.metaText || '');
+        }
+
+        panels.find('.ai-fr-job-progress').toggleClass('is-indeterminate', indeterminate);
+        if (progress !== null && !indeterminate) {
+            panels.find('.ai-fr-job-progress-bar').css('width', progress + '%');
+            panels.find('.ai-fr-job-progress').attr('aria-valuenow', String(Math.round(progress)));
+        } else if (indeterminate) {
+            panels.find('.ai-fr-job-progress').attr('aria-valuenow', '0');
+        }
+    }
+
+    function updateRunningElapsed(extraMeta) {
+        if (!regenUi.running) return;
+        var elapsed = formatElapsed(Date.now() - regenUi.startedAt);
+        var meta = extraMeta ? (extraMeta + ' | Tempo: ' + elapsed) : ('Tempo: ' + elapsed);
+        setRegenPanelState({
+            title: 'Rigenerazione',
+            severity: 'info',
+            stateText: 'In corso...',
+            metaText: meta,
+            indeterminate: true,
+            stateClass: 'is-running'
+        });
+    }
+
+    function startRegenUi(metaText) {
+        regenUi.running = true;
+        regenUi.startedAt = Date.now();
+        setRegenButtonsDisabled(true);
+        if (regenUi.timer) {
+            clearInterval(regenUi.timer);
+            regenUi.timer = null;
+        }
+        updateRunningElapsed(metaText || '');
+        regenUi.timer = setInterval(function () {
+            updateRunningElapsed(metaText || '');
+        }, 500);
+    }
+
+    function finishRegenUi(stats, isError, fallbackMessage) {
+        regenUi.running = false;
+        if (regenUi.timer) {
+            clearInterval(regenUi.timer);
+            regenUi.timer = null;
+        }
+        setRegenButtonsDisabled(false);
+
+        if (isError) {
+            setRegenPanelState({
+                title: 'Rigenerazione',
+                severity: 'critical',
+                stateText: 'Errore',
+                metaText: fallbackMessage || 'Operazione non completata.',
+                progress: 100,
+                indeterminate: false,
+                stateClass: 'is-error'
+            });
+            return;
+        }
+
+        var s = stats || {};
+        var processed = Number(s.processed || 0);
+        var regenerated = Number(s.regenerated || 0);
+        var skipped = Number(s.skipped || 0);
+        var errors = Number(s.errors || 0);
+        var batchSize = Number(s.batch_size || 0);
+        var mode = String(s.mode || '');
+        var progress = 100;
+
+        if (mode === 'batch' && batchSize > 0) {
+            progress = Math.round(Math.max(0, Math.min(100, (processed / batchSize) * 100)));
+        }
+
+        var stateText = errors > 0 ? 'Completata con errori' : 'Completata';
+        var severity = errors > 0 ? 'warning' : 'success';
+        var meta = 'Processati: ' + processed + ' | Rigenerati: ' + regenerated + ' | Saltati: ' + skipped + ' | Errori: ' + errors;
+        if (mode === 'batch' && batchSize > 0) {
+            meta += ' | Batch: ' + processed + '/' + batchSize;
+        }
+
+        setRegenPanelState({
+            title: 'Rigenerazione',
+            severity: severity,
+            stateText: stateText,
+            metaText: meta,
+            progress: progress,
+            indeterminate: false,
+            stateClass: errors > 0 ? 'is-error' : 'is-success'
+        });
+    }
+
+    function runRegeneration(opts) {
+        var o = opts || {};
+        var force = !!o.force;
+        var mode = o.mode || 'full';
+        var statusPrefix = o.statusPrefix || 'Rigenerazione';
+        var startMeta = mode === 'batch' ? 'Esecuzione batch in corso' : 'Esecuzione completa in corso';
+
+        startRegenUi(startMeta);
+        $('#ai-fr-action-status').text(statusPrefix + ' in corso...');
+
+        return ajax('ai_fr_regenerate_all', { force: force ? 1 : 0, mode: mode })
+            .done(function (res) {
+                if (!res || !res.success) {
+                    finishRegenUi(null, true, 'Risposta non valida dal server.');
+                    return;
+                }
+
+                var d = res.data || {};
+                finishRegenUi(d, false);
+
+                if (mode === 'batch') {
+                    $('#ai-fr-action-status').text(
+                        'Batch completato. Processati: ' + (d.processed || 0) + ', rigenerati: ' + (d.regenerated || 0) + '.'
+                    );
+                } else if (force) {
+                    $('#ai-fr-action-status').text('Rigenerazione forzata completata.');
+                } else {
+                    $('#ai-fr-action-status').text('Rigenerazione completata.');
+                }
+
+                refreshOverview();
+                refreshTimeline();
+            })
+            .fail(function () {
+                finishRegenUi(null, true, 'Errore AJAX durante la rigenerazione.');
+                $('#ai-fr-action-status').text('Errore durante la rigenerazione.');
+            });
     }
 
     function refreshOverview() {
@@ -221,34 +424,18 @@
         });
 
         $('#ai-fr-regenerate-overview,#ai-fr-run-now').on('click', function () {
-            ajax('ai_fr_regenerate_all', { force: 0, mode: 'batch' }).done(function (res) {
-                if (!res || !res.success) return;
-                var d = res.data || {};
-                var processed = d.processed || 0;
-                var regenerated = d.regenerated || 0;
-                $('#ai-fr-action-status').text(
-                    'Batch completato. Processati: ' + processed + ', rigenerati: ' + regenerated + '.'
-                );
-                refreshOverview();
-                refreshTimeline();
-            });
+            if (regenUi.running) return;
+            runRegeneration({ force: false, mode: 'batch', statusPrefix: 'Batch rigenerazione' });
         });
 
         $('#ai-fr-regenerate').on('click', function () {
-            ajax('ai_fr_regenerate_all', { force: 0, mode: 'full' }).done(function (res) {
-                if (!res || !res.success) return;
-                $('#ai-fr-action-status').text('Rigenerazione completata.');
-                refreshOverview();
-                refreshTimeline();
-            });
+            if (regenUi.running) return;
+            runRegeneration({ force: false, mode: 'full', statusPrefix: 'Rigenerazione' });
         });
 
         $('#ai-fr-regenerate-force').on('click', function () {
-            ajax('ai_fr_regenerate_all', { force: 1, mode: 'full' }).done(function () {
-                $('#ai-fr-action-status').text('Rigenerazione forzata completata.');
-                refreshOverview();
-                refreshTimeline();
-            });
+            if (regenUi.running) return;
+            runRegeneration({ force: true, mode: 'full', statusPrefix: 'Rigenerazione forzata' });
         });
 
         $('#ai-fr-clear-versions').on('click', function () {

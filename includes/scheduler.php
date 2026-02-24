@@ -305,44 +305,113 @@ function ai_fr_finalize_regeneration_stats( array $stats, string $trigger, bool 
 /**
  * Genera il contenuto Markdown per un singolo post.
  */
-function ai_fr_generate_markdown( WP_Post $post ): string {
-    
-    $post_id = $post->ID;
-    
-    // Ottieni contenuto HTML
-    $html = ai_fr_get_rendered_content_safe( $post, false );
-    $text_html = trim( wp_strip_all_tags( $html ) );
-    $fallback_plain = trim( wp_strip_all_tags( (string) $post->post_excerpt ) );
-    if ( $fallback_plain === '' ) {
-        $fallback_plain = ai_fr_extract_text_from_raw( (string) $post->post_content );
-    }
-    
-    // Converter
-    $converter = new AiFrConverter( AI_FR_NORMALIZE_HEADINGS );
-    
-    // Costruisci output
-    $md = AiFrMetadata::frontmatter( $post );
-    $md .= "# " . get_the_title( $post_id ) . "\n\n";
-    
-    // Featured image
-    if ( AI_FR_INCLUDE_METADATA && has_post_thumbnail( $post_id ) ) {
-        $featured_url = get_the_post_thumbnail_url( $post_id, 'large' );
-        $featured_alt = get_post_meta( get_post_thumbnail_id( $post_id ), '_wp_attachment_image_alt', true );
-        if ( $featured_url && ! str_contains( $html, $featured_url ) ) {
-            $alt = ! empty( $featured_alt ) ? $featured_alt : get_the_title( $post_id );
-            $md .= "![{$alt}]({$featured_url})\n\n";
+function ai_fr_generate_markdown( WP_Post $post, bool $debug = false ): string {
+    $lang_ctx = ai_fr_enter_post_language_context( $post );
+
+    try {
+        $post_id = $post->ID;
+        
+        // Ottieni contenuto HTML
+        $html = ai_fr_get_rendered_content_safe( $post, $debug );
+        $text_html = trim( wp_strip_all_tags( $html ) );
+        $fallback_plain = trim( wp_strip_all_tags( (string) $post->post_excerpt ) );
+        if ( $fallback_plain === '' ) {
+            $fallback_plain = ai_fr_extract_text_from_raw( (string) $post->post_content );
         }
+        
+        // Converter
+        $converter = new AiFrConverter( AI_FR_NORMALIZE_HEADINGS );
+        
+        // Costruisci output
+        $md = AiFrMetadata::frontmatter( $post );
+        $md .= "# " . get_the_title( $post_id ) . "\n\n";
+        
+        // Featured image
+        if ( AI_FR_INCLUDE_METADATA && has_post_thumbnail( $post_id ) ) {
+            $featured_url = get_the_post_thumbnail_url( $post_id, 'large' );
+            $featured_alt = get_post_meta( get_post_thumbnail_id( $post_id ), '_wp_attachment_image_alt', true );
+            if ( $featured_url && ! str_contains( $html, $featured_url ) ) {
+                $alt = ! empty( $featured_alt ) ? $featured_alt : get_the_title( $post_id );
+                $md .= "![{$alt}]({$featured_url})\n\n";
+            }
+        }
+        
+        if ( $text_html !== '' ) {
+            $md .= $converter->convert( $html ) . "\n";
+        } elseif ( $fallback_plain !== '' ) {
+            $md .= $fallback_plain . "\n";
+        } else {
+            $md .= "_Contenuto non disponibile._\n";
+        }
+        
+        return $md;
+    } finally {
+        ai_fr_restore_language_context( $lang_ctx );
     }
-    
-    if ( $text_html !== '' ) {
-        $md .= $converter->convert( $html ) . "\n";
-    } elseif ( $fallback_plain !== '' ) {
-        $md .= $fallback_plain . "\n";
-    } else {
-        $md .= "_Contenuto non disponibile._\n";
+}
+
+function ai_fr_enter_post_language_context( WP_Post $post ): array {
+    $ctx = [
+        'engine' => 'none',
+        'restore_lang' => null,
+        'switched' => false,
+    ];
+
+    // WPML
+    if ( has_filter( 'wpml_object_id' ) || defined( 'ICL_SITEPRESS_VERSION' ) || function_exists( 'icl_object_id' ) ) {
+        $details = apply_filters( 'wpml_post_language_details', null, $post->ID );
+        $target_lang = is_array( $details ) && ! empty( $details['language_code'] ) ? (string) $details['language_code'] : '';
+        $current_lang = apply_filters( 'wpml_current_language', null );
+
+        $ctx['engine'] = 'wpml';
+        $ctx['restore_lang'] = is_string( $current_lang ) ? $current_lang : null;
+
+        if ( $target_lang !== '' && $target_lang !== $current_lang ) {
+            do_action( 'wpml_switch_language', $target_lang );
+            $ctx['switched'] = true;
+        }
+
+        return $ctx;
     }
-    
-    return $md;
+
+    // Polylang
+    if ( function_exists( 'pll_get_post_language' ) ) {
+        $target_lang = (string) pll_get_post_language( $post->ID, 'slug' );
+        $current_lang = function_exists( 'pll_current_language' ) ? pll_current_language( 'slug' ) : null;
+
+        $ctx['engine'] = 'polylang';
+        $ctx['restore_lang'] = is_string( $current_lang ) ? $current_lang : null;
+
+        if ( function_exists( 'pll_switch_language' ) && $target_lang !== '' && $target_lang !== $current_lang ) {
+            pll_switch_language( $target_lang );
+            $ctx['switched'] = true;
+        }
+
+        return $ctx;
+    }
+
+    return $ctx;
+}
+
+function ai_fr_restore_language_context( array $ctx ): void {
+    if ( empty( $ctx['switched'] ) ) {
+        return;
+    }
+
+    $restore_lang = isset( $ctx['restore_lang'] ) && is_string( $ctx['restore_lang'] ) ? $ctx['restore_lang'] : '';
+    if ( $restore_lang === '' ) {
+        return;
+    }
+
+    $engine = isset( $ctx['engine'] ) && is_string( $ctx['engine'] ) ? $ctx['engine'] : 'none';
+    if ( $engine === 'wpml' ) {
+        do_action( 'wpml_switch_language', $restore_lang );
+        return;
+    }
+
+    if ( $engine === 'polylang' && function_exists( 'pll_switch_language' ) ) {
+        pll_switch_language( $restore_lang );
+    }
 }
 
 // Hook per rigenerazione su salvataggio post
