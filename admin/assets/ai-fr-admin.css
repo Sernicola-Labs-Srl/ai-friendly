@@ -21,7 +21,27 @@
 }
 
 .ai-fr-save-notice {
-    margin: 12px 0 14px;
+    flex-basis: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(360px, 100%);
+    margin: 2px 0 8px;
+    padding: 10px 12px;
+    border-left: 4px solid #00a32a;
+    background: #edfaef;
+    color: #1d2327;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.ai-fr-save-notice-dismiss {
+    border: 0;
+    background: transparent;
+    color: #1d2327;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 2px;
 }
 
 .ai-fr-onboarding {

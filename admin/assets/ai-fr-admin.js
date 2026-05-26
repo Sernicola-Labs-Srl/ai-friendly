@@ -394,6 +394,10 @@
             });
         });
 
+        $('.ai-fr-save-notice-dismiss').on('click', function () {
+            $(this).closest('.ai-fr-save-notice').attr('hidden', true);
+        });
+
         switchSection('overview');
         updateTocFromEditor();
         refreshPreview();

@@ -391,13 +391,13 @@ function ai_fr_render_options_page(): void {
         <div class="ai-fr-header">
             <h1>AI Friendly - AI Content Hub <small class="ai-fr-version">v<?php echo esc_html( AI_FR_VERSION ); ?></small></h1>
             <button type="button" class="button button-secondary" id="ai-fr-reopen-wizard">Riapri Wizard</button>
+            <?php if ( $settings_saved ) : ?>
+                <div class="ai-fr-save-notice" role="status" aria-live="polite">
+                    <span>Impostazioni salvate.</span>
+                    <button type="button" class="ai-fr-save-notice-dismiss" aria-label="Nascondi notifica">&times;</button>
+                </div>
+            <?php endif; ?>
         </div>
-
-        <?php if ( $settings_saved ) : ?>
-            <div class="notice notice-success is-dismissible ai-fr-save-notice">
-                <p>Impostazioni salvate.</p>
-            </div>
-        <?php endif; ?>
 
         <?php if ( ! $onboarding_done ) : ?>
             <div class="ai-fr-onboarding">
