@@ -509,7 +509,7 @@ function ai_fr_extract_text_from_raw( string $content ): string {
 function ai_fr_resolve_post( string $path ): int {
     $path = ai_fr_normalize_relative_path( $path );
     if ( empty( $path ) ) {
-        return 0;
+        return ai_fr_resolve_front_page_post();
     }
 
     $public_types = get_post_types( [ 'public' => true ], 'names' );
@@ -581,6 +581,256 @@ function ai_fr_resolve_post( string $path ): int {
     }
 
     return 0;
+}
+
+function ai_fr_resolve_front_page_post(): int {
+    if ( get_option( 'show_on_front' ) !== 'page' ) {
+        return 0;
+    }
+
+    $front_page_id = (int) get_option( 'page_on_front' );
+    if ( $front_page_id <= 0 ) {
+        return 0;
+    }
+
+    $post = get_post( $front_page_id );
+    return ( $post && $post->post_status === 'publish' ) ? $front_page_id : 0;
+}
+
+/**
+ * Estrae testo "canonico" da un prodotto WooCommerce se disponibile.
+ *
+ * @return array{text:string,attributes_count:int}
+ */
+function ai_fr_extract_woocommerce_product_text( int $post_id ): array {
+    if ( ! function_exists( 'wc_get_product' ) ) {
+        return [ 'text' => '', 'attributes_count' => 0 ];
+    }
+
+    $product = wc_get_product( $post_id );
+    if ( ! $product instanceof WC_Product ) {
+        return [ 'text' => '', 'attributes_count' => 0 ];
+    }
+
+    $parts = [];
+
+    $short_description = method_exists( $product, 'get_short_description' ) ? (string) $product->get_short_description() : '';
+    $short_description = trim( wp_strip_all_tags( html_entity_decode( $short_description, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+    if ( $short_description !== '' ) {
+        $parts[] = $short_description;
+    }
+
+    $description = method_exists( $product, 'get_description' ) ? (string) $product->get_description() : '';
+    $description = trim( wp_strip_all_tags( html_entity_decode( $description, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+    if ( $description !== '' ) {
+        $parts[] = $description;
+    }
+
+    $attributes_count = 0;
+    if ( method_exists( $product, 'get_attributes' ) ) {
+        $attributes = $product->get_attributes();
+        if ( is_array( $attributes ) ) {
+            foreach ( $attributes as $attribute ) {
+                if ( ! $attribute instanceof WC_Product_Attribute ) {
+                    continue;
+                }
+
+                if ( method_exists( $attribute, 'get_visible' ) && ! $attribute->get_visible() ) {
+                    continue;
+                }
+
+                $values = [];
+                if ( method_exists( $attribute, 'is_taxonomy' ) && $attribute->is_taxonomy() ) {
+                    $taxonomy = method_exists( $attribute, 'get_name' ) ? (string) $attribute->get_name() : '';
+                    if ( $taxonomy !== '' && function_exists( 'wc_get_product_terms' ) ) {
+                        $values = wc_get_product_terms( $post_id, $taxonomy, [ 'fields' => 'names' ] );
+                    }
+                } else {
+                    $options = method_exists( $attribute, 'get_options' ) ? $attribute->get_options() : [];
+                    if ( is_array( $options ) ) {
+                        $values = array_map( 'strval', $options );
+                    }
+                }
+
+                $values = array_values(
+                    array_filter(
+                        array_map(
+                            static fn( $v ) => trim( wp_strip_all_tags( html_entity_decode( (string) $v, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) ),
+                            is_array( $values ) ? $values : []
+                        ),
+                        static fn( string $v ): bool => $v !== ''
+                    )
+                );
+
+                if ( empty( $values ) ) {
+                    continue;
+                }
+
+                $label = '';
+                if ( function_exists( 'wc_attribute_label' ) && method_exists( $attribute, 'get_name' ) ) {
+                    $label = trim( (string) wc_attribute_label( (string) $attribute->get_name(), $product ) );
+                }
+
+                $line = implode( ', ', array_unique( $values ) );
+                if ( $label !== '' ) {
+                    $line = $label . ': ' . $line;
+                }
+
+                if ( trim( $line ) !== '' ) {
+                    $parts[] = $line;
+                    $attributes_count++;
+                }
+            }
+        }
+    }
+
+    return [
+        'text' => ai_fr_merge_builder_text_parts( $parts ),
+        'attributes_count' => $attributes_count,
+    ];
+}
+
+function ai_fr_match_translated_post_to_path( int $post_id, string $requested_path ): int {
+    if ( $post_id <= 0 || $requested_path === '' ) {
+        return $post_id;
+    }
+
+    $requested_path = ai_fr_normalize_relative_path( $requested_path );
+    $trace = ai_fr_debug_get_resolve_trace();
+    $trace['before_id'] = $post_id;
+    $trace['after_id'] = $post_id;
+    $trace['engine'] = 'none';
+    $trace['matched'] = false;
+
+    $direct_permalink = get_permalink( $post_id );
+    if ( is_string( $direct_permalink ) && $direct_permalink !== '' ) {
+        $direct_path = ai_fr_relative_path_from_url( $direct_permalink );
+        $trace['selected_permalink_path'] = $direct_path;
+        if ( $direct_path === $requested_path ) {
+            ai_fr_debug_set_resolve_trace( $trace );
+            return $post_id;
+        }
+    }
+
+    if ( ai_fr_wpml_is_available() ) {
+        $matched_id = ai_fr_match_wpml_translation_to_path( $post_id, $requested_path, $trace );
+        $trace['engine'] = 'wpml';
+        if ( $matched_id > 0 ) {
+            $trace['matched'] = true;
+            $trace['after_id'] = $matched_id;
+            ai_fr_debug_set_resolve_trace( $trace );
+            return $matched_id;
+        }
+        ai_fr_debug_set_resolve_trace( $trace );
+        return $post_id;
+    }
+
+    if ( ai_fr_polylang_is_available() ) {
+        $matched_id = ai_fr_match_polylang_translation_to_path( $post_id, $requested_path, $trace );
+        $trace['engine'] = 'polylang';
+        if ( $matched_id > 0 ) {
+            $trace['matched'] = true;
+            $trace['after_id'] = $matched_id;
+            ai_fr_debug_set_resolve_trace( $trace );
+            return $matched_id;
+        }
+        ai_fr_debug_set_resolve_trace( $trace );
+        return $post_id;
+    }
+
+    ai_fr_debug_set_resolve_trace( $trace );
+    return $post_id;
+}
+
+function ai_fr_match_wpml_translation_to_path( int $post_id, string $requested_path, array &$trace ): int {
+    $post = get_post( $post_id );
+    if ( ! $post || ! is_string( $post->post_type ) || $post->post_type === '' ) {
+        return 0;
+    }
+
+    $languages = apply_filters( 'wpml_active_languages', null, [ 'skip_missing' => 0 ] );
+    if ( ! is_array( $languages ) || empty( $languages ) ) {
+        return 0;
+    }
+
+    $original_lang = apply_filters( 'wpml_current_language', null );
+    $checked_ids = [];
+
+    foreach ( $languages as $lang => $lang_info ) {
+        $translated_id = apply_filters( 'wpml_object_id', $post_id, $post->post_type, false, $lang );
+        $translated_id = (int) $translated_id;
+        if ( $translated_id <= 0 || isset( $checked_ids[ $translated_id ] ) ) {
+            continue;
+        }
+        $checked_ids[ $translated_id ] = true;
+
+        if ( is_string( $lang ) && $lang !== '' ) {
+            do_action( 'wpml_switch_language', $lang );
+        }
+
+        $translated_permalink = get_permalink( $translated_id );
+        if ( is_string( $translated_permalink ) && $translated_permalink !== '' ) {
+            $translated_path = ai_fr_relative_path_from_url( $translated_permalink );
+            $trace['selected_permalink_path'] = $translated_path;
+            if ( $translated_path === $requested_path ) {
+                if ( is_string( $original_lang ) && $original_lang !== '' ) {
+                    do_action( 'wpml_switch_language', $original_lang );
+                }
+                return $translated_id;
+            }
+        }
+    }
+
+    if ( is_string( $original_lang ) && $original_lang !== '' ) {
+        do_action( 'wpml_switch_language', $original_lang );
+    }
+
+    return 0;
+}
+
+function ai_fr_wpml_is_available(): bool {
+    return has_filter( 'wpml_object_id' ) || defined( 'ICL_SITEPRESS_VERSION' ) || function_exists( 'icl_object_id' );
+}
+
+function ai_fr_match_polylang_translation_to_path( int $post_id, string $requested_path, array &$trace ): int {
+    if ( ! function_exists( 'pll_get_post' ) || ! function_exists( 'pll_languages_list' ) ) {
+        return 0;
+    }
+
+    $languages = pll_languages_list( [ 'fields' => 'slug' ] );
+    if ( ! is_array( $languages ) || empty( $languages ) ) {
+        return 0;
+    }
+
+    $checked_ids = [];
+    foreach ( $languages as $lang ) {
+        if ( ! is_string( $lang ) || $lang === '' ) {
+            continue;
+        }
+
+        $translated_id = (int) pll_get_post( $post_id, $lang );
+        if ( $translated_id <= 0 || isset( $checked_ids[ $translated_id ] ) ) {
+            continue;
+        }
+        $checked_ids[ $translated_id ] = true;
+
+        $translated_permalink = get_permalink( $translated_id );
+        if ( ! is_string( $translated_permalink ) || $translated_permalink === '' ) {
+            continue;
+        }
+
+        $translated_path = ai_fr_relative_path_from_url( $translated_permalink );
+        $trace['selected_permalink_path'] = $translated_path;
+        if ( $translated_path === $requested_path ) {
+            return $translated_id;
+        }
+    }
+
+    return 0;
+}
+
+function ai_fr_polylang_is_available(): bool {
+    return function_exists( 'pll_get_post' ) && function_exists( 'pll_languages_list' );
 }
 
 function ai_fr_resolve_archive_post_type( string $path ): string {

@@ -334,6 +334,7 @@ function ai_fr_render_options_page(): void {
 
     $defaults = ai_fr_get_default_options();
     $options  = wp_parse_args( get_option( 'ai_fr_options', [] ), $defaults );
+    $settings_saved = false;
 
     if ( ai_fr_post_bool( 'ai_fr_save' ) && check_admin_referer( 'ai_fr_options_nonce' ) ) {
         $options['llms_content']         = sanitize_textarea_field( (string) ai_fr_post_raw( 'llms_content', '' ) );
@@ -371,8 +372,7 @@ function ai_fr_render_options_page(): void {
 
         ai_fr_schedule_cron();
         ai_fr_add_event( 'settings_saved', [ 'source' => 'admin_page' ] );
-
-        echo '<div class="notice notice-success"><p>Impostazioni salvate.</p></div>';
+        $settings_saved = true;
     }
 
     $all_categories  = get_categories( [ 'hide_empty' => false ] );
@@ -392,6 +392,12 @@ function ai_fr_render_options_page(): void {
             <h1>AI Friendly - AI Content Hub <small class="ai-fr-version">v<?php echo esc_html( AI_FR_VERSION ); ?></small></h1>
             <button type="button" class="button button-secondary" id="ai-fr-reopen-wizard">Riapri Wizard</button>
         </div>
+
+        <?php if ( $settings_saved ) : ?>
+            <div class="notice notice-success is-dismissible ai-fr-save-notice">
+                <p>Impostazioni salvate.</p>
+            </div>
+        <?php endif; ?>
 
         <?php if ( ! $onboarding_done ) : ?>
             <div class="ai-fr-onboarding">

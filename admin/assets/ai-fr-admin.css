@@ -20,6 +20,10 @@
     flex-wrap: wrap;
 }
 
+.ai-fr-save-notice {
+    margin: 12px 0 14px;
+}
+
 .ai-fr-onboarding {
     background: linear-gradient(120deg, #eff6ff, #f7fbff);
     border: 1px solid #cbdff6;

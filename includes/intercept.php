@@ -34,6 +34,11 @@ add_action( 'template_redirect', function () {
         exit;
     }
 
+    if ( $rel === '/index.html.md' || $rel === '/.md' ) {
+        ai_fr_serve_markdown( '/' );
+        exit;
+    }
+
     if ( preg_match( '#^(.+?)(?:/index\.html\.md|\.md)$#i', $rel, $m ) ) {
         ai_fr_serve_markdown( $m[1] );
         exit;

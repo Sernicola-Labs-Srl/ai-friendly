@@ -11,9 +11,15 @@ function ai_fr_serve_llms_txt(): void {
 
     $body = ai_fr_build_llms_txt();
 
+    ai_fr_reset_output_buffers();
+
     status_header( 200 );
     header( 'Content-Type: text/plain; charset=UTF-8' );
-    header( 'Cache-Control: public, max-age=3600' );
+    header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
+    header( 'Pragma: no-cache' );
+    header( 'Expires: 0' );
+    header( 'X-AI-Friendly-Version: ' . AI_FR_VERSION );
+    header( 'X-AI-Friendly-LLMS-Length: ' . strlen( $body ) );
     echo esc_html( $body );
     exit;
 }
