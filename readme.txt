@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 1.6.4
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,19 @@ Yes. Use per-content exclusion in the metabox or global exclusion rules in setti
 Yes. Fill the editor and disable automatic content listing.
 
 == Changelog ==
+
+= 1.7.1 =
+* Fix serving homepage in Markdown via `/index.html.md`.
+* Hardening `/llms.txt` output against empty/stale proxy cache responses.
+* Explicit raw text/plain body and Content-Length for `/llms.txt`.
+* Improved saved-settings toast placement and moved "Riapri Wizard" into the admin navigation bar.
+
+= 1.7.0 =
+* More robust builder/ACF/WooCommerce content extraction.
+* Improved multilingual `.md` resolution for WPML/Polylang.
+* Static Markdown filename collision fix for translated content.
+* Raw Markdown output for `.md` endpoints.
+* Improved robots.txt diagnostics and admin regeneration progress UI.
 
 = 1.6.4 =
 * Plugin Check and coding standards compliance hardening.
