@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,13 +38,18 @@ Yes. Fill the editor and disable automatic content listing.
 
 == Changelog ==
 
+= 1.7.1 =
+* Fix serving homepage in Markdown via `/index.html.md`.
+* Hardening `/llms.txt` output against empty/stale proxy cache responses.
+* Explicit raw text/plain body and Content-Length for `/llms.txt`.
+* Improved saved-settings toast placement and moved "Riapri Wizard" into the admin navigation bar.
+
 = 1.7.0 =
-* Migliorata estrazione contenuti per builder/ACF con scoring candidati, merge deduplicato e debug avanzato.
-* Supporto migliorato per WooCommerce product (descrizione breve, descrizione, attributi visibili) nel Markdown.
-* Fix multilingua WPML/Polylang per risoluzione URL `.md` e generazione statica nella lingua corretta del post.
-* Fix collisioni file statici `.md` tra traduzioni con stesso slug (filename ora include post ID) con cleanup legacy sicuro.
-* Migliorata diagnostica `robots.txt` (niente falsi positivi su `Disallow: /wp-admin/`, warning soft per restrizioni parziali).
-* UX admin: stato/progresso rigenerazione visibile in Overview e sezione Markdown, severita visiva per warning/error.
+* More robust builder/ACF/WooCommerce content extraction.
+* Improved multilingual `.md` resolution for WPML/Polylang.
+* Static Markdown filename collision fix for translated content.
+* Raw Markdown output for `.md` endpoints.
+* Improved robots.txt diagnostics and admin regeneration progress UI.
 
 = 1.6.4 =
 * Plugin Check and coding standards compliance hardening.

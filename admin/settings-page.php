@@ -334,6 +334,7 @@ function ai_fr_render_options_page(): void {
 
     $defaults = ai_fr_get_default_options();
     $options  = wp_parse_args( get_option( 'ai_fr_options', [] ), $defaults );
+    $settings_saved = false;
 
     if ( ai_fr_post_bool( 'ai_fr_save' ) && check_admin_referer( 'ai_fr_options_nonce' ) ) {
         $options['llms_content']         = sanitize_textarea_field( (string) ai_fr_post_raw( 'llms_content', '' ) );
@@ -371,8 +372,7 @@ function ai_fr_render_options_page(): void {
 
         ai_fr_schedule_cron();
         ai_fr_add_event( 'settings_saved', [ 'source' => 'admin_page' ] );
-
-        echo '<div class="notice notice-success"><p>Impostazioni salvate.</p></div>';
+        $settings_saved = true;
     }
 
     $all_categories  = get_categories( [ 'hide_empty' => false ] );
@@ -390,7 +390,13 @@ function ai_fr_render_options_page(): void {
     <div class="wrap ai-fr-wrap">
         <div class="ai-fr-header">
             <h1>AI Friendly - AI Content Hub <small class="ai-fr-version">v<?php echo esc_html( AI_FR_VERSION ); ?></small></h1>
-            <button type="button" class="button button-secondary" id="ai-fr-reopen-wizard">Riapri Wizard</button>
+            <?php if ( $settings_saved ) : ?>
+                <div class="ai-fr-save-notice" role="status" aria-live="polite">
+                    <span class="ai-fr-save-notice-icon" aria-hidden="true"></span>
+                    <span>Impostazioni salvate</span>
+                    <button type="button" class="ai-fr-save-notice-dismiss" aria-label="Nascondi notifica" onclick="this.closest('.ai-fr-save-notice').hidden = true;">&times;</button>
+                </div>
+            <?php endif; ?>
         </div>
 
         <?php if ( ! $onboarding_done ) : ?>
@@ -431,6 +437,7 @@ function ai_fr_render_options_page(): void {
                 <button type="button" class="ai-fr-nav-item" data-section="content">Content</button>
                 <button type="button" class="ai-fr-nav-item" data-section="rules">Rules</button>
                 <button type="button" class="ai-fr-nav-item" data-section="automation">Automation</button>
+                <button type="button" class="button button-secondary ai-fr-nav-action" id="ai-fr-reopen-wizard">Riapri Wizard</button>
             </nav>
 
             <section id="ai-fr-section-overview" class="ai-fr-section is-active">
@@ -454,64 +461,14 @@ function ai_fr_render_options_page(): void {
                         <p>File: <strong><?php echo intval( $overview['markdown']['count'] ); ?></strong></p>
                         <p>Spazio: <strong><?php echo esc_html( size_format( intval( $overview['markdown']['size'] ) ) ); ?></strong></p>
                         <button type="button" id="ai-fr-regenerate-overview" class="button button-primary">Rigenera llms/MD</button>
-                        <div id="ai-fr-regen-progress-overview" class="ai-fr-job-status" hidden>
-                            <div class="ai-fr-job-status-row">
-                                <span class="ai-fr-alert-label is-info">Info</span>
-                                <strong class="ai-fr-job-status-title">Rigenerazione</strong>
-                                <span class="ai-fr-job-status-state">In attesa</span>
-                            </div>
-                            <div class="ai-fr-job-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                <div class="ai-fr-job-progress-bar"></div>
-                            </div>
-                            <p class="ai-fr-job-status-meta"></p>
-                        </div>
                     </article>
 
                     <article class="ai-fr-card">
                         <h3>Avvisi rapidi</h3>
                         <ul id="ai-fr-overview-warnings" class="ai-fr-list">
-                            <?php
-                            $diag_errors = $overview['diagnostics']['errors'] ?? [];
-                            $diag_warnings = $overview['diagnostics']['warnings'] ?? [];
-                            $diag_items = [];
-                            foreach ( $diag_errors as $err ) {
-                                if ( ! is_array( $err ) ) {
-                                    continue;
-                                }
-                                if ( empty( $err['severity'] ) ) {
-                                    $err['severity'] = 'critical';
-                                }
-                                $diag_items[] = $err;
-                            }
-                            foreach ( $diag_warnings as $warning ) {
-                                if ( ! is_array( $warning ) ) {
-                                    continue;
-                                }
-                                if ( empty( $warning['severity'] ) ) {
-                                    $warning['severity'] = 'warning';
-                                }
-                                $diag_items[] = $warning;
-                            }
-                            $severity_labels = [
-                                'critical' => 'Critico',
-                                'warning'  => 'Attenzione',
-                                'info'     => 'Info',
-                            ];
-                            ?>
-                            <?php if ( empty( $diag_items ) ) : ?>
-                                <li>Nessun avviso.</li>
-                            <?php else : ?>
-                                <?php foreach ( $diag_items as $item ) : ?>
-                                    <?php
-                                    $severity = strtolower( (string) ( $item['severity'] ?? 'warning' ) );
-                                    $label = $severity_labels[ $severity ] ?? 'Avviso';
-                                    ?>
-                                    <li>
-                                        <span class="ai-fr-alert-label is-<?php echo esc_attr( $severity ); ?>"><?php echo esc_html( $label ); ?></span>
-                                        <?php echo esc_html( $item['message'] ?? '' ); ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                            <?php foreach ( $overview['diagnostics']['warnings'] as $warning ) : ?>
+                                <li><?php echo esc_html( $warning['message'] ?? '' ); ?></li>
+                            <?php endforeach; ?>
                         </ul>
                         <button type="button" id="ai-fr-refresh-diagnostics" class="button">Aggiorna diagnostica</button>
                         <p class="description" id="ai-fr-sr-info"></p>
@@ -818,17 +775,6 @@ function ai_fr_render_options_page(): void {
                             <button type="button" id="ai-fr-regenerate-force" class="button">Forza rigenerazione</button>
                             <button type="button" id="ai-fr-clear-versions" class="button">Elimina tutti i file</button>
                             <p id="ai-fr-action-status"></p>
-                            <div id="ai-fr-regen-progress-md" class="ai-fr-job-status" hidden>
-                                <div class="ai-fr-job-status-row">
-                                    <span class="ai-fr-alert-label is-info">Info</span>
-                                    <strong class="ai-fr-job-status-title">Rigenerazione</strong>
-                                    <span class="ai-fr-job-status-state">In attesa</span>
-                                </div>
-                                <div class="ai-fr-job-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                    <div class="ai-fr-job-progress-bar"></div>
-                                </div>
-                                <p class="ai-fr-job-status-meta"></p>
-                            </div>
                             <?php if ( ! empty( $last_regen['stats'] ) ) : ?>
                                 <p class="description">
                                     Ultimo run: Processati <?php echo intval( $last_regen['stats']['processed'] ?? 0 ); ?>,
