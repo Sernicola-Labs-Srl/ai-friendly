@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function ai_fr_serve_llms_txt(): void {
 
     $body = ai_fr_build_llms_txt();
+    $body = (string) apply_filters( 'ai_fr_llms_txt_response_body', $body );
 
     ai_fr_reset_output_buffers();
 
@@ -20,7 +21,8 @@ function ai_fr_serve_llms_txt(): void {
     header( 'Expires: 0' );
     header( 'X-AI-Friendly-Version: ' . AI_FR_VERSION );
     header( 'X-AI-Friendly-LLMS-Length: ' . strlen( $body ) );
-    echo esc_html( $body );
+    header( 'Content-Length: ' . strlen( $body ) );
+    echo $body;
     exit;
 }
 

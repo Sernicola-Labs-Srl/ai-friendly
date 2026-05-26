@@ -3,6 +3,7 @@
 ## Unreleased
 - Fix URL e serving della homepage in formato `.md` tramite `/index.html.md`
 - Hardening `llms.txt` contro cache proxy vuote/stale con header no-cache e diagnostica lunghezza
+- Fix output `llms.txt` con body raw `text/plain` e `Content-Length` esplicito
 - UI admin: notice "Impostazioni salvate" riposizionata dentro il layout del plugin
 
 ## 1.7.0
