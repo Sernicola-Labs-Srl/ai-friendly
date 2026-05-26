@@ -390,11 +390,11 @@ function ai_fr_render_options_page(): void {
     <div class="wrap ai-fr-wrap">
         <div class="ai-fr-header">
             <h1>AI Friendly - AI Content Hub <small class="ai-fr-version">v<?php echo esc_html( AI_FR_VERSION ); ?></small></h1>
-            <button type="button" class="button button-secondary" id="ai-fr-reopen-wizard">Riapri Wizard</button>
             <?php if ( $settings_saved ) : ?>
                 <div class="ai-fr-save-notice" role="status" aria-live="polite">
-                    <span>Impostazioni salvate.</span>
-                    <button type="button" class="ai-fr-save-notice-dismiss" aria-label="Nascondi notifica">&times;</button>
+                    <span class="ai-fr-save-notice-icon" aria-hidden="true"></span>
+                    <span>Impostazioni salvate</span>
+                    <button type="button" class="ai-fr-save-notice-dismiss" aria-label="Nascondi notifica" onclick="this.closest('.ai-fr-save-notice').hidden = true;">&times;</button>
                 </div>
             <?php endif; ?>
         </div>
@@ -437,6 +437,7 @@ function ai_fr_render_options_page(): void {
                 <button type="button" class="ai-fr-nav-item" data-section="content">Content</button>
                 <button type="button" class="ai-fr-nav-item" data-section="rules">Rules</button>
                 <button type="button" class="ai-fr-nav-item" data-section="automation">Automation</button>
+                <button type="button" class="button button-secondary ai-fr-nav-action" id="ai-fr-reopen-wizard">Riapri Wizard</button>
             </nav>
 
             <section id="ai-fr-section-overview" class="ai-fr-section is-active">

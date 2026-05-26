@@ -17,31 +17,51 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    flex-wrap: wrap;
+    position: relative;
+    min-height: 44px;
 }
 
 .ai-fr-save-notice {
-    flex-basis: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: min(360px, 100%);
-    margin: 2px 0 8px;
-    padding: 10px 12px;
-    border-left: 4px solid #00a32a;
-    background: #edfaef;
+    gap: 8px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    max-width: min(360px, 100%);
+    padding: 9px 10px 9px 12px;
+    border: 1px solid #b8dec3;
+    border-radius: 7px;
+    background: #f3fbf4;
     color: #1d2327;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 22px rgba(16, 24, 40, 0.08);
+}
+
+.ai-fr-save-notice[hidden] {
+    display: none;
+}
+
+.ai-fr-save-notice-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #00a32a;
+    flex: 0 0 auto;
 }
 
 .ai-fr-save-notice-dismiss {
     border: 0;
     background: transparent;
-    color: #1d2327;
+    color: #526174;
     cursor: pointer;
     font-size: 18px;
     line-height: 1;
-    padding: 0 2px;
+    padding: 0 1px 1px 6px;
+}
+
+.ai-fr-save-notice-dismiss:hover,
+.ai-fr-save-notice-dismiss:focus {
+    color: #1d2327;
 }
 
 .ai-fr-onboarding {
@@ -66,6 +86,8 @@
 
 .ai-fr-nav {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
     margin: 14px 0 16px;
 }
@@ -82,6 +104,10 @@
 .ai-fr-nav-item.is-active {
     background: #e8f2fb;
     border-color: #afd0ef;
+}
+
+.ai-fr-nav-action {
+    margin-left: auto !important;
 }
 
 .ai-fr-section {
@@ -305,5 +331,11 @@
 
     .ai-fr-header {
         align-items: flex-start;
+        padding-top: 48px;
+    }
+
+    .ai-fr-save-notice {
+        left: 0;
+        right: auto;
     }
 }
