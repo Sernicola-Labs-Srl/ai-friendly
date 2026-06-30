@@ -996,8 +996,9 @@ function ai_fr_render_options_page(): void {
 add_filter(
     'plugin_action_links_' . plugin_basename( AI_FR_PLUGIN_FILE ),
     function ( array $links ): array {
-        $settings_link = '<a href="' . admin_url( 'options-general.php?page=ai-friendly' ) . '">Impostazioni</a>';
-        array_unshift( $links, $settings_link );
+        $settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=ai-friendly' ) ) . '">Impostazioni</a>';
+        $github_link   = '<a href="https://github.com/Sernicola-Labs-Srl/ai-friendly" target="_blank" rel="noopener noreferrer">GitHub</a>';
+        array_unshift( $links, $settings_link, $github_link );
         return $links;
     }
 );

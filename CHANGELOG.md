@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.2
+- Aggiunto link "GitHub" nel listato plugin di WordPress accanto ad "Impostazioni"
+
 ## 1.8.1
 - Updater GitHub per repository pubblico con `Update URI`, controllo release latest e supporto update nativo WordPress
 - Scheda dettagli versione collegata alle GitHub Releases tramite `plugins_api`
