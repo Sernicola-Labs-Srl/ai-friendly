@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.1
+- Updater GitHub per repository pubblico con `Update URI`, controllo release latest e supporto update nativo WordPress
+- Scheda dettagli versione collegata alle GitHub Releases tramite `plugins_api`
+
 ## 1.8.0
 - Nuovo modulo Semantic Schema JSON-LD con identità `Person`/`Organization`, `sameAs`, `knowsAbout`, lingue, immagine, licenza e pagina `ProfilePage`
 - Modalità compatibilità schema: auto, standalone, estensione Yoast, estensione Rank Math

@@ -12,6 +12,7 @@ if ( ! defined( 'AI_FR_PLUGIN_FILE' ) ) {
 
 require_once AI_FR_PLUGIN_DIR . '/includes/constants.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/options.php';
+require_once AI_FR_PLUGIN_DIR . '/includes/updater.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/activation.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/content-filter.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/versioning.php';

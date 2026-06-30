@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 1.8.0
+Stable tag: 1.8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,8 @@ AI Friendly provides:
 * Optional static Markdown files with regeneration workflows.
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
 * Admin tools for preview, snapshots, diagnostics, and bulk operations.
-* Optional Semantic Schema JSON-LD layer for identity, sameAs profiles, AI-friendly context, and Yoast/Rank Math extension.
+* Optional Semantic Schema JSON-LD layer for Person/Organization identity, sameAs profiles, knowsAbout topics, known languages, ProfilePage, license, and Yoast/Rank Math graph extension.
+* Native WordPress updates from public GitHub Releases.
 
 == Installation ==
 
@@ -37,12 +38,21 @@ Yes. Use per-content exclusion in the metabox or global exclusion rules in setti
 
 Yes. Fill the editor and disable automatic content listing.
 
+= Does it replace Yoast or Rank Math schema? =
+
+No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON-LD graph and merges nodes with the same @id to avoid duplicate Person or Organization entities.
+
 == Changelog ==
+
+= 1.8.1 =
+* Added native WordPress update checks from public GitHub Releases.
+* Added plugin information modal support for GitHub release details.
 
 = 1.8.0 =
 * Added Semantic Schema JSON-LD module with Person/Organization identity, sameAs, knowsAbout, language, image, license, and ProfilePage support.
 * Added auto, standalone, Yoast extension, and Rank Math extension output modes.
 * Added Schema admin section, Overview status card, and diagnostics.
+* Added JSON-LD cleanup for duplicate sameAs URLs, invalid Organization jobTitle output, and empty image dimensions.
 
 = 1.7.1 =
 * Fix serving homepage in Markdown via `/index.html.md`.

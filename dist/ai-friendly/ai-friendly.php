@@ -2,13 +2,14 @@
 /**
  * Plugin Name:        Sernicola Labs | AI Friendly - llms.txt & Markdown
  * Description:        Genera /llms.txt e versioni .md di post e pagine.
- * Version:            1.8.0
+ * Version:            1.8.1
  * Changelog:          CHANGELOG.md
  * Author:             Sernicola Labs
  * Author URI:         https://sernicola-labs.com
  * License:            GPL v2 or later
  * Requires at least:  6.0
  * Requires PHP:       8.1
+ * Update URI:         https://github.com/Sernicola-Labs-Srl/ai-friendly
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -31,7 +32,7 @@ if ( ! defined( 'AI_FR_PLUGIN_DIR' ) ) {
     define( 'AI_FR_PLUGIN_DIR', __DIR__ );
 }
 if ( ! defined( 'AI_FR_VERSION' ) ) {
-    define( 'AI_FR_VERSION', '1.8.0' );
+    define( 'AI_FR_VERSION', '1.8.1' );
 }
 
 require_once AI_FR_PLUGIN_DIR . '/includes/boot.php';

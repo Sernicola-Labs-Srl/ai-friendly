@@ -1,6 +1,6 @@
 ﻿# Sernicola Labs | AI Friendly - llms.txt & Markdown
 
-**Version:** 1.8.0
+**Version:** 1.8.1
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v2 or later
@@ -15,23 +15,25 @@
 4. AI Content Hub (admin)
 5. Regole di inclusione/esclusione
 6. Output Markdown
-7. Compatibilita
-8. Debug e diagnostica
-9. Hook e filtri
-10. FAQ
-11. Release checklist
-12. Changelog
+7. Semantic Schema JSON-LD
+8. Compatibilità
+9. Debug e diagnostica
+10. Hook e filtri
+11. FAQ
+12. Release checklist
+13. Changelog
 
 ---
 
 ## Introduzione
 
-AI Friendly espone contenuti WordPress in un formato piu leggibile per sistemi AI/LLM:
+AI Friendly espone contenuti WordPress in un formato più leggibile per sistemi AI/LLM:
 
 - `/llms.txt` con indice dei contenuti
 - endpoint `.md` per singoli contenuti pubblici
 - (se disponibile) endpoint `.md` per archive CPT pubblici, ad esempio `/podcast.md`
-- layer opzionale Semantic Schema JSON-LD per identita, profili e contesto AI-friendly
+- layer opzionale Semantic Schema JSON-LD per identità, profili e contesto AI-friendly
+- aggiornamenti nativi WordPress tramite GitHub Releases pubbliche
 
 Il plugin include anche un pannello admin (AI Content Hub) per gestire regole, rigenerazione, snapshot e diagnostica.
 
@@ -53,7 +55,8 @@ Il plugin include anche un pannello admin (AI Content Hub) per gestire regole, r
 
 Note:
 - Le opzioni restano nel database (`ai_fr_options`)
-- In hosting con OPcache/FPM puo servire un reload del pool PHP dopo update manuali
+- In hosting con OPcache/FPM può servire un reload del pool PHP dopo update manuali
+- Gli aggiornamenti automatici usano le release pubbliche GitHub del repository `Sernicola-Labs-Srl/ai-friendly`; ogni release deve includere uno zip installabile, preferibilmente `ai-friendly.zip`
 
 ---
 
@@ -61,7 +64,7 @@ Note:
 
 ### 1) `llms.txt`
 
-`/llms.txt` viene generato dinamicamente e puo combinare:
+`/llms.txt` viene generato dinamicamente e può combinare:
 
 - contenuto custom scritto in admin
 - lista automatica dei contenuti inclusi
@@ -77,7 +80,7 @@ Per CPT con archive pubblico (`has_archive`), se abilitati:
 
 - `https://sito.tld/podcast/` -> `https://sito.tld/podcast.md`
 
-### 3) Modalita statica (opzionale)
+### 3) Modalità statica (opzionale)
 
 Se attivi "File MD statici":
 
@@ -89,7 +92,7 @@ Se attivi "File MD statici":
 
 ## AI Content Hub (admin)
 
-Il pannello e diviso in 5 sezioni:
+Il pannello è diviso in 5 sezioni:
 
 - **Overview**
   - stato `llms.txt`
@@ -111,10 +114,10 @@ Il pannello e diviso in 5 sezioni:
   - timeline eventi
   - notifiche errore rigenerazione
 - **Schema**
-  - identita `Person` / `Organization`
+  - identità `Person` / `Organization`
   - profili `sameAs`, competenze `knowsAbout`, lingue e immagine
   - pagina `ProfilePage` e licenza contenuti
-  - modalita auto/standalone/estensione Yoast/estensione Rank Math
+  - modalità auto/standalone/estensione Yoast/estensione Rank Math
 
 ---
 
@@ -140,7 +143,7 @@ Formato tipico:
 2. `#` titolo documento
 3. contenuto convertito in markdown
 
-Se il contenuto principale e scarso, il plugin usa fallback:
+Se il contenuto principale è scarso, il plugin usa fallback:
 
 - testo builder supportati
 - estrazione campi ACF
@@ -157,7 +160,45 @@ Per CPT creati/gestiti con ACF:
 
 ---
 
-## Compatibilita
+## Semantic Schema JSON-LD
+
+Il modulo **Semantic Schema** aggiunge un layer JSON-LD pensato per descrivere meglio l'identità del sito e renderla più chiara a crawler, motori di ricerca e sistemi AI.
+
+Non sostituisce Yoast SEO o Rank Math: quando uno dei due è attivo, AI Friendly estende il grafo esistente e fonde i propri dati nei nodi già presenti con lo stesso `@id`. In questo modo evita duplicati come due nodi `Organization` o `Person` concorrenti.
+
+### Modalità disponibili
+
+- `auto`: estende Yoast o Rank Math se rilevati, altrimenti stampa JSON-LD standalone
+- `standalone`: genera un grafo minimo AI Friendly
+- `extend_yoast`: aggiunge o fonde nodi nel grafo Yoast
+- `extend_rank_math`: aggiunge o fonde nodi nel JSON-LD Rank Math
+
+### Campi configurabili
+
+Dalla sezione **Schema** dell'AI Content Hub puoi configurare:
+
+- entità principale: `Person` oppure `Organization`
+- nome, nome alternativo e descrizione
+- descrizione disambiguante (`disambiguatingDescription`)
+- immagine identitaria
+- profili esterni `sameAs`
+- competenze o argomenti autorevoli `knowsAbout`
+- lingue `knowsLanguage`
+- pagina profilo `ProfilePage`
+- URL di licenza dei contenuti
+
+### Pulizia e compatibilità
+
+Il modulo applica alcune normalizzazioni per mantenere il grafo pulito:
+
+- deduplica gli URL `sameAs`, anche quando differiscono solo per lo slash finale
+- evita `jobTitle` su `Organization`, mantenendolo solo per `Person`
+- rimuove dimensioni immagine vuote (`width`/`height`) dal JSON-LD finale
+- in modalità estensione lascia ai plugin SEO i nodi base come `WebSite`, `WebPage`, `Article`, `BreadcrumbList` e prodotti
+
+---
+
+## Compatibilità
 
 ### Editor/Page builder
 
@@ -179,20 +220,9 @@ Supporto estrazione contenuti per:
 - All in One SEO
 - SEOPress
 
-### JSON-LD / Schema
-
-Il modulo Semantic Schema puo lavorare in modalita:
-
-- `auto`: estende Yoast o Rank Math se rilevati, altrimenti stampa JSON-LD standalone
-- `standalone`: genera un grafo minimo AI Friendly
-- `extend_yoast`: aggiunge nodi al grafo Yoast
-- `extend_rank_math`: aggiunge nodi al JSON-LD Rank Math
-
-Per evitare duplicazioni, quando estende Yoast o Rank Math il plugin aggiunge soprattutto identita e contesto semantico, lasciando ai plugin SEO i nodi base come `WebSite`, `WebPage`, `Article`, `BreadcrumbList` e prodotti.
-
 ### WooCommerce
 
-Supporto prodotti `product` se WooCommerce e attivo e abilitato nelle regole.
+Supporto prodotti `product` se WooCommerce è attivo e abilitato nelle regole.
 
 ---
 
@@ -213,7 +243,7 @@ Il plugin espone header utili:
 
 Con `?debug=1`:
 
-- viene richiesta modalita debug
+- viene richiesta modalità debug
 - le informazioni debug nel body vengono mostrate solo ad admin
 - la risposta HTTP resta no-cache per facilitare troubleshooting
 
@@ -239,7 +269,19 @@ Aggiunge chiavi meta che invalidano la cache markdown.
 
 ### `ai_fr_can_serve_post`
 
-Controllo finale sulla possibilita di esporre un contenuto via `.md` / `llms.txt`.
+Controllo finale sulla possibilità di esporre un contenuto via `.md` / `llms.txt`.
+
+### `ai_fr_schema_enabled`
+
+Permette di abilitare/disabilitare programmaticamente il modulo Semantic Schema.
+
+### `ai_fr_schema_identity`
+
+Permette di modificare il nodo `Person` / `Organization` prima dell'output.
+
+### `ai_fr_schema_graph`
+
+Permette di modificare il grafo AI Friendly prima della stampa standalone o della fusione con Yoast/Rank Math.
 
 ---
 
@@ -251,11 +293,11 @@ Di default viene inviato `X-Robots-Tag: noindex, follow`.
 
 ### Posso escludere singoli contenuti?
 
-Si, con metabox per singolo contenuto o con regole globali nel tab Rules.
+Sì, con metabox per singolo contenuto o con regole globali nel tab Rules.
 
 ### Posso usare solo contenuto custom per `llms.txt`?
 
-Si. Compila l'editor `llms.txt` e disattiva "Aggiungi lista automatica".
+Sì. Compila l'editor `llms.txt` e disattiva "Aggiungi lista automatica".
 
 ### Ho aggiornato il plugin ma il comportamento non cambia
 
@@ -267,7 +309,7 @@ Controlla:
 
 ### Funziona su CPT creati con ACF?
 
-Si. Sia in risoluzione URL `.md` sia in estrazione contenuto testuale.
+Sì. Sia in risoluzione URL `.md` sia in estrazione contenuto testuale.
 
 ---
 
@@ -282,7 +324,7 @@ Usa questa checklist ad ogni nuova release.
 
 2. **Documentazione**
 - Verifica coerenza `README.md` con feature reali
-- Aggiorna eventuali note su header/debug/compatibilita
+- Aggiorna eventuali note su header/debug/compatibilità
 
 3. **Packaging**
 - Crea zip release includendo `ai-friendly.php`, `includes/`, `admin/`, `README.md`, `readme.txt`, `CHANGELOG.md`
