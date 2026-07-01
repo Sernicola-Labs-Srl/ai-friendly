@@ -19,7 +19,7 @@ AI Friendly provides:
 * Optional static Markdown files with regeneration workflows.
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
 * Admin tools for preview, snapshots, diagnostics, and bulk operations.
-* Optional Semantic Schema JSON-LD layer for Person/Organization identity, sameAs profiles, knowsAbout topics, known languages, ProfilePage, license, and Yoast/Rank Math graph extension.
+* Optional Semantic Schema JSON-LD layer for Person/Organization identity, business context, OfferCatalog services, sameAs profiles, knowsAbout topics, known languages, ProfilePage, license, and Yoast/Rank Math graph extension.
 * Native WordPress updates from public GitHub Releases.
 
 == Installation ==
@@ -46,6 +46,7 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 
 = 1.8.2 =
 * Added GitHub link to the WordPress plugin action links.
+* Added optional Organization business context and OfferCatalog service schema fields.
 
 = 1.8.1 =
 * Added native WordPress update checks from public GitHub Releases.

@@ -87,6 +87,15 @@ function ai_fr_schema_dedupe_urls( array $urls ): array {
     return $unique;
 }
 
+function ai_fr_schema_sanitize_schema_type( string $type ): string {
+    $type = trim( $type );
+    if ( $type === '' || ! preg_match( '/^[A-Z][A-Za-z0-9]*$/', $type ) ) {
+        return '';
+    }
+
+    return $type;
+}
+
 function ai_fr_schema_home_id( string $fragment ): string {
     return trailingslashit( home_url( '/' ) ) . '#' . ltrim( sanitize_title( $fragment ), '#' );
 }
@@ -104,8 +113,16 @@ function ai_fr_schema_get_identity_node(): array {
         $name = get_bloginfo( 'name' );
     }
 
+    $schema_type = $type;
+    if ( $type === 'Organization' ) {
+        $additional_type = ai_fr_schema_sanitize_schema_type( (string) ( $options['schema_additional_type'] ?? '' ) );
+        if ( $additional_type !== '' && $additional_type !== $type ) {
+            $schema_type = [ $type, $additional_type ];
+        }
+    }
+
     $node = [
-        '@type' => $type,
+        '@type' => $schema_type,
         '@id'   => ai_fr_schema_home_id( strtolower( $type ) ),
         'url'   => home_url( '/' ),
         'name'  => $name,
@@ -119,6 +136,9 @@ function ai_fr_schema_get_identity_node(): array {
 
     if ( $type === 'Person' ) {
         $simple_fields['jobTitle'] = 'schema_job_title';
+    } else {
+        $simple_fields['slogan']       = 'schema_slogan';
+        $simple_fields['foundingDate'] = 'schema_founding_date';
     }
 
     foreach ( $simple_fields as $schema_key => $option_key ) {
@@ -144,6 +164,18 @@ function ai_fr_schema_get_identity_node(): array {
         $node['knowsLanguage'] = $knows_language;
     }
 
+    if ( $type === 'Organization' ) {
+        $area_served = ai_fr_schema_parse_area_served( (string) ( $options['schema_area_served'] ?? '' ) );
+        if ( ! empty( $area_served ) ) {
+            $node['areaServed'] = $area_served;
+        }
+
+        $offer_catalog_raw = trim( (string) ( $options['schema_offer_catalog'] ?? '' ) );
+        if ( $offer_catalog_raw !== '' && is_array( json_decode( $offer_catalog_raw, true ) ) ) {
+            $node['hasOfferCatalog'] = [ '@id' => ai_fr_schema_home_id( 'service-catalog' ) ];
+        }
+    }
+
     $image_id = intval( $options['schema_image_id'] ?? 0 );
     if ( $image_id > 0 ) {
         $image = wp_get_attachment_image_src( $image_id, 'full' );
@@ -163,6 +195,130 @@ function ai_fr_schema_get_identity_node(): array {
     }
 
     return (array) apply_filters( 'ai_fr_schema_identity', $node, $options );
+}
+
+function ai_fr_schema_parse_area_served( string $value ): array {
+    $items = ai_fr_schema_split_lines( $value );
+    $areas = [];
+
+    foreach ( $items as $item ) {
+        $parts = array_map( 'trim', explode( ':', $item, 2 ) );
+        if ( count( $parts ) === 2 ) {
+            $place_type = ai_fr_schema_sanitize_schema_type( $parts[0] );
+            if ( in_array( $place_type, [ 'City', 'Country', 'AdministrativeArea', 'Place' ], true ) && $parts[1] !== '' ) {
+                $areas[] = [
+                    '@type' => $place_type,
+                    'name'  => sanitize_text_field( $parts[1] ),
+                ];
+                continue;
+            }
+        }
+
+        $areas[] = sanitize_text_field( $item );
+    }
+
+    return array_values( array_filter( $areas ) );
+}
+
+function ai_fr_schema_get_offer_catalog_node( array $options ): array {
+    if ( ( $options['schema_entity_type'] ?? '' ) !== 'Organization' ) {
+        return [];
+    }
+
+    $raw = trim( (string) ( $options['schema_offer_catalog'] ?? '' ) );
+    if ( $raw === '' ) {
+        return [];
+    }
+
+    $decoded = json_decode( $raw, true );
+    if ( ! is_array( $decoded ) ) {
+        return [];
+    }
+
+    $catalog_source = $decoded;
+    $services       = $decoded;
+    if ( ! array_is_list( $decoded ) ) {
+        $services = isset( $decoded['itemListElement'] ) && is_array( $decoded['itemListElement'] ) ? $decoded['itemListElement'] : [];
+    }
+
+    $offers = [];
+    foreach ( $services as $service ) {
+        $offer = ai_fr_schema_normalize_service_offer( is_array( $service ) ? $service : [] );
+        if ( ! empty( $offer ) ) {
+            $offers[] = $offer;
+        }
+    }
+
+    if ( empty( $offers ) ) {
+        return [];
+    }
+
+    $catalog_name = ! array_is_list( $catalog_source ) && ! empty( $catalog_source['name'] )
+        ? sanitize_text_field( (string) $catalog_source['name'] )
+        : sprintf( 'Servizi %s', get_bloginfo( 'name' ) );
+
+    return [
+        '@type'           => 'OfferCatalog',
+        '@id'             => ai_fr_schema_home_id( 'service-catalog' ),
+        'name'            => $catalog_name,
+        'itemListElement' => $offers,
+    ];
+}
+
+function ai_fr_schema_normalize_service_offer( array $source ): array {
+    $offer_source   = $source;
+    $service_source = isset( $source['itemOffered'] ) && is_array( $source['itemOffered'] ) ? $source['itemOffered'] : $source;
+
+    $name = sanitize_text_field( (string) ( $service_source['name'] ?? '' ) );
+    $url  = esc_url_raw( (string) ( $service_source['url'] ?? '' ) );
+    if ( $name === '' && $url === '' ) {
+        return [];
+    }
+
+    $service = [
+        '@type'    => 'Service',
+        'provider' => [ '@id' => ai_fr_schema_home_id( 'organization' ) ],
+    ];
+
+    if ( $url !== '' ) {
+        $service['@id'] = trailingslashit( $url ) . '#service';
+        $service['url'] = $url;
+    }
+
+    foreach ( [ 'name', 'serviceType', 'description' ] as $key ) {
+        $value = sanitize_text_field( (string) ( $service_source[ $key ] ?? '' ) );
+        if ( $value !== '' ) {
+            $service[ $key ] = $value;
+        }
+    }
+
+    $area_served = '';
+    if ( ! empty( $service_source['areaServed']['name'] ) ) {
+        $area_served = (string) $service_source['areaServed']['name'];
+    } elseif ( ! empty( $service_source['areaServed'] ) && is_string( $service_source['areaServed'] ) ) {
+        $area_served = $service_source['areaServed'];
+    }
+
+    if ( $area_served !== '' ) {
+        $service['areaServed'] = [
+            '@type' => 'Country',
+            'name'  => sanitize_text_field( $area_served ),
+        ];
+    }
+
+    $offer = [
+        '@type'       => 'Offer',
+        'itemOffered' => $service,
+    ];
+
+    foreach ( [ 'price', 'priceCurrency' ] as $key ) {
+        $value = sanitize_text_field( (string) ( $offer_source[ $key ] ?? '' ) );
+        if ( $value !== '' ) {
+            $offer[ $key ] = $value;
+        }
+    }
+
+    return $offer;
 }
 
 function ai_fr_schema_get_profile_page_node(): array {
@@ -297,6 +453,11 @@ function ai_fr_schema_get_graph(): array {
         $graph[] = $blog;
     }
 
+    $offer_catalog = ai_fr_schema_get_offer_catalog_node( $options );
+    if ( ! empty( $offer_catalog ) ) {
+        $graph[] = $offer_catalog;
+    }
+
     if ( is_singular() ) {
         $post = get_post();
         if ( $post instanceof WP_Post ) {
@@ -368,7 +529,7 @@ function ai_fr_schema_merge_node( array $base, array $addition ): array {
             continue;
         }
 
-        if ( in_array( $key, [ 'sameAs', 'knowsAbout', 'knowsLanguage', 'alternateName' ], true ) ) {
+        if ( in_array( $key, [ '@type', 'sameAs', 'knowsAbout', 'knowsLanguage', 'alternateName' ], true ) ) {
             $base[ $key ] = ai_fr_schema_merge_list_values( $base[ $key ], $value );
         }
     }

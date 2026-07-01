@@ -376,6 +376,11 @@ function ai_fr_render_options_page(): void {
         $options['schema_description'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_description', '' ) );
         $options['schema_disambiguating_description'] = ai_fr_post_text( 'schema_disambiguating_description', '' );
         $options['schema_job_title'] = ai_fr_post_text( 'schema_job_title', '' );
+        $options['schema_additional_type'] = ai_fr_post_text( 'schema_additional_type', '' );
+        $options['schema_slogan'] = ai_fr_post_text( 'schema_slogan', '' );
+        $options['schema_founding_date'] = ai_fr_post_text( 'schema_founding_date', '' );
+        $options['schema_area_served'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_area_served', '' ) );
+        $options['schema_offer_catalog'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_offer_catalog', '' ) );
         $options['schema_image_id'] = max( 0, ai_fr_post_int( 'schema_image_id', 0 ) );
         $options['schema_same_as'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_same_as', '' ) );
         $options['schema_knows_about'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_knows_about', '' ) );
@@ -801,6 +806,10 @@ function ai_fr_render_options_page(): void {
                                 <span>Ruolo / job title (solo Person)</span>
                                 <input type="text" name="schema_job_title" value="<?php echo esc_attr( $options['schema_job_title'] ); ?>">
                             </label>
+                            <label class="ai-fr-field">
+                                <span>Tipo aggiuntivo (solo Organization)</span>
+                                <input type="text" name="schema_additional_type" value="<?php echo esc_attr( $options['schema_additional_type'] ); ?>" placeholder="ProfessionalService">
+                            </label>
                         </div>
                     </article>
 
@@ -817,6 +826,14 @@ function ai_fr_render_options_page(): void {
                             <label class="ai-fr-field">
                                 <span>Descrizione disambiguante</span>
                                 <input type="text" name="schema_disambiguating_description" value="<?php echo esc_attr( $options['schema_disambiguating_description'] ); ?>">
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>Slogan (solo Organization)</span>
+                                <input type="text" name="schema_slogan" value="<?php echo esc_attr( $options['schema_slogan'] ); ?>" placeholder="E-problem solving: sviluppo web fuori dagli schemi.">
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>Data fondazione (solo Organization)</span>
+                                <input type="text" name="schema_founding_date" value="<?php echo esc_attr( $options['schema_founding_date'] ); ?>" placeholder="2015">
                             </label>
                         </div>
                     </article>
@@ -859,6 +876,23 @@ function ai_fr_render_options_page(): void {
                             <label class="ai-fr-field">
                                 <span>knowsLanguage</span>
                                 <textarea name="schema_knows_language" rows="3" placeholder="it-IT&#10;en-US"><?php echo esc_textarea( $options['schema_knows_language'] ); ?></textarea>
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>areaServed (solo Organization)</span>
+                                <textarea name="schema_area_served" rows="3" placeholder="City: Milano&#10;Country: Italia"><?php echo esc_textarea( $options['schema_area_served'] ); ?></textarea>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="ai-fr-schema-card ai-fr-schema-card-wide">
+                        <div class="ai-fr-schema-card-head">
+                            <h4>Catalogo servizi</h4>
+                            <p>JSON opzionale per aggiungere un `OfferCatalog` collegato all'Organization.</p>
+                        </div>
+                        <div class="ai-fr-schema-fields">
+                            <label class="ai-fr-field">
+                                <span>Servizi JSON</span>
+                                <textarea name="schema_offer_catalog" rows="8" class="code" placeholder='[{"name":"UX e Graphic Design","url":"https://example.com/ux/","serviceType":"UX/UI design","description":"Progettazione di interfacce digitali.","areaServed":"Italia"}]'><?php echo esc_textarea( $options['schema_offer_catalog'] ); ?></textarea>
                             </label>
                         </div>
                     </article>

@@ -115,7 +115,7 @@ Il pannello è diviso in 5 sezioni:
   - notifiche errore rigenerazione
 - **Schema**
   - identità `Person` / `Organization`
-  - profili `sameAs`, competenze `knowsAbout`, lingue e immagine
+  - profili `sameAs`, competenze `knowsAbout`, lingue, immagine e contesto business
   - pagina `ProfilePage` e licenza contenuti
   - modalità auto/standalone/estensione Yoast/estensione Rank Math
 
@@ -180,6 +180,9 @@ Dalla sezione **Schema** dell'AI Content Hub puoi configurare:
 - entità principale: `Person` oppure `Organization`
 - nome, nome alternativo e descrizione
 - descrizione disambiguante (`disambiguatingDescription`)
+- tipo aggiuntivo per `Organization`, ad esempio `ProfessionalService`
+- slogan, data di fondazione e aree servite per `Organization`
+- catalogo servizi opzionale come `OfferCatalog`
 - immagine identitaria
 - profili esterni `sameAs`
 - competenze o argomenti autorevoli `knowsAbout`
@@ -195,6 +198,21 @@ Il modulo applica alcune normalizzazioni per mantenere il grafo pulito:
 - evita `jobTitle` su `Organization`, mantenendolo solo per `Person`
 - rimuove dimensioni immagine vuote (`width`/`height`) dal JSON-LD finale
 - in modalità estensione lascia ai plugin SEO i nodi base come `WebSite`, `WebPage`, `Article`, `BreadcrumbList` e prodotti
+- aggiunge il catalogo servizi solo come nodo separato collegato all'entità principale, evitando di duplicare `WebSite` o `WebPage`
+
+Esempio minimo di catalogo servizi:
+
+```json
+[
+  {
+    "name": "UX e Graphic Design",
+    "url": "https://example.com/ux/",
+    "serviceType": "UX/UI design",
+    "description": "Progettazione di interfacce digitali.",
+    "areaServed": "Italia"
+  }
+]
+```
 
 ---
 

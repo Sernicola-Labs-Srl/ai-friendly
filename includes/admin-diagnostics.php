@@ -87,6 +87,14 @@ function ai_fr_run_diagnostics(): array {
                 'message' => 'Semantic Schema usa standalone perche la modalita scelta non corrisponde al provider SEO rilevato.',
             ];
         }
+
+        $offer_catalog = trim( (string) ( $options['schema_offer_catalog'] ?? '' ) );
+        if ( $offer_catalog !== '' && ! is_array( json_decode( $offer_catalog, true ) ) ) {
+            $warnings[] = [
+                'code'    => 'schema_offer_catalog_invalid',
+                'message' => 'Semantic Schema: il catalogo servizi non contiene JSON valido e non verra aggiunto al grafo.',
+            ];
+        }
     }
 
     // Warning URL esclusioni duplicate.

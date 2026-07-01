@@ -2,6 +2,8 @@
 
 ## 1.8.2
 - Aggiunto link "GitHub" nel listato plugin di WordPress accanto ad "Impostazioni"
+- Aggiunti campi Semantic Schema per contesto business `Organization`: tipo aggiuntivo, slogan, fondazione, aree servite e catalogo servizi `OfferCatalog`
+- Aggiunta diagnostica per catalogo servizi JSON non valido
 
 ## 1.8.1
 - Updater GitHub per repository pubblico con `Update URI`, controllo release latest e supporto update nativo WordPress
