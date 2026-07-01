@@ -390,7 +390,7 @@
 
         reindexSchemaServices();
 
-        $('#ai-fr-schema-service-add').on('click', function () {
+        $(document).on('click', '#ai-fr-schema-service-add', function () {
             $('#ai-fr-schema-services').append(renderServiceRow());
             reindexSchemaServices();
         });

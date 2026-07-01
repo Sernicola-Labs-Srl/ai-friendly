@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.3
+- Fix pulsante "Aggiungi servizio" nel repeater del catalogo servizi Schema
+- Bump versione asset admin per evitare cache del JavaScript precedente
+
 ## 1.8.2
 - Aggiunto link "GitHub" nel listato plugin di WordPress accanto ad "Impostazioni"
 - Nome pubblico semplificato in "AI Friendly" e descrizione aggiornata per includere llms.txt, Markdown e Semantic Schema JSON-LD
