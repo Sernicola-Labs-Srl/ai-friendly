@@ -192,6 +192,48 @@
         });
     }
 
+    function serviceField(name, label, type, placeholder) {
+        var tag = type === 'textarea'
+            ? '<textarea rows="3" data-service-field="' + name + '" placeholder="' + esc(placeholder) + '"></textarea>'
+            : '<input type="' + type + '" data-service-field="' + name + '" placeholder="' + esc(placeholder) + '">';
+
+        return '<label class="ai-fr-field">' +
+            '<span>' + esc(label) + '</span>' +
+            tag +
+            '</label>';
+    }
+
+    function renderServiceRow() {
+        return '<div class="ai-fr-schema-service">' +
+            '<div class="ai-fr-schema-service-head">' +
+            '<strong>Servizio</strong>' +
+            '<button type="button" class="button button-link-delete ai-fr-schema-service-remove">Rimuovi</button>' +
+            '</div>' +
+            '<div class="ai-fr-schema-service-grid">' +
+            serviceField('name', 'Nome', 'text', 'UX e Graphic Design') +
+            serviceField('url', 'URL pagina', 'url', 'https://example.com/servizio/') +
+            serviceField('serviceType', 'Tipo servizio', 'text', 'Web design, UX/UI design') +
+            serviceField('areaServed', 'Area servita', 'text', 'Italia') +
+            '<label class="ai-fr-field ai-fr-schema-service-description">' +
+            '<span>Descrizione</span>' +
+            '<textarea rows="3" data-service-field="description" placeholder="Descrizione breve del servizio."></textarea>' +
+            '</label>' +
+            serviceField('price', 'Prezzo', 'text', '0') +
+            serviceField('priceCurrency', 'Valuta', 'text', 'EUR') +
+            '</div>' +
+            '</div>';
+    }
+
+    function reindexSchemaServices() {
+        $('#ai-fr-schema-services .ai-fr-schema-service').each(function (index) {
+            $(this).attr('data-service-index', index);
+            $(this).find('[data-service-field]').each(function () {
+                var field = $(this).data('service-field');
+                $(this).attr('name', 'schema_services[' + index + '][' + field + ']');
+            });
+        });
+    }
+
     $(function () {
         if (window.wp && wp.codeEditor && window.AiFrCodeEditor && $('#llms_content').length) {
             markdownEditor = wp.codeEditor.initialize($('#llms_content')[0], AiFrCodeEditor.settings || {});
@@ -344,6 +386,23 @@
         $('#ai-fr-schema-image-clear').on('click', function () {
             $('#ai-fr-schema-image-id').val('0');
             $('.ai-fr-schema-image-preview').html('<span>Nessuna immagine</span>');
+        });
+
+        reindexSchemaServices();
+
+        $('#ai-fr-schema-service-add').on('click', function () {
+            $('#ai-fr-schema-services').append(renderServiceRow());
+            reindexSchemaServices();
+        });
+
+        $(document).on('click', '.ai-fr-schema-service-remove', function () {
+            var $rows = $('#ai-fr-schema-services .ai-fr-schema-service');
+            if ($rows.length <= 1) {
+                $(this).closest('.ai-fr-schema-service').find('input, textarea').val('');
+            } else {
+                $(this).closest('.ai-fr-schema-service').remove();
+            }
+            reindexSchemaServices();
         });
 
         $('#ai-fr-auto-regenerate').on('change', function () {

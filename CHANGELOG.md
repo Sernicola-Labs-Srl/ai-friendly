@@ -2,7 +2,10 @@
 
 ## 1.8.2
 - Aggiunto link "GitHub" nel listato plugin di WordPress accanto ad "Impostazioni"
+- Nome pubblico semplificato in "AI Friendly" e descrizione aggiornata per includere llms.txt, Markdown e Semantic Schema JSON-LD
+- Aggiunto link rapido a Schema Markup Validator nella sezione Schema
 - Aggiunti campi Semantic Schema per contesto business `Organization`: tipo aggiuntivo, slogan, fondazione, aree servite e catalogo servizi `OfferCatalog`
+- Sostituito il campo JSON del catalogo servizi con campi ripetibili per creare offerte senza scrivere JSON manuale
 - Aggiunta diagnostica per catalogo servizi JSON non valido
 
 ## 1.8.1

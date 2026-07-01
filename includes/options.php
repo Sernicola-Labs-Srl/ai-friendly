@@ -55,6 +55,7 @@ function ai_fr_get_default_options(): array {
         'schema_slogan'         => '',
         'schema_founding_date'  => '',
         'schema_area_served'    => '',
+        'schema_services'       => [],
         'schema_offer_catalog'  => '',
         'schema_image_id'       => 0,
         'schema_same_as'        => '',

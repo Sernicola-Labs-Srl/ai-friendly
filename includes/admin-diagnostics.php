@@ -89,10 +89,11 @@ function ai_fr_run_diagnostics(): array {
         }
 
         $offer_catalog = trim( (string) ( $options['schema_offer_catalog'] ?? '' ) );
-        if ( $offer_catalog !== '' && ! is_array( json_decode( $offer_catalog, true ) ) ) {
+        $schema_services = isset( $options['schema_services'] ) && is_array( $options['schema_services'] ) ? $options['schema_services'] : [];
+        if ( empty( $schema_services ) && $offer_catalog !== '' && ! is_array( json_decode( $offer_catalog, true ) ) ) {
             $warnings[] = [
                 'code'    => 'schema_offer_catalog_invalid',
-                'message' => 'Semantic Schema: il catalogo servizi non contiene JSON valido e non verra aggiunto al grafo.',
+                'message' => 'Semantic Schema: il catalogo servizi legacy non contiene JSON valido e non verra aggiunto al grafo.',
             ];
         }
     }

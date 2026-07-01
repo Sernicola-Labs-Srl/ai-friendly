@@ -1,4 +1,4 @@
-﻿=== Sernicola Labs | AI Friendly - llms.txt & Markdown ===
+﻿=== AI Friendly ===
 Contributors: sernicolalabs
 Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
@@ -26,7 +26,7 @@ AI Friendly provides:
 
 1. Upload the plugin zip from `Plugins > Add New > Upload Plugin`.
 2. Activate the plugin.
-3. Open `Settings > Sernicola Labs | AI Friendly`.
+3. Open `Settings > AI Friendly`.
 
 == Frequently Asked Questions ==
 
@@ -46,7 +46,7 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 
 = 1.8.2 =
 * Added GitHub link to the WordPress plugin action links.
-* Added optional Organization business context and OfferCatalog service schema fields.
+* Added optional Organization business context and repeatable OfferCatalog service schema fields.
 
 = 1.8.1 =
 * Added native WordPress update checks from public GitHub Releases.

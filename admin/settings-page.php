@@ -7,8 +7,8 @@ add_action(
     'admin_menu',
     function () {
         add_options_page(
-            'Sernicola Labs | AI Friendly - AI Content Hub',
-            'Sernicola Labs | AI Friendly',
+            'AI Friendly - AI Content Hub',
+            'AI Friendly',
             'manage_options',
             'ai-friendly',
             'ai_fr_render_options_page'
@@ -98,6 +98,34 @@ function ai_fr_post_text( string $key, string $default = '' ): string {
 function ai_fr_post_array( string $key ): array {
     $value = ai_fr_post_raw( $key, [] );
     return is_array( $value ) ? $value : [];
+}
+
+function ai_fr_admin_sanitize_schema_services( array $rows ): array {
+    $services = [];
+
+    foreach ( $rows as $row ) {
+        if ( ! is_array( $row ) ) {
+            continue;
+        }
+
+        $service = [
+            'name'          => sanitize_text_field( (string) ( $row['name'] ?? '' ) ),
+            'url'           => esc_url_raw( (string) ( $row['url'] ?? '' ) ),
+            'serviceType'   => sanitize_text_field( (string) ( $row['serviceType'] ?? '' ) ),
+            'description'   => sanitize_textarea_field( (string) ( $row['description'] ?? '' ) ),
+            'areaServed'    => sanitize_text_field( (string) ( $row['areaServed'] ?? '' ) ),
+            'price'         => sanitize_text_field( (string) ( $row['price'] ?? '' ) ),
+            'priceCurrency' => sanitize_text_field( (string) ( $row['priceCurrency'] ?? '' ) ),
+        ];
+
+        if ( $service['name'] === '' && $service['url'] === '' ) {
+            continue;
+        }
+
+        $services[] = $service;
+    }
+
+    return $services;
 }
 
 add_action(
@@ -380,7 +408,8 @@ function ai_fr_render_options_page(): void {
         $options['schema_slogan'] = ai_fr_post_text( 'schema_slogan', '' );
         $options['schema_founding_date'] = ai_fr_post_text( 'schema_founding_date', '' );
         $options['schema_area_served'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_area_served', '' ) );
-        $options['schema_offer_catalog'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_offer_catalog', '' ) );
+        $options['schema_services'] = ai_fr_admin_sanitize_schema_services( ai_fr_post_array( 'schema_services' ) );
+        $options['schema_offer_catalog'] = '';
         $options['schema_image_id'] = max( 0, ai_fr_post_int( 'schema_image_id', 0 ) );
         $options['schema_same_as'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_same_as', '' ) );
         $options['schema_knows_about'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_knows_about', '' ) );
@@ -410,10 +439,28 @@ function ai_fr_render_options_page(): void {
     $services_md_url = ai_fr_permalink_to_md( home_url( '/servizi/' ) );
     $schema_provider = function_exists( 'ai_fr_schema_detect_provider' ) ? ai_fr_schema_detect_provider() : 'none';
     $schema_mode     = function_exists( 'ai_fr_schema_output_mode' ) ? ai_fr_schema_output_mode() : 'standalone';
+    $schema_validator_url = 'https://validator.schema.org/#url=' . rawurlencode( home_url( '/' ) );
     $schema_image_url = '';
     if ( ! empty( $options['schema_image_id'] ) ) {
         $schema_image_src = wp_get_attachment_image_src( intval( $options['schema_image_id'] ), 'thumbnail' );
         $schema_image_url = is_array( $schema_image_src ) ? (string) $schema_image_src[0] : '';
+    }
+    $schema_services_source = function_exists( 'ai_fr_schema_get_offer_catalog_source' )
+        ? ai_fr_schema_get_offer_catalog_source( $options )
+        : [ 'services' => [] ];
+    $schema_services = ! empty( $schema_services_source['services'] ) && is_array( $schema_services_source['services'] )
+        ? $schema_services_source['services']
+        : [];
+    if ( empty( $schema_services ) ) {
+        $schema_services[] = [
+            'name'          => '',
+            'url'           => '',
+            'serviceType'   => '',
+            'description'   => '',
+            'areaServed'    => '',
+            'price'         => '',
+            'priceCurrency' => '',
+        ];
     }
 
     ?>
@@ -755,6 +802,7 @@ function ai_fr_render_options_page(): void {
                         </span>
                         <span>Provider: <code><?php echo esc_html( $schema_provider ); ?></code></span>
                         <span>Output: <code><?php echo esc_html( $schema_mode ); ?></code></span>
+                        <a class="button button-secondary" href="<?php echo esc_url( $schema_validator_url ); ?>" target="_blank" rel="noopener noreferrer">Apri Schema Validator</a>
                     </div>
                 </div>
 
@@ -887,14 +935,49 @@ function ai_fr_render_options_page(): void {
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide">
                         <div class="ai-fr-schema-card-head">
                             <h4>Catalogo servizi</h4>
-                            <p>JSON opzionale per aggiungere un `OfferCatalog` collegato all'Organization.</p>
+                            <p>Aggiunge un `OfferCatalog` collegato all'Organization, senza scrivere JSON a mano.</p>
                         </div>
-                        <div class="ai-fr-schema-fields">
-                            <label class="ai-fr-field">
-                                <span>Servizi JSON</span>
-                                <textarea name="schema_offer_catalog" rows="8" class="code" placeholder='[{"name":"UX e Graphic Design","url":"https://example.com/ux/","serviceType":"UX/UI design","description":"Progettazione di interfacce digitali.","areaServed":"Italia"}]'><?php echo esc_textarea( $options['schema_offer_catalog'] ); ?></textarea>
-                            </label>
+                        <div class="ai-fr-schema-services" id="ai-fr-schema-services">
+                            <?php foreach ( $schema_services as $index => $service ) : ?>
+                                <div class="ai-fr-schema-service" data-service-index="<?php echo esc_attr( $index ); ?>">
+                                    <div class="ai-fr-schema-service-head">
+                                        <strong>Servizio</strong>
+                                        <button type="button" class="button button-link-delete ai-fr-schema-service-remove">Rimuovi</button>
+                                    </div>
+                                    <div class="ai-fr-schema-service-grid">
+                                        <label class="ai-fr-field">
+                                            <span>Nome</span>
+                                            <input type="text" data-service-field="name" name="schema_services[<?php echo esc_attr( $index ); ?>][name]" value="<?php echo esc_attr( $service['name'] ?? '' ); ?>" placeholder="UX e Graphic Design">
+                                        </label>
+                                        <label class="ai-fr-field">
+                                            <span>URL pagina</span>
+                                            <input type="url" data-service-field="url" name="schema_services[<?php echo esc_attr( $index ); ?>][url]" value="<?php echo esc_attr( $service['url'] ?? '' ); ?>" placeholder="https://example.com/servizio/">
+                                        </label>
+                                        <label class="ai-fr-field">
+                                            <span>Tipo servizio</span>
+                                            <input type="text" data-service-field="serviceType" name="schema_services[<?php echo esc_attr( $index ); ?>][serviceType]" value="<?php echo esc_attr( $service['serviceType'] ?? '' ); ?>" placeholder="Web design, UX/UI design">
+                                        </label>
+                                        <label class="ai-fr-field">
+                                            <span>Area servita</span>
+                                            <input type="text" data-service-field="areaServed" name="schema_services[<?php echo esc_attr( $index ); ?>][areaServed]" value="<?php echo esc_attr( $service['areaServed'] ?? '' ); ?>" placeholder="Italia">
+                                        </label>
+                                        <label class="ai-fr-field ai-fr-schema-service-description">
+                                            <span>Descrizione</span>
+                                            <textarea data-service-field="description" name="schema_services[<?php echo esc_attr( $index ); ?>][description]" rows="3" placeholder="Descrizione breve del servizio."><?php echo esc_textarea( $service['description'] ?? '' ); ?></textarea>
+                                        </label>
+                                        <label class="ai-fr-field">
+                                            <span>Prezzo</span>
+                                            <input type="text" data-service-field="price" name="schema_services[<?php echo esc_attr( $index ); ?>][price]" value="<?php echo esc_attr( $service['price'] ?? '' ); ?>" placeholder="0">
+                                        </label>
+                                        <label class="ai-fr-field">
+                                            <span>Valuta</span>
+                                            <input type="text" data-service-field="priceCurrency" name="schema_services[<?php echo esc_attr( $index ); ?>][priceCurrency]" value="<?php echo esc_attr( $service['priceCurrency'] ?? '' ); ?>" placeholder="EUR">
+                                        </label>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
+                        <button type="button" class="button button-secondary" id="ai-fr-schema-service-add">Aggiungi servizio</button>
                     </article>
 
                     <article class="ai-fr-schema-card">

@@ -146,7 +146,7 @@ add_filter(
         }
 
         return (object) [
-            'name'          => 'Sernicola Labs | AI Friendly - llms.txt & Markdown',
+            'name'          => 'AI Friendly',
             'slug'          => 'ai-friendly',
             'version'       => (string) $release['version'],
             'author'        => '<a href="https://sernicola-labs.com">Sernicola Labs</a>',

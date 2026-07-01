@@ -170,8 +170,7 @@ function ai_fr_schema_get_identity_node(): array {
             $node['areaServed'] = $area_served;
         }
 
-        $offer_catalog_raw = trim( (string) ( $options['schema_offer_catalog'] ?? '' ) );
-        if ( $offer_catalog_raw !== '' && is_array( json_decode( $offer_catalog_raw, true ) ) ) {
+        if ( ai_fr_schema_has_offer_catalog( $options ) ) {
             $node['hasOfferCatalog'] = [ '@id' => ai_fr_schema_home_id( 'service-catalog' ) ];
         }
     }
@@ -225,21 +224,8 @@ function ai_fr_schema_get_offer_catalog_node( array $options ): array {
         return [];
     }
 
-    $raw = trim( (string) ( $options['schema_offer_catalog'] ?? '' ) );
-    if ( $raw === '' ) {
-        return [];
-    }
-
-    $decoded = json_decode( $raw, true );
-    if ( ! is_array( $decoded ) ) {
-        return [];
-    }
-
-    $catalog_source = $decoded;
-    $services       = $decoded;
-    if ( ! array_is_list( $decoded ) ) {
-        $services = isset( $decoded['itemListElement'] ) && is_array( $decoded['itemListElement'] ) ? $decoded['itemListElement'] : [];
-    }
+    $catalog_source = ai_fr_schema_get_offer_catalog_source( $options );
+    $services       = $catalog_source['services'];
 
     $offers = [];
     foreach ( $services as $service ) {
@@ -253,7 +239,7 @@ function ai_fr_schema_get_offer_catalog_node( array $options ): array {
         return [];
     }
 
-    $catalog_name = ! array_is_list( $catalog_source ) && ! empty( $catalog_source['name'] )
+    $catalog_name = ! empty( $catalog_source['name'] )
         ? sanitize_text_field( (string) $catalog_source['name'] )
         : sprintf( 'Servizi %s', get_bloginfo( 'name' ) );
 
@@ -265,12 +251,99 @@ function ai_fr_schema_get_offer_catalog_node( array $options ): array {
     ];
 }
 
-function ai_fr_schema_normalize_service_offer( array $source ): array {
+function ai_fr_schema_has_offer_catalog( array $options ): bool {
+    return ! empty( ai_fr_schema_get_offer_catalog_source( $options )['services'] );
+}
+
+function ai_fr_schema_get_offer_catalog_source( array $options ): array {
+    $services = [];
+    if ( isset( $options['schema_services'] ) && is_array( $options['schema_services'] ) ) {
+        $services = $options['schema_services'];
+    }
+
+    if ( empty( $services ) ) {
+        $legacy = ai_fr_schema_parse_legacy_offer_catalog( (string) ( $options['schema_offer_catalog'] ?? '' ) );
+        if ( ! empty( $legacy['services'] ) ) {
+            return $legacy;
+        }
+    }
+
+    return [
+        'name'     => '',
+        'services' => ai_fr_schema_normalize_service_inputs( $services ),
+    ];
+}
+
+function ai_fr_schema_parse_legacy_offer_catalog( string $raw ): array {
+    $raw = trim( $raw );
+    if ( $raw === '' ) {
+        return [ 'name' => '', 'services' => [] ];
+    }
+
+    $decoded = json_decode( $raw, true );
+    if ( ! is_array( $decoded ) ) {
+        return [ 'name' => '', 'services' => [] ];
+    }
+
+    $catalog_name = '';
+    $services     = $decoded;
+    if ( ! array_is_list( $decoded ) ) {
+        $catalog_name = sanitize_text_field( (string) ( $decoded['name'] ?? '' ) );
+        $services     = isset( $decoded['itemListElement'] ) && is_array( $decoded['itemListElement'] ) ? $decoded['itemListElement'] : [];
+    }
+
+    return [
+        'name'     => $catalog_name,
+        'services' => ai_fr_schema_normalize_service_inputs( $services ),
+    ];
+}
+
+function ai_fr_schema_normalize_service_inputs( array $services ): array {
+    $normalized = [];
+
+    foreach ( $services as $service ) {
+        if ( ! is_array( $service ) ) {
+            continue;
+        }
+
+        $service = ai_fr_schema_normalize_service_input( $service );
+        if ( ! empty( $service ) ) {
+            $normalized[] = $service;
+        }
+    }
+
+    return $normalized;
+}
+
+function ai_fr_schema_normalize_service_input( array $source ): array {
     $offer_source   = $source;
     $service_source = isset( $source['itemOffered'] ) && is_array( $source['itemOffered'] ) ? $source['itemOffered'] : $source;
 
-    $name = sanitize_text_field( (string) ( $service_source['name'] ?? '' ) );
-    $url  = esc_url_raw( (string) ( $service_source['url'] ?? '' ) );
+    $area_served = '';
+    if ( ! empty( $service_source['areaServed']['name'] ) ) {
+        $area_served = (string) $service_source['areaServed']['name'];
+    } elseif ( ! empty( $service_source['areaServed'] ) && is_string( $service_source['areaServed'] ) ) {
+        $area_served = $service_source['areaServed'];
+    }
+
+    $service = [
+        'name'          => sanitize_text_field( (string) ( $service_source['name'] ?? '' ) ),
+        'url'           => esc_url_raw( (string) ( $service_source['url'] ?? '' ) ),
+        'serviceType'   => sanitize_text_field( (string) ( $service_source['serviceType'] ?? '' ) ),
+        'description'   => sanitize_textarea_field( (string) ( $service_source['description'] ?? '' ) ),
+        'areaServed'    => sanitize_text_field( $area_served ),
+        'price'         => sanitize_text_field( (string) ( $offer_source['price'] ?? '' ) ),
+        'priceCurrency' => sanitize_text_field( (string) ( $offer_source['priceCurrency'] ?? '' ) ),
+    ];
+
+    return $service['name'] !== '' || $service['url'] !== '' ? $service : [];
+}
+
+function ai_fr_schema_normalize_service_offer( array $source ): array {
+    $service_source = ai_fr_schema_normalize_service_input( $source );
+
+    $name = $service_source['name'] ?? '';
+    $url  = $service_source['url'] ?? '';
     if ( $name === '' && $url === '' ) {
         return [];
     }
@@ -286,23 +359,16 @@ function ai_fr_schema_normalize_service_offer( array $source ): array {
     }
 
     foreach ( [ 'name', 'serviceType', 'description' ] as $key ) {
-        $value = sanitize_text_field( (string) ( $service_source[ $key ] ?? '' ) );
+        $value = (string) ( $service_source[ $key ] ?? '' );
         if ( $value !== '' ) {
             $service[ $key ] = $value;
         }
     }
 
-    $area_served = '';
-    if ( ! empty( $service_source['areaServed']['name'] ) ) {
-        $area_served = (string) $service_source['areaServed']['name'];
-    } elseif ( ! empty( $service_source['areaServed'] ) && is_string( $service_source['areaServed'] ) ) {
-        $area_served = $service_source['areaServed'];
-    }
-
-    if ( $area_served !== '' ) {
+    if ( ! empty( $service_source['areaServed'] ) ) {
         $service['areaServed'] = [
             '@type' => 'Country',
-            'name'  => sanitize_text_field( $area_served ),
+            'name'  => $service_source['areaServed'],
         ];
     }
 
@@ -312,7 +378,7 @@ function ai_fr_schema_normalize_service_offer( array $source ): array {
     ];
 
     foreach ( [ 'price', 'priceCurrency' ] as $key ) {
-        $value = sanitize_text_field( (string) ( $offer_source[ $key ] ?? '' ) );
+        $value = (string) ( $service_source[ $key ] ?? '' );
         if ( $value !== '' ) {
             $offer[ $key ] = $value;
         }

@@ -1,4 +1,4 @@
-﻿# Sernicola Labs | AI Friendly - llms.txt & Markdown
+﻿# AI Friendly
 
 **Version:** 1.8.2
 **Author:** Sernicola Labs
@@ -9,19 +9,19 @@
 
 ## Indice
 
-1. Introduzione
-2. Installazione e aggiornamento
-3. Come funziona
-4. AI Content Hub (admin)
-5. Regole di inclusione/esclusione
-6. Output Markdown
-7. Semantic Schema JSON-LD
-8. Compatibilità
-9. Debug e diagnostica
-10. Hook e filtri
-11. FAQ
-12. Release checklist
-13. Changelog
+1. [Introduzione](#introduzione)
+2. [Installazione e aggiornamento](#installazione-e-aggiornamento)
+3. [Come funziona](#come-funziona)
+4. [AI Content Hub (admin)](#ai-content-hub-admin)
+5. [Regole di inclusione/esclusione](#regole-di-inclusioneesclusione)
+6. [Output Markdown](#output-markdown)
+7. [Semantic Schema JSON-LD](#semantic-schema-json-ld)
+8. [Compatibilità](#compatibilità)
+9. [Debug e diagnostica](#debug-e-diagnostica)
+10. [Hook e filtri](#hook-e-filtri)
+11. [FAQ](#faq)
+12. [Release checklist](#release-checklist)
+13. [Changelog](#changelog)
 
 ---
 
@@ -45,7 +45,7 @@ Il plugin include anche un pannello admin (AI Content Hub) per gestire regole, r
 
 1. Carica lo zip del plugin da WordPress (`Plugin > Aggiungi nuovo > Carica plugin`)
 2. Attiva il plugin
-3. Apri `Impostazioni > Sernicola Labs | AI Friendly`
+3. Apri `Impostazioni > AI Friendly`
 
 ### Aggiornamento
 
@@ -182,7 +182,7 @@ Dalla sezione **Schema** dell'AI Content Hub puoi configurare:
 - descrizione disambiguante (`disambiguatingDescription`)
 - tipo aggiuntivo per `Organization`, ad esempio `ProfessionalService`
 - slogan, data di fondazione e aree servite per `Organization`
-- catalogo servizi opzionale come `OfferCatalog`
+- catalogo servizi opzionale come `OfferCatalog`, compilabile con campi ripetibili
 - immagine identitaria
 - profili esterni `sameAs`
 - competenze o argomenti autorevoli `knowsAbout`
@@ -199,20 +199,7 @@ Il modulo applica alcune normalizzazioni per mantenere il grafo pulito:
 - rimuove dimensioni immagine vuote (`width`/`height`) dal JSON-LD finale
 - in modalità estensione lascia ai plugin SEO i nodi base come `WebSite`, `WebPage`, `Article`, `BreadcrumbList` e prodotti
 - aggiunge il catalogo servizi solo come nodo separato collegato all'entità principale, evitando di duplicare `WebSite` o `WebPage`
-
-Esempio minimo di catalogo servizi:
-
-```json
-[
-  {
-    "name": "UX e Graphic Design",
-    "url": "https://example.com/ux/",
-    "serviceType": "UX/UI design",
-    "description": "Progettazione di interfacce digitali.",
-    "areaServed": "Italia"
-  }
-]
-```
+- mantiene compatibilità con eventuali cataloghi legacy salvati come JSON, ma la UI usa campi ripetibili per evitare errori manuali
 
 ---
 
@@ -350,7 +337,7 @@ Usa questa checklist ad ogni nuova release.
 
 4. **Deploy**
 - Aggiorna plugin su ambiente test/staging
-- Verifica versione mostrata in `Impostazioni > Sernicola Labs | AI Friendly`
+- Verifica versione mostrata in `Impostazioni > AI Friendly`
 - Se necessario, riavvia PHP-FPM/OPcache
 
 5. **Post-deploy**

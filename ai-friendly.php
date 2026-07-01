@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:        Sernicola Labs | AI Friendly - llms.txt & Markdown
- * Description:        Genera /llms.txt e versioni .md di post e pagine.
+ * Plugin Name:        AI Friendly
+ * Description:        Espone contenuti WordPress per AI/LLM con llms.txt, Markdown e Semantic Schema JSON-LD.
  * Version:            1.8.2
  * Changelog:          CHANGELOG.md
  * Author:             Sernicola Labs
