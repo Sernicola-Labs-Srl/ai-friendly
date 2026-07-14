@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.1
+- Resi neutri e riutilizzabili i placeholder dei campi societari nella sezione Schema
+
 ## 1.9.0
 - Aggiunti dati societari opzionali per `Organization`: ragione sociale, partita IVA, codice fiscale, LEI, `iso6523Code` e ticker
 - Aggiunti logo aziendale dedicato, indirizzo `PostalAddress` e contatto pubblico `ContactPoint`
