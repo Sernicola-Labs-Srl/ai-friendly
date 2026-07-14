@@ -378,14 +378,31 @@
                 var attachment = frame.state().get('selection').first().toJSON();
                 $('#ai-fr-schema-image-id').val(attachment.id || 0);
                 var url = (attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url) || '';
-                $('.ai-fr-schema-image-preview').html(url ? '<img src="' + esc(url) + '" alt="">' : '');
+                $('#ai-fr-schema-entity-image-preview').html(url ? '<img src="' + esc(url) + '" alt="">' : '');
             });
             frame.open();
         });
 
         $('#ai-fr-schema-image-clear').on('click', function () {
             $('#ai-fr-schema-image-id').val('0');
-            $('.ai-fr-schema-image-preview').html('<span>Nessuna immagine</span>');
+            $('#ai-fr-schema-entity-image-preview').html('<span>Nessuna immagine</span>');
+        });
+
+        $('#ai-fr-schema-logo-select').on('click', function () {
+            if (!window.wp || !wp.media) return;
+            var frame = wp.media({ title: 'Seleziona logo aziendale', button: { text: 'Usa questo logo' }, multiple: false });
+            frame.on('select', function () {
+                var attachment = frame.state().get('selection').first().toJSON();
+                var url = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
+                $('#ai-fr-schema-logo-id').val(attachment.id || 0);
+                $('#ai-fr-schema-logo-preview').html(url ? '<img src="' + esc(url) + '" alt="">' : '');
+            });
+            frame.open();
+        });
+
+        $('#ai-fr-schema-logo-clear').on('click', function () {
+            $('#ai-fr-schema-logo-id').val('0');
+            $('#ai-fr-schema-logo-preview').html('<span>Nessun logo</span>');
         });
 
         reindexSchemaServices();

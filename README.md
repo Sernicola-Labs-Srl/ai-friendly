@@ -1,6 +1,6 @@
 ﻿# AI Friendly
 
-**Version:** 1.8.3
+**Version:** 1.9.0
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v2 or later
@@ -182,6 +182,9 @@ Dalla sezione **Schema** dell'AI Content Hub puoi configurare:
 - descrizione disambiguante (`disambiguatingDescription`)
 - tipo aggiuntivo per `Organization`, ad esempio `ProfessionalService`
 - slogan, data di fondazione e aree servite per `Organization`
+- ragione sociale, partita IVA, codice fiscale, LEI con `iso6523Code` e ticker per `Organization`
+- logo aziendale dedicato, sede postale e punto di contatto pubblico
+- fondatori opzionali, con ruolo separato e non obbligatorio
 - catalogo servizi opzionale come `OfferCatalog`, compilabile con campi ripetibili
 - immagine identitaria
 - profili esterni `sameAs`
@@ -326,13 +329,15 @@ Usa questa checklist ad ogni nuova release.
 - Aggiorna `Version:` in `ai-friendly.php`
 - Aggiorna `AI_FR_VERSION` in `ai-friendly.php`
 - Aggiorna `CHANGELOG.md`
+- Usa preferibilmente un tag nel formato `v1.9.0` (l'updater accetta anche il formato storico `v.1.9.0`)
 
 2. **Documentazione**
 - Verifica coerenza `README.md` con feature reali
 - Aggiorna eventuali note su header/debug/compatibilità
 
 3. **Packaging**
-- Crea zip release includendo `ai-friendly.php`, `includes/`, `admin/`, `README.md`, `readme.txt`, `CHANGELOG.md`
+- Il push di un tag `v*` avvia la GitHub Action che crea e allega `ai-friendly.zip` alla release
+- Verifica che lo ZIP abbia come cartella radice `ai-friendly/` e contenga `ai-friendly.php`, `includes/`, `admin/`, `README.md`, `readme.txt`, `CHANGELOG.md`
 - Escludi file non necessari al runtime (es. `.git`, file locali IDE)
 
 4. **Deploy**

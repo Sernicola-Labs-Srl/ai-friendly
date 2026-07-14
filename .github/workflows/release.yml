@@ -1,0 +1,45 @@
+name: Build WordPress release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+
+      - name: Validate tag and plugin version
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag_version="${GITHUB_REF_NAME#v}"
+          tag_version="${tag_version#.}"
+          plugin_version="$(sed -nE "s/^[[:space:]]*\*[[:space:]]Version:[[:space:]]+([^[:space:]]+).*/\1/p" ai-friendly.php | head -n1)"
+          if [[ -z "$plugin_version" || "$plugin_version" != "$tag_version" ]]; then
+            echo "Tag version ($tag_version) does not match plugin version ($plugin_version)." >&2
+            exit 1
+          fi
+
+      - name: Build ai-friendly.zip
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/ai-friendly
+          cp ai-friendly.php README.md readme.txt CHANGELOG.md LICENSE build/ai-friendly/
+          cp -R admin includes build/ai-friendly/
+          cd build
+          zip -r ../ai-friendly.zip ai-friendly
+
+      - name: Create release and upload WordPress package
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ai-friendly.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true

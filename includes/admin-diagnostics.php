@@ -98,6 +98,21 @@ function ai_fr_run_diagnostics(): array {
         }
     }
 
+    if ( function_exists( 'ai_fr_updater_get_latest_release' ) ) {
+        $release = ai_fr_updater_get_latest_release();
+        if ( empty( $release ) ) {
+            $warnings[] = [
+                'code'    => 'updater_release_unavailable',
+                'message' => 'Updater: impossibile leggere la release GitHub più recente.',
+            ];
+        } elseif ( empty( $release['package'] ) ) {
+            $warnings[] = [
+                'code'    => 'updater_package_missing',
+                'message' => 'Updater: la release GitHub non contiene un asset ZIP installabile.',
+            ];
+        }
+    }
+
     // Warning URL esclusioni duplicate.
     $patterns = array_filter( array_map( 'trim', explode( "\n", (string) ( $options['exclude_url_patterns'] ?? '' ) ) ) );
     if ( count( $patterns ) !== count( array_unique( $patterns ) ) ) {

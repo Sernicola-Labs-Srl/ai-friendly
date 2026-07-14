@@ -407,6 +407,21 @@ function ai_fr_render_options_page(): void {
         $options['schema_additional_type'] = ai_fr_post_text( 'schema_additional_type', '' );
         $options['schema_slogan'] = ai_fr_post_text( 'schema_slogan', '' );
         $options['schema_founding_date'] = ai_fr_post_text( 'schema_founding_date', '' );
+        $options['schema_legal_name'] = ai_fr_post_text( 'schema_legal_name', '' );
+        $options['schema_vat_id'] = ai_fr_post_text( 'schema_vat_id', '' );
+        $options['schema_tax_id'] = ai_fr_post_text( 'schema_tax_id', '' );
+        $options['schema_lei_code'] = ai_fr_post_text( 'schema_lei_code', '' );
+        $options['schema_ticker_symbol'] = ai_fr_post_text( 'schema_ticker_symbol', '' );
+        $options['schema_logo_id'] = max( 0, ai_fr_post_int( 'schema_logo_id', 0 ) );
+        $options['schema_street_address'] = ai_fr_post_text( 'schema_street_address', '' );
+        $options['schema_postal_code'] = ai_fr_post_text( 'schema_postal_code', '' );
+        $options['schema_address_locality'] = ai_fr_post_text( 'schema_address_locality', '' );
+        $options['schema_address_region'] = ai_fr_post_text( 'schema_address_region', '' );
+        $options['schema_address_country'] = ai_fr_post_text( 'schema_address_country', '' );
+        $options['schema_contact_type'] = ai_fr_post_text( 'schema_contact_type', '' );
+        $options['schema_contact_email'] = sanitize_email( (string) ai_fr_post_raw( 'schema_contact_email', '' ) );
+        $options['schema_contact_languages'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_contact_languages', '' ) );
+        $options['schema_founders'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_founders', '' ) );
         $options['schema_area_served'] = sanitize_textarea_field( (string) ai_fr_post_raw( 'schema_area_served', '' ) );
         $options['schema_services'] = ai_fr_admin_sanitize_schema_services( ai_fr_post_array( 'schema_services' ) );
         $options['schema_offer_catalog'] = '';
@@ -444,6 +459,11 @@ function ai_fr_render_options_page(): void {
     if ( ! empty( $options['schema_image_id'] ) ) {
         $schema_image_src = wp_get_attachment_image_src( intval( $options['schema_image_id'] ), 'thumbnail' );
         $schema_image_url = is_array( $schema_image_src ) ? (string) $schema_image_src[0] : '';
+    }
+    $schema_logo_url = '';
+    if ( ! empty( $options['schema_logo_id'] ) ) {
+        $schema_logo_src = wp_get_attachment_image_src( intval( $options['schema_logo_id'] ), 'thumbnail' );
+        $schema_logo_url = is_array( $schema_logo_src ) ? (string) $schema_logo_src[0] : '';
     }
     $schema_services_source = function_exists( 'ai_fr_schema_get_offer_catalog_source' )
         ? ai_fr_schema_get_offer_catalog_source( $options )
@@ -829,6 +849,35 @@ function ai_fr_render_options_page(): void {
                         </div>
                     </article>
 
+                    <article class="ai-fr-schema-card ai-fr-schema-card-wide">
+                        <div class="ai-fr-schema-card-head">
+                            <h4>Dati societari</h4>
+                            <p>Campi opzionali per `Organization`. Inserisci solo dati ufficiali e pubblicamente verificabili.</p>
+                        </div>
+                        <div class="ai-fr-schema-fields">
+                            <label class="ai-fr-field">
+                                <span>Ragione sociale</span>
+                                <input type="text" name="schema_legal_name" value="<?php echo esc_attr( $options['schema_legal_name'] ); ?>" placeholder="Azienda S.p.A.">
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>Partita IVA</span>
+                                <input type="text" name="schema_vat_id" value="<?php echo esc_attr( $options['schema_vat_id'] ); ?>" placeholder="IT01234567890">
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>Codice fiscale / taxID</span>
+                                <input type="text" name="schema_tax_id" value="<?php echo esc_attr( $options['schema_tax_id'] ); ?>">
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>Codice LEI</span>
+                                <input type="text" name="schema_lei_code" value="<?php echo esc_attr( $options['schema_lei_code'] ); ?>" placeholder="815600...">
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>Simbolo di borsa</span>
+                                <input type="text" name="schema_ticker_symbol" value="<?php echo esc_attr( $options['schema_ticker_symbol'] ); ?>" placeholder="E9IA">
+                            </label>
+                        </div>
+                    </article>
+
                     <article class="ai-fr-schema-card">
                         <div class="ai-fr-schema-card-head">
                             <h4>Identità principale</h4>
@@ -859,6 +908,55 @@ function ai_fr_render_options_page(): void {
                                 <input type="text" name="schema_additional_type" value="<?php echo esc_attr( $options['schema_additional_type'] ); ?>" placeholder="ProfessionalService">
                             </label>
                         </div>
+                    </article>
+
+                    <article class="ai-fr-schema-card">
+                        <div class="ai-fr-schema-card-head">
+                            <h4>Logo aziendale</h4>
+                            <p>Logo dedicato a `Organization`, distinto dall'immagine generica. Preferisci una versione leggibile su fondo bianco.</p>
+                        </div>
+                        <input type="hidden" name="schema_logo_id" id="ai-fr-schema-logo-id" value="<?php echo esc_attr( intval( $options['schema_logo_id'] ) ); ?>">
+                        <div class="ai-fr-schema-media">
+                            <div class="ai-fr-schema-image-preview" id="ai-fr-schema-logo-preview">
+                                <?php if ( $schema_logo_url !== '' ) : ?>
+                                    <img src="<?php echo esc_url( $schema_logo_url ); ?>" alt="" />
+                                <?php else : ?>
+                                    <span>Nessun logo</span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="ai-fr-schema-media-actions">
+                                <button type="button" class="button" id="ai-fr-schema-logo-select">Seleziona</button>
+                                <button type="button" class="button button-secondary" id="ai-fr-schema-logo-clear">Rimuovi</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="ai-fr-schema-card ai-fr-schema-card-wide">
+                        <div class="ai-fr-schema-card-head">
+                            <h4>Sede e contatto</h4>
+                            <p>Aggiunge `PostalAddress` e un `ContactPoint` pubblico all'organizzazione.</p>
+                        </div>
+                        <div class="ai-fr-schema-fields">
+                            <label class="ai-fr-field"><span>Indirizzo</span><input type="text" name="schema_street_address" value="<?php echo esc_attr( $options['schema_street_address'] ); ?>" placeholder="Viale Monza 259"></label>
+                            <label class="ai-fr-field"><span>CAP</span><input type="text" name="schema_postal_code" value="<?php echo esc_attr( $options['schema_postal_code'] ); ?>" placeholder="20126"></label>
+                            <label class="ai-fr-field"><span>Città</span><input type="text" name="schema_address_locality" value="<?php echo esc_attr( $options['schema_address_locality'] ); ?>" placeholder="Milano"></label>
+                            <label class="ai-fr-field"><span>Provincia / regione</span><input type="text" name="schema_address_region" value="<?php echo esc_attr( $options['schema_address_region'] ); ?>" placeholder="MI"></label>
+                            <label class="ai-fr-field"><span>Paese (codice ISO)</span><input type="text" name="schema_address_country" value="<?php echo esc_attr( $options['schema_address_country'] ); ?>" placeholder="IT"></label>
+                            <label class="ai-fr-field"><span>Tipo contatto</span><input type="text" name="schema_contact_type" value="<?php echo esc_attr( $options['schema_contact_type'] ); ?>" placeholder="customer service"></label>
+                            <label class="ai-fr-field"><span>Email pubblica</span><input type="email" name="schema_contact_email" value="<?php echo esc_attr( $options['schema_contact_email'] ); ?>"></label>
+                            <label class="ai-fr-field"><span>Lingue del contatto</span><textarea name="schema_contact_languages" rows="3" placeholder="it&#10;en"><?php echo esc_textarea( $options['schema_contact_languages'] ); ?></textarea></label>
+                        </div>
+                    </article>
+
+                    <article class="ai-fr-schema-card ai-fr-schema-card-wide">
+                        <div class="ai-fr-schema-card-head">
+                            <h4>Fondatori</h4>
+                            <p>Uno per riga nel formato `Nome | ruolo attuale`. Il ruolo è opzionale: omettilo se non è verificato o aggiornato.</p>
+                        </div>
+                        <label class="ai-fr-field">
+                            <span>Persone fondatrici</span>
+                            <textarea name="schema_founders" rows="4" placeholder="Mario Rossi&#10;Laura Bianchi | CEO"><?php echo esc_textarea( $options['schema_founders'] ); ?></textarea>
+                        </label>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide">
@@ -893,7 +991,7 @@ function ai_fr_render_options_page(): void {
                         </div>
                         <input type="hidden" name="schema_image_id" id="ai-fr-schema-image-id" value="<?php echo esc_attr( intval( $options['schema_image_id'] ) ); ?>">
                         <div class="ai-fr-schema-media">
-                            <div class="ai-fr-schema-image-preview">
+                            <div class="ai-fr-schema-image-preview" id="ai-fr-schema-entity-image-preview">
                                 <?php if ( $schema_image_url !== '' ) : ?>
                                     <img src="<?php echo esc_url( $schema_image_url ); ?>" alt="" />
                                 <?php else : ?>

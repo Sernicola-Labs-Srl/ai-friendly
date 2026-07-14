@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.0
+- Aggiunti dati societari opzionali per `Organization`: ragione sociale, partita IVA, codice fiscale, LEI, `iso6523Code` e ticker
+- Aggiunti logo aziendale dedicato, indirizzo `PostalAddress` e contatto pubblico `ContactPoint`
+- Aggiunti fondatori configurabili con ruolo opzionale, per evitare incarichi non verificati o non aggiornati
+- Corretto il riconoscimento delle versioni GitHub per tag con prefissi come `v1.9.0` e `v.1.9.0`
+- Aggiunte diagnostiche per release GitHub non raggiungibile o priva dello ZIP installabile
+- Aggiunta GitHub Action di release per allegare sempre `ai-friendly.zip` con cartella radice interna `ai-friendly/`
+
 ## 1.8.3
 - Fix pulsante "Aggiungi servizio" nel repeater del catalogo servizi Schema
 - Bump versione asset admin per evitare cache del JavaScript precedente

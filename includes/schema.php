@@ -165,6 +165,45 @@ function ai_fr_schema_get_identity_node(): array {
     }
 
     if ( $type === 'Organization' ) {
+        $organization_fields = [
+            'legalName'    => 'schema_legal_name',
+            'vatID'        => 'schema_vat_id',
+            'taxID'        => 'schema_tax_id',
+            'leiCode'      => 'schema_lei_code',
+            'tickerSymbol' => 'schema_ticker_symbol',
+        ];
+        foreach ( $organization_fields as $schema_key => $option_key ) {
+            $value = trim( (string) ( $options[ $option_key ] ?? '' ) );
+            if ( $value !== '' ) {
+                $node[ $schema_key ] = $value;
+            }
+        }
+
+        $lei_code = trim( (string) ( $options['schema_lei_code'] ?? '' ) );
+        if ( $lei_code !== '' ) {
+            $node['iso6523Code'] = '0199:' . preg_replace( '/\s+/', '', $lei_code );
+        }
+
+        $logo = ai_fr_schema_get_image_object( intval( $options['schema_logo_id'] ?? 0 ), 'organization-logo' );
+        if ( ! empty( $logo ) ) {
+            $node['logo'] = $logo;
+        }
+
+        $address = ai_fr_schema_get_address( $options );
+        if ( ! empty( $address ) ) {
+            $node['address'] = $address;
+        }
+
+        $contact = ai_fr_schema_get_contact_point( $options );
+        if ( ! empty( $contact ) ) {
+            $node['contactPoint'] = [ $contact ];
+        }
+
+        $founders = ai_fr_schema_parse_founders( (string) ( $options['schema_founders'] ?? '' ) );
+        if ( ! empty( $founders ) ) {
+            $node['founder'] = $founders;
+        }
+
         $area_served = ai_fr_schema_parse_area_served( (string) ( $options['schema_area_served'] ?? '' ) );
         if ( ! empty( $area_served ) ) {
             $node['areaServed'] = $area_served;
@@ -194,6 +233,91 @@ function ai_fr_schema_get_identity_node(): array {
     }
 
     return (array) apply_filters( 'ai_fr_schema_identity', $node, $options );
+}
+
+function ai_fr_schema_get_image_object( int $attachment_id, string $fragment ): array {
+    if ( $attachment_id <= 0 ) {
+        return [];
+    }
+
+    $image = wp_get_attachment_image_src( $attachment_id, 'full' );
+    if ( ! is_array( $image ) || empty( $image[0] ) ) {
+        return [];
+    }
+
+    $node = [
+        '@type'      => 'ImageObject',
+        '@id'        => ai_fr_schema_home_id( $fragment ),
+        'url'        => esc_url_raw( $image[0] ),
+        'contentUrl' => esc_url_raw( $image[0] ),
+    ];
+    if ( ! empty( $image[1] ) ) {
+        $node['width'] = intval( $image[1] );
+    }
+    if ( ! empty( $image[2] ) ) {
+        $node['height'] = intval( $image[2] );
+    }
+    return $node;
+}
+
+function ai_fr_schema_get_address( array $options ): array {
+    $fields = [
+        'streetAddress'   => 'schema_street_address',
+        'postalCode'      => 'schema_postal_code',
+        'addressLocality' => 'schema_address_locality',
+        'addressRegion'   => 'schema_address_region',
+        'addressCountry'  => 'schema_address_country',
+    ];
+    $address = [ '@type' => 'PostalAddress' ];
+    foreach ( $fields as $schema_key => $option_key ) {
+        $value = trim( (string) ( $options[ $option_key ] ?? '' ) );
+        if ( $value !== '' ) {
+            $address[ $schema_key ] = $value;
+        }
+    }
+    return count( $address ) > 1 ? $address : [];
+}
+
+function ai_fr_schema_get_contact_point( array $options ): array {
+    $type  = trim( (string) ( $options['schema_contact_type'] ?? '' ) );
+    $email = sanitize_email( (string) ( $options['schema_contact_email'] ?? '' ) );
+    if ( $type === '' && $email === '' ) {
+        return [];
+    }
+
+    $contact = [ '@type' => 'ContactPoint' ];
+    if ( $type !== '' ) {
+        $contact['contactType'] = $type;
+    }
+    if ( $email !== '' ) {
+        $contact['email'] = $email;
+    }
+    $languages = ai_fr_schema_split_lines( (string) ( $options['schema_contact_languages'] ?? '' ) );
+    if ( ! empty( $languages ) ) {
+        $contact['availableLanguage'] = $languages;
+    }
+    return $contact;
+}
+
+function ai_fr_schema_parse_founders( string $value ): array {
+    $rows = preg_split( '/\r\n|\r|\n/', $value );
+    if ( ! is_array( $rows ) ) {
+        return [];
+    }
+
+    $founders = [];
+    foreach ( $rows as $row ) {
+        $parts = array_map( 'trim', explode( '|', $row, 2 ) );
+        if ( $parts[0] === '' ) {
+            continue;
+        }
+        $person = [ '@type' => 'Person', 'name' => sanitize_text_field( $parts[0] ) ];
+        if ( ! empty( $parts[1] ) ) {
+            $person['jobTitle'] = sanitize_text_field( $parts[1] );
+        }
+        $founders[] = $person;
+    }
+    return $founders;
 }
 
 function ai_fr_schema_parse_area_served( string $value ): array {

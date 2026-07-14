@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 1.8.3
+Stable tag: 1.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ AI Friendly provides:
 * Optional static Markdown files with regeneration workflows.
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
 * Admin tools for preview, snapshots, diagnostics, and bulk operations.
-* Optional Semantic Schema JSON-LD layer for Person/Organization identity, business context, OfferCatalog services, sameAs profiles, knowsAbout topics, known languages, ProfilePage, license, and Yoast/Rank Math graph extension.
+* Optional Semantic Schema JSON-LD layer for Person/Organization identity, corporate identifiers, logo, address, contact point, founders, business context, OfferCatalog services, sameAs profiles, knowsAbout topics, known languages, ProfilePage, license, and Yoast/Rank Math graph extension.
 * Native WordPress updates from public GitHub Releases.
 
 == Installation ==
@@ -43,6 +43,11 @@ Yes. Fill the editor and disable automatic content listing.
 No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON-LD graph and merges nodes with the same @id to avoid duplicate Person or Organization entities.
 
 == Changelog ==
+
+= 1.9.0 =
+* Added optional Organization legal and financial identifiers, including automatic ISO 6523 LEI output.
+* Added a dedicated organization logo, postal address, public contact point, and founders.
+* Fixed GitHub update version parsing for both `v1.9.0` and `v.1.9.0` tag formats.
 
 = 1.8.3 =
 * Fixed repeatable service add button in the Schema catalog editor and refreshed admin asset versioning.

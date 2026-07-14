@@ -58,10 +58,11 @@ function ai_fr_updater_get_latest_release( bool $force = false ): array {
 }
 
 function ai_fr_updater_normalize_release( array $release ): array {
-    $version = ltrim( (string) ( $release['tag_name'] ?? '' ), 'vV' );
-    if ( $version === '' ) {
+    $tag = trim( (string) ( $release['tag_name'] ?? '' ) );
+    if ( ! preg_match( '/\d+(?:\.\d+)+(?:[-+][0-9A-Za-z.-]+)?/', $tag, $matches ) ) {
         return [];
     }
+    $version = $matches[0];
 
     $package = '';
     $assets  = isset( $release['assets'] ) && is_array( $release['assets'] ) ? $release['assets'] : [];
@@ -84,6 +85,7 @@ function ai_fr_updater_normalize_release( array $release ): array {
     }
 
     return [
+        'tag'          => $tag,
         'version'      => $version,
         'name'         => sanitize_text_field( (string) ( $release['name'] ?? $release['tag_name'] ?? $version ) ),
         'body'         => wp_kses_post( (string) ( $release['body'] ?? '' ) ),

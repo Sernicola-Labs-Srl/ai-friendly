@@ -2,7 +2,7 @@
 /**
  * Plugin Name:        AI Friendly
  * Description:        Espone contenuti WordPress per AI/LLM con llms.txt, Markdown e Semantic Schema JSON-LD.
- * Version:            1.8.3
+ * Version:            1.9.0
  * Changelog:          CHANGELOG.md
  * Author:             Sernicola Labs
  * Author URI:         https://sernicola-labs.com
@@ -32,7 +32,7 @@ if ( ! defined( 'AI_FR_PLUGIN_DIR' ) ) {
     define( 'AI_FR_PLUGIN_DIR', __DIR__ );
 }
 if ( ! defined( 'AI_FR_VERSION' ) ) {
-    define( 'AI_FR_VERSION', '1.8.3' );
+    define( 'AI_FR_VERSION', '1.9.0' );
 }
 
 require_once AI_FR_PLUGIN_DIR . '/includes/boot.php';
