@@ -869,11 +869,11 @@ function ai_fr_render_options_page(): void {
                             </label>
                             <label class="ai-fr-field">
                                 <span>Codice LEI</span>
-                                <input type="text" name="schema_lei_code" value="<?php echo esc_attr( $options['schema_lei_code'] ); ?>" placeholder="815600...">
+                                <input type="text" name="schema_lei_code" value="<?php echo esc_attr( $options['schema_lei_code'] ); ?>" placeholder="Codice LEI (20 caratteri)">
                             </label>
                             <label class="ai-fr-field">
                                 <span>Simbolo di borsa</span>
-                                <input type="text" name="schema_ticker_symbol" value="<?php echo esc_attr( $options['schema_ticker_symbol'] ); ?>" placeholder="E9IA">
+                                <input type="text" name="schema_ticker_symbol" value="<?php echo esc_attr( $options['schema_ticker_symbol'] ); ?>" placeholder="ACME">
                             </label>
                         </div>
                     </article>
@@ -937,9 +937,9 @@ function ai_fr_render_options_page(): void {
                             <p>Aggiunge `PostalAddress` e un `ContactPoint` pubblico all'organizzazione.</p>
                         </div>
                         <div class="ai-fr-schema-fields">
-                            <label class="ai-fr-field"><span>Indirizzo</span><input type="text" name="schema_street_address" value="<?php echo esc_attr( $options['schema_street_address'] ); ?>" placeholder="Viale Monza 259"></label>
-                            <label class="ai-fr-field"><span>CAP</span><input type="text" name="schema_postal_code" value="<?php echo esc_attr( $options['schema_postal_code'] ); ?>" placeholder="20126"></label>
-                            <label class="ai-fr-field"><span>Città</span><input type="text" name="schema_address_locality" value="<?php echo esc_attr( $options['schema_address_locality'] ); ?>" placeholder="Milano"></label>
+                            <label class="ai-fr-field"><span>Indirizzo</span><input type="text" name="schema_street_address" value="<?php echo esc_attr( $options['schema_street_address'] ); ?>" placeholder="Via Esempio 10"></label>
+                            <label class="ai-fr-field"><span>CAP</span><input type="text" name="schema_postal_code" value="<?php echo esc_attr( $options['schema_postal_code'] ); ?>" placeholder="00000"></label>
+                            <label class="ai-fr-field"><span>Città</span><input type="text" name="schema_address_locality" value="<?php echo esc_attr( $options['schema_address_locality'] ); ?>" placeholder="Esempiopoli"></label>
                             <label class="ai-fr-field"><span>Provincia / regione</span><input type="text" name="schema_address_region" value="<?php echo esc_attr( $options['schema_address_region'] ); ?>" placeholder="MI"></label>
                             <label class="ai-fr-field"><span>Paese (codice ISO)</span><input type="text" name="schema_address_country" value="<?php echo esc_attr( $options['schema_address_country'] ); ?>" placeholder="IT"></label>
                             <label class="ai-fr-field"><span>Tipo contatto</span><input type="text" name="schema_contact_type" value="<?php echo esc_attr( $options['schema_contact_type'] ); ?>" placeholder="customer service"></label>
@@ -1025,7 +1025,7 @@ function ai_fr_render_options_page(): void {
                             </label>
                             <label class="ai-fr-field">
                                 <span>areaServed (solo Organization)</span>
-                                <textarea name="schema_area_served" rows="3" placeholder="City: Milano&#10;Country: Italia"><?php echo esc_textarea( $options['schema_area_served'] ); ?></textarea>
+                                <textarea name="schema_area_served" rows="3" placeholder="City: Esempiopoli&#10;Country: Italia"><?php echo esc_textarea( $options['schema_area_served'] ); ?></textarea>
                             </label>
                         </div>
                     </article>

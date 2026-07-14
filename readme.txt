@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 1.9.0
+Stable tag: 1.9.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,9 @@ Yes. Fill the editor and disable automatic content listing.
 No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON-LD graph and merges nodes with the same @id to avoid duplicate Person or Organization entities.
 
 == Changelog ==
+
+= 1.9.1 =
+* Refined Schema form placeholders with neutral, reusable example values.
 
 = 1.9.0 =
 * Added optional Organization legal and financial identifiers, including automatic ISO 6523 LEI output.
