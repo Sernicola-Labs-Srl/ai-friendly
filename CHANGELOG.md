@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Aggiunti i campi modificabili per attribuire la realizzazione del sito a una persona o organizzazione tramite `creator` nel nodo JSON-LD `WebSite`
+
 ## 1.9.1
 - Resi neutri e riutilizzabili i placeholder dei campi societari nella sezione Schema
 

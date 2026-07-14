@@ -45,6 +45,9 @@ function ai_fr_get_default_options(): array {
         // JSON-LD / Semantic identity
         'schema_enabled'        => '',
         'schema_mode'           => 'auto',
+        'schema_creator_type'   => 'Organization',
+        'schema_creator_name'   => '',
+        'schema_creator_url'    => '',
         'schema_entity_type'    => 'Person',
         'schema_name'           => '',
         'schema_alternate_name' => '',
