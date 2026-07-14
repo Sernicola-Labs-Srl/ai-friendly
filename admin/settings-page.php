@@ -397,6 +397,10 @@ function ai_fr_render_options_page(): void {
         $options['schema_enabled']       = ai_fr_post_bool( 'schema_enabled' ) ? '1' : '';
         $schema_mode = ai_fr_post_key( 'schema_mode', 'auto' );
         $options['schema_mode'] = in_array( $schema_mode, [ 'auto', 'standalone', 'extend_yoast', 'extend_rank_math' ], true ) ? $schema_mode : 'auto';
+        $schema_creator_type = (string) ai_fr_post_raw( 'schema_creator_type', 'Organization' );
+        $options['schema_creator_type'] = in_array( $schema_creator_type, [ 'Person', 'Organization' ], true ) ? $schema_creator_type : 'Organization';
+        $options['schema_creator_name'] = ai_fr_post_text( 'schema_creator_name', '' );
+        $options['schema_creator_url'] = esc_url_raw( (string) ai_fr_post_raw( 'schema_creator_url', '' ) );
         $schema_entity_type = (string) ai_fr_post_raw( 'schema_entity_type', 'Person' );
         $options['schema_entity_type'] = in_array( $schema_entity_type, [ 'Person', 'Organization' ], true ) ? $schema_entity_type : 'Person';
         $options['schema_name'] = ai_fr_post_text( 'schema_name', '' );
@@ -845,6 +849,30 @@ function ai_fr_render_options_page(): void {
                                     <option value="extend_yoast" <?php selected( $options['schema_mode'], 'extend_yoast' ); ?>>Estendi Yoast</option>
                                     <option value="extend_rank_math" <?php selected( $options['schema_mode'], 'extend_rank_math' ); ?>>Estendi Rank Math</option>
                                 </select>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="ai-fr-schema-card ai-fr-schema-card-wide">
+                        <div class="ai-fr-schema-card-head">
+                            <h4>Realizzazione del sito</h4>
+                            <p>Indica facoltativamente la persona o l'organizzazione che ha sviluppato il sito. Il dato viene pubblicato come <code>creator</code> del nodo <code>WebSite</code>.</p>
+                        </div>
+                        <div class="ai-fr-schema-fields">
+                            <label class="ai-fr-field ai-fr-field-short">
+                                <span>Tipo</span>
+                                <select name="schema_creator_type">
+                                    <option value="Organization" <?php selected( $options['schema_creator_type'], 'Organization' ); ?>>Organization</option>
+                                    <option value="Person" <?php selected( $options['schema_creator_type'], 'Person' ); ?>>Person</option>
+                                </select>
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>Nome sviluppatore / agenzia</span>
+                                <input type="text" name="schema_creator_name" value="<?php echo esc_attr( $options['schema_creator_name'] ); ?>" placeholder="Nome agenzia o professionista">
+                            </label>
+                            <label class="ai-fr-field">
+                                <span>URL</span>
+                                <input type="url" name="schema_creator_url" value="<?php echo esc_attr( $options['schema_creator_url'] ); ?>" placeholder="https://www.esempio.it/">
                             </label>
                         </div>
                     </article>

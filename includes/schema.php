@@ -575,7 +575,38 @@ function ai_fr_schema_get_web_nodes(): array {
         'publisher'  => [ '@id' => $identity['@id'] ],
     ];
 
+    $creator = ai_fr_schema_get_creator();
+    if ( ! empty( $creator ) ) {
+        $website['creator'] = $creator;
+    }
+
     return [ $identity, $website ];
+}
+
+function ai_fr_schema_get_creator(): array {
+    $options = ai_fr_schema_get_options();
+    $name    = trim( (string) ( $options['schema_creator_name'] ?? '' ) );
+
+    if ( $name === '' ) {
+        return [];
+    }
+
+    $type = (string) ( $options['schema_creator_type'] ?? 'Organization' );
+    if ( ! in_array( $type, [ 'Person', 'Organization' ], true ) ) {
+        $type = 'Organization';
+    }
+
+    $creator = [
+        '@type' => $type,
+        'name'  => $name,
+    ];
+
+    $url = esc_url_raw( (string) ( $options['schema_creator_url'] ?? '' ) );
+    if ( $url !== '' ) {
+        $creator['url'] = $url;
+    }
+
+    return $creator;
 }
 
 function ai_fr_schema_get_current_webpage_node(): array {
@@ -625,6 +656,17 @@ function ai_fr_schema_get_graph(): array {
     $options = ai_fr_schema_get_options();
     $mode    = ai_fr_schema_output_mode();
     $graph   = $mode === 'standalone' ? ai_fr_schema_get_web_nodes() : [ ai_fr_schema_get_identity_node() ];
+
+    if ( $mode !== 'standalone' ) {
+        $creator = ai_fr_schema_get_creator();
+        if ( ! empty( $creator ) ) {
+            $graph[] = [
+                '@type'   => 'WebSite',
+                '@id'     => ai_fr_schema_home_id( 'website' ),
+                'creator' => $creator,
+            ];
+        }
+    }
 
     if ( $mode === 'standalone' ) {
         $webpage = ai_fr_schema_get_current_webpage_node();
