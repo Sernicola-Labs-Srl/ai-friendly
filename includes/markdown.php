@@ -59,6 +59,7 @@ function ai_fr_serve_markdown( string $rel_path ): void {
                 
                 status_header( 200 );
                 header( 'Content-Type: text/markdown; charset=UTF-8' );
+                header( 'X-Content-Type-Options: nosniff' );
                 header( 'X-Robots-Tag: noindex, follow' );
                 header( 'Link: <' . $canonical . '>; rel="canonical"', false );
                 header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
@@ -68,7 +69,8 @@ function ai_fr_serve_markdown( string $rel_path ): void {
                 header( 'X-AI-Friendly-MD-Length: ' . strlen( $static_content ) );
                 header( 'X-AI-Friendly-Version: ' . AI_FR_VERSION );
                 
-                echo esc_html( $static_content );
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Markdown response, not HTML; nosniff prevents MIME reinterpretation.
+                echo $static_content;
                 exit;
             }
         }
@@ -123,6 +125,7 @@ function ai_fr_serve_markdown( string $rel_path ): void {
 
         status_header( 200 );
         header( 'Content-Type: text/markdown; charset=UTF-8' );
+        header( 'X-Content-Type-Options: nosniff' );
         header( 'X-Robots-Tag: noindex, follow' );
         header( 'Link: <' . $canonical . '>; rel="canonical"', false );
         header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
@@ -134,7 +137,8 @@ function ai_fr_serve_markdown( string $rel_path ): void {
         header( 'X-AI-Friendly-Debug-Requested: ' . ( $debug_requested ? '1' : '0' ) );
         header( 'X-AI-Friendly-Debug-Admin: ' . ( $debug_mode ? '1' : '0' ) );
 
-        echo esc_html( $md );
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Markdown response, not HTML; nosniff prevents MIME reinterpretation.
+        echo $md;
         exit;
 
     } catch ( Throwable $e ) {
@@ -927,6 +931,7 @@ function ai_fr_serve_archive_markdown( string $post_type, bool $debug_mode = fal
     ai_fr_reset_output_buffers();
     status_header( 200 );
     header( 'Content-Type: text/markdown; charset=UTF-8' );
+    header( 'X-Content-Type-Options: nosniff' );
     header( 'X-Robots-Tag: noindex, follow' );
     header( 'Link: <' . $archive_url . '>; rel="canonical"', false );
     header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
@@ -937,7 +942,8 @@ function ai_fr_serve_archive_markdown( string $post_type, bool $debug_mode = fal
     header( 'X-AI-Friendly-Version: ' . AI_FR_VERSION );
     header( 'X-AI-Friendly-Debug-Requested: ' . ( $debug_requested ? '1' : '0' ) );
     header( 'X-AI-Friendly-Debug-Admin: ' . ( $debug_mode ? '1' : '0' ) );
-    echo esc_html( $md );
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Markdown response, not HTML; nosniff prevents MIME reinterpretation.
+    echo $md;
     exit;
 }
 

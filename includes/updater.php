@@ -35,7 +35,7 @@ function ai_fr_updater_get_latest_release( bool $force = false ): array {
             'timeout' => 8,
             'headers' => [
                 'Accept'     => 'application/vnd.github+json',
-                'User-Agent' => 'AI-Friendly-Updater/' . AI_FR_VERSION . '; ' . home_url( '/' ),
+                'User-Agent' => 'AI-Friendly-Updater/' . AI_FR_VERSION,
             ],
         ]
     );

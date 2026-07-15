@@ -441,6 +441,7 @@ function ai_fr_render_options_page(): void {
         update_option( 'ai_fr_onboarding_done', $options['onboarding_done'], false );
         update_option( 'ai_fr_ui_version', 'hub-v1', false );
 
+        AiFrVersioning::pruneObsoleteVersions();
         ai_fr_schedule_cron();
         ai_fr_add_event( 'settings_saved', [ 'source' => 'admin_page' ] );
         $settings_saved = true;
