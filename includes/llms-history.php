@@ -4,6 +4,139 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Restituisce il nome dell'opzione non autoloadata che contiene uno snapshot.
+ */
+function ai_fr_llms_snapshot_option_name( string $id ): string {
+    return 'ai_fr_llms_snapshot_' . md5( $id );
+}
+
+/**
+ * Blocca l'accesso web alla directory legacy durante la migrazione.
+ */
+function ai_fr_protect_llms_history_directory(): void {
+    if ( ! is_dir( AI_FR_LLMS_HISTORY_DIR ) || ! wp_is_writable( AI_FR_LLMS_HISTORY_DIR ) ) {
+        return;
+    }
+
+    $protection_files = [
+        '.htaccess' => "Options -Indexes\n<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n",
+        'web.config' => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<configuration><system.webServer><authorization><deny users=\"*\" /></authorization></system.webServer></configuration>\n",
+        'index.php'  => "<?php\nexit;\n",
+    ];
+
+    foreach ( $protection_files as $filename => $content ) {
+        $path = trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename;
+        if ( ! file_exists( $path ) ) {
+            file_put_contents( $path, $content );
+        }
+    }
+}
+
+/**
+ * Elimina lo storage database e l'eventuale file legacy di uno snapshot.
+ */
+function ai_fr_delete_llms_snapshot_storage( array $entry ): void {
+    $id = (string) ( $entry['id'] ?? '' );
+    if ( $id !== '' ) {
+        delete_option( ai_fr_llms_snapshot_option_name( $id ) );
+    }
+
+    $filename = basename( (string) ( $entry['filename'] ?? '' ) );
+    if ( $filename === '' || ! preg_match( '/\A[a-z0-9._-]+\.txt\z/i', $filename ) ) {
+        return;
+    }
+
+    $file = trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename;
+    if ( file_exists( $file ) ) {
+        wp_delete_file( $file );
+        if ( file_exists( $file ) ) {
+            delete_option( 'ai_fr_llms_storage_version' );
+        }
+    }
+}
+
+/**
+ * Migra gli snapshot legacy da uploads a opzioni non autoloadate.
+ */
+function ai_fr_migrate_llms_history_storage(): void {
+    ai_fr_protect_llms_history_directory();
+
+    if ( get_option( 'ai_fr_llms_storage_version' ) === '2' ) {
+        return;
+    }
+
+    $index = get_option( 'ai_fr_llms_history_index', [] );
+    $index = is_array( $index ) ? $index : [];
+    $migration_complete = true;
+    $index_changed = false;
+    $legacy_files = [];
+
+    foreach ( $index as &$entry ) {
+        if ( ! is_array( $entry ) || empty( $entry['id'] ) ) {
+            continue;
+        }
+
+        $id = (string) $entry['id'];
+        $option_name = ai_fr_llms_snapshot_option_name( $id );
+        $stored = get_option( $option_name, null );
+        $filename = basename( (string) ( $entry['filename'] ?? '' ) );
+        $file = $filename !== '' ? trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename : '';
+
+        if ( $file !== '' ) {
+            $legacy_files[ $filename ] = true;
+        }
+
+        if ( ! is_string( $stored ) && $file !== '' && is_readable( $file ) ) {
+            $content = file_get_contents( $file );
+            if ( is_string( $content ) && add_option( $option_name, $content, '', false ) ) {
+                $stored = $content;
+            }
+        }
+
+        if ( ! is_string( $stored ) ) {
+            $migration_complete = false;
+            continue;
+        }
+
+        if ( $file !== '' && file_exists( $file ) ) {
+            wp_delete_file( $file );
+            if ( file_exists( $file ) ) {
+                $migration_complete = false;
+                continue;
+            }
+        }
+        unset( $entry['filename'] );
+        $entry['storage'] = 'option';
+        $index_changed = true;
+    }
+    unset( $entry );
+
+    if ( $index_changed ) {
+        update_option( 'ai_fr_llms_history_index', $index, false );
+    }
+
+    // I file non presenti nell'indice sono snapshot oltre la retention legacy.
+    $orphan_files = glob( AI_FR_LLMS_HISTORY_DIR . '/*.txt' );
+    if ( is_array( $orphan_files ) ) {
+        foreach ( $orphan_files as $file ) {
+            if ( isset( $legacy_files[ basename( $file ) ] ) ) {
+                continue;
+            }
+            wp_delete_file( $file );
+            if ( file_exists( $file ) ) {
+                $migration_complete = false;
+            }
+        }
+    }
+
+    if ( $migration_complete ) {
+        update_option( 'ai_fr_llms_storage_version', '2', false );
+    }
+}
+
+add_action( 'init', 'ai_fr_migrate_llms_history_storage', 1 );
+
+/**
  * Restituisce indice snapshot.
  */
 function ai_fr_get_llms_history_index(): array {
@@ -15,15 +148,12 @@ function ai_fr_get_llms_history_index(): array {
  * Crea snapshot llms.txt.
  */
 function ai_fr_create_llms_snapshot( string $content, string $reason = 'manual' ): array {
-    if ( ! file_exists( AI_FR_LLMS_HISTORY_DIR ) ) {
-        wp_mkdir_p( AI_FR_LLMS_HISTORY_DIR );
-    }
+    ai_fr_migrate_llms_history_storage();
 
-    $id       = 'llms-' . gmdate( 'Ymd-His' ) . '-' . wp_generate_password( 6, false, false );
-    $filename = sanitize_file_name( $id . '.txt' );
-    $path     = trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename;
+    $id = 'llms-' . gmdate( 'Ymd-His' ) . '-' . wp_generate_password( 6, false, false );
+    $option_name = ai_fr_llms_snapshot_option_name( $id );
 
-    $saved = file_put_contents( $path, $content ) !== false;
+    $saved = add_option( $option_name, $content, '', false );
     if ( ! $saved ) {
         return [ 'saved' => false ];
     }
@@ -37,7 +167,7 @@ function ai_fr_create_llms_snapshot( string $content, string $reason = 'manual' 
 
     $entry = [
         'id'         => $id,
-        'filename'   => $filename,
+        'storage'    => 'option',
         'created_at' => current_time( 'mysql' ),
         'user_id'    => get_current_user_id(),
         'reason'     => sanitize_text_field( $reason ),
@@ -60,7 +190,13 @@ function ai_fr_create_llms_snapshot( string $content, string $reason = 'manual' 
 
     array_unshift( $index, $entry );
     if ( count( $index ) > 100 ) {
+        $removed = array_slice( $index, 100 );
         $index = array_slice( $index, 0, 100 );
+        foreach ( $removed as $removed_entry ) {
+            if ( is_array( $removed_entry ) ) {
+                ai_fr_delete_llms_snapshot_storage( $removed_entry );
+            }
+        }
     }
     update_option( 'ai_fr_llms_history_index', $index, false );
 
@@ -74,10 +210,20 @@ function ai_fr_get_llms_snapshot_content( string $id ): ?string {
     $index = ai_fr_get_llms_history_index();
     foreach ( $index as $entry ) {
         if ( ( $entry['id'] ?? '' ) === $id ) {
-            $file = trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . basename( (string) $entry['filename'] );
+            $content = get_option( ai_fr_llms_snapshot_option_name( $id ), null );
+            if ( is_string( $content ) ) {
+                return $content;
+            }
+
+            // Compatibilita temporanea se un file legacy non e stato migrato.
+            $filename = basename( (string) ( $entry['filename'] ?? '' ) );
+            if ( $filename === '' || ! preg_match( '/\A[a-z0-9._-]+\.txt\z/i', $filename ) ) {
+                return null;
+            }
+            $file = trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename;
             if ( file_exists( $file ) ) {
-                $content = file_get_contents( $file );
-                return is_string( $content ) ? $content : null;
+                $legacy_content = file_get_contents( $file );
+                return is_string( $legacy_content ) ? $legacy_content : null;
             }
         }
     }

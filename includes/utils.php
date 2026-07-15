@@ -33,7 +33,5 @@ function ai_fr_excerpt( WP_Post $post ): string {
     $raw = preg_replace( '/\[[^\]]+\]/', '', $raw ) ?? $raw;
     $text = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $raw ) ) ?? '' );
 
-    return strlen( $text ) > AI_FR_EXCERPT_LEN
-        ? substr( $text, 0, AI_FR_EXCERPT_LEN ) . '…'
-        : $text;
+    return wp_html_excerpt( $text, AI_FR_EXCERPT_LEN, '…' );
 }

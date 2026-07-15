@@ -140,11 +140,7 @@ class AiFrMetadata {
         $text = preg_replace( '/\s+/', ' ', $text ) ?? $text;
         $text = trim( $text );
 
-        if ( strlen( $text ) > 300 ) {
-            $text = substr( $text, 0, 297 ) . '...';
-        }
-
-        return $text;
+        return wp_html_excerpt( $text, 300, '...' );
     }
 
     private static function yamlEscape( string $s ): string {

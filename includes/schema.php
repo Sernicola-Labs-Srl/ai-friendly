@@ -903,11 +903,20 @@ function ai_fr_schema_print_standalone(): void {
         return;
     }
 
-    $json = wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+    $json = wp_json_encode(
+        $data,
+        JSON_HEX_TAG
+        | JSON_HEX_AMP
+        | JSON_HEX_APOS
+        | JSON_HEX_QUOT
+        | JSON_UNESCAPED_SLASHES
+        | JSON_UNESCAPED_UNICODE
+    );
     if ( ! is_string( $json ) || $json === '' ) {
         return;
     }
 
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON_HEX_* prevents breaking out of the script element.
     echo '<script type="application/ld+json">' . $json . '</script>' . "\n";
 }
 add_action( 'wp_head', 'ai_fr_schema_print_standalone', 20 );

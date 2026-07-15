@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 1.9.1
+Stable tag: 1.9.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,15 @@ Yes. Fill the editor and disable automatic content listing.
 No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON-LD graph and merges nodes with the same @id to avoid duplicate Person or Organization entities.
 
 == Changelog ==
+
+= 1.9.2 =
+* Added editable WebSite creator attribution for a person or organization.
+* Made static Markdown filenames unique and removed obsolete, excluded, renamed, and orphaned files.
+* Preserved raw Markdown output while preventing MIME sniffing.
+* Hardened standalone JSON-LD output against script element breakout.
+* Moved llms.txt snapshots from public uploads to non-autoloaded database storage with legacy migration and retention cleanup.
+* Removed the installation domain from the GitHub updater User-Agent.
+* Made excerpt and metadata truncation UTF-8 safe.
 
 = 1.9.1 =
 * Refined Schema form placeholders with neutral, reusable example values.

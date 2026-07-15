@@ -90,6 +90,7 @@ function ai_fr_regenerate_batch( int $batch_size = 100, bool $force = false, str
         // Nuovo ciclo completo: riparte dall'inizio all'esecuzione successiva.
         update_option( 'ai_fr_regeneration_cursor', [ 'last_id' => 0 ], false );
         $stats['cycle_reset'] = 1;
+        $stats['deleted_obsolete'] = AiFrVersioning::pruneObsoleteVersions();
         ai_fr_finalize_regeneration_stats( $stats, $trigger, $force );
         return $stats;
     }
@@ -207,6 +208,7 @@ function ai_fr_regenerate_all( bool $force = false, string $trigger = 'manual' )
     }
 
     delete_option( 'ai_fr_regeneration_cursor' );
+    $stats['deleted_obsolete'] = AiFrVersioning::pruneObsoleteVersions();
 
     ai_fr_finalize_regeneration_stats( $stats, $trigger, $force );
     return $stats;
@@ -230,6 +232,7 @@ function ai_fr_process_regeneration_posts( array $posts, AiFrContentFilter $filt
 
         // Verifica se deve essere incluso.
         if ( ! $filter->shouldInclude( $post ) ) {
+            AiFrVersioning::deleteVersion( $post->ID );
             $stats['skipped']++;
             continue;
         }

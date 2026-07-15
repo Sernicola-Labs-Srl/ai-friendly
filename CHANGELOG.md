@@ -1,7 +1,14 @@
 # Changelog
 
-## Unreleased
+## 1.9.2
 - Aggiunti i campi modificabili per attribuire la realizzazione del sito a una persona o organizzazione tramite `creator` nel nodo JSON-LD `WebSite`
+- Resi univoci i filename Markdown statici tramite post ID, evitando collisioni tra contenuti gerarchici o tradotti con lo stesso slug
+- Rimossi automaticamente i file Markdown statici obsoleti, esclusi, rinominati o rimasti senza un contenuto valido
+- Corretto l'output degli endpoint Markdown evitando la conversione di URL, blockquote e markup inline in entità HTML
+- Rafforzato l'output JSON-LD standalone codificando i caratteri che potrebbero chiudere anticipatamente il tag `<script>`
+- Spostati gli snapshot `llms.txt` fuori dai file pubblici nella directory `uploads`, con migrazione nel database e pulizia della retention legacy
+- Rimosso il dominio dell'installazione dallo `User-Agent` usato per controllare gli aggiornamenti GitHub
+- Reso sicuro per UTF-8 il troncamento di excerpt e descrizioni Markdown tramite le funzioni native di WordPress
 
 ## 1.9.1
 - Resi neutri e riutilizzabili i placeholder dei campi societari nella sezione Schema
@@ -28,15 +35,15 @@
 
 ## 1.8.1
 - Updater GitHub per repository pubblico con `Update URI`, controllo release latest e supporto update nativo WordPress
-- Scheda dettagli versione collegata alle GitHub Releases tramite `plugins_api`
+- Scheda dei dettagli della versione collegata alle GitHub Releases tramite `plugins_api`
 
 ## 1.8.0
 - Nuovo modulo Semantic Schema JSON-LD con identità `Person`/`Organization`, `sameAs`, `knowsAbout`, lingue, immagine, licenza e pagina `ProfilePage`
-- Modalità compatibilità schema: auto, standalone, estensione Yoast, estensione Rank Math
+- Modalità di compatibilità dello schema: auto, standalone, estensione Yoast, estensione Rank Math
 - Fallback standalone con grafo minimo `WebSite`, entità principale e `WebPage` per singoli contenuti
 - Nuova sezione admin "Schema" e card Overview con provider SEO rilevato/output effettivo
 - UI sezione Schema riorganizzata in card compatte con status, campi raggruppati e controlli immagine più chiari
-- Diagnostica Semantic Schema per nome entità, profili `sameAs` e fallback modalità
+- Diagnostica Semantic Schema per nome entità, profili `sameAs` e fallback della modalità
 - Merge dei nodi JSON-LD AI Friendly nei nodi Yoast/Rank Math esistenti con lo stesso `@id`, evitando duplicati `Person`/`Organization`
 - Pulizia JSON-LD: deduplica URL `sameAs`, rimozione `jobTitle` da `Organization` e rimozione dimensioni immagine vuote
 
