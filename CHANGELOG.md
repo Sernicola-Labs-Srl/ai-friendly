@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.0.0
+
+- Corretto un errore critico nelle pagine singole quando il rilevamento automatico delle FAQ Breakdance era attivo: il guard di compatibilità non interrompe più l'inizializzazione di `AI_FR_FAQ_VERSION`.
+- Rifinita l'intera UI admin con pulsanti indipendenti dallo schema colore WordPress, card neutre, moduli Schema bilanciati, media compatti e repeater responsive con stati vuoti espliciti
+- Aggiunta la visibilita contestuale dei campi `Person` e `Organization`, preservando i valori non pertinenti senza alterarli
+- Uniformata l'intera interfaccia AI Content Hub con un design system admin condiviso, card coerenti, focus accessibili, layout responsive e barra di salvataggio con stato delle modifiche
+- Sostituito il wizard dimostrativo con una configurazione guidata in cinque passi basata sui dati reali del sito, con stato di sessione, riepilogo, salvataggio AJAX e prima generazione o validazione dinamica
+- Trasformate le sezioni Rules e Automation in gruppi di card, mantenendo le tabelle solo per gli elenchi di dati
+- Aggiunto il multi-typing reale di `Organization` tramite array `@type`, mantenendo la compatibilita con il campo storico
+- Aggiunti `ContactPoint` ripetibili con telefono, email, lingue e orari di reparto
+- Aggiunti sede fisica `Place`, coordinate `GeoCoordinates`, accesso con trasporto pubblico e `openingHoursSpecification`
+- Aggiunte certificazioni `hasCertification` e coppie `identifier` / `PropertyValue` per RUNTS, REA, ATECO e altri registri
+- Aggiunto un metabox per contenuto che genera nodi `Course`, `Event`, `Service` e `FAQPage` riusando i metadati WordPress
+- Integrata la lettura automatica delle FAQ Breakdance, inclusi i Global Block, con cache invalidata alla modifica e fusione con le FAQ manuali; l'opzione appare solo quando Breakdance è attivo
+- Riordinata la pagina Semantic Schema spostando la realizzazione del sito dopo i dati principali e il catalogo
+- Ridisegnata la UI Semantic Schema con gerarchia visiva più netta, campi ripetibili etichettati e numerati, azioni coerenti e layout responsive
+- Aggiunte sorgenti WordPress ripetibili per `OfferCatalog`: ID termine, `taxonomy:slug`, permalink di tassonomie, pagine e CPT risolvono automaticamente nome, URL e descrizione
+
 ## 1.9.2
 - Aggiunti i campi modificabili per attribuire la realizzazione del sito a una persona o organizzazione tramite `creator` nel nodo JSON-LD `WebSite`
 - Resi univoci i filename Markdown statici tramite post ID, evitando collisioni tra contenuti gerarchici o tradotti con lo stesso slug

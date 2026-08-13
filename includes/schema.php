@@ -115,9 +115,15 @@ function ai_fr_schema_get_identity_node(): array {
 
     $schema_type = $type;
     if ( $type === 'Organization' ) {
-        $additional_type = ai_fr_schema_sanitize_schema_type( (string) ( $options['schema_additional_type'] ?? '' ) );
-        if ( $additional_type !== '' && $additional_type !== $type ) {
-            $schema_type = [ $type, $additional_type ];
+        $configured_types = isset( $options['schema_types'] ) && is_array( $options['schema_types'] ) ? $options['schema_types'] : [];
+        if ( empty( $configured_types ) && ! empty( $options['schema_additional_type'] ) ) {
+            $configured_types[] = $options['schema_additional_type'];
+        }
+        $configured_types = array_map( static fn( $item ): string => ai_fr_schema_sanitize_schema_type( (string) $item ), $configured_types );
+        $configured_types = array_values( array_unique( array_filter( $configured_types ) ) );
+        $configured_types = array_values( array_diff( $configured_types, [ $type ] ) );
+        if ( ! empty( $configured_types ) ) {
+            $schema_type = array_merge( [ $type ], $configured_types );
         }
     }
 
@@ -194,9 +200,23 @@ function ai_fr_schema_get_identity_node(): array {
             $node['address'] = $address;
         }
 
-        $contact = ai_fr_schema_get_contact_point( $options );
-        if ( ! empty( $contact ) ) {
-            $node['contactPoint'] = [ $contact ];
+        $contacts = ai_fr_schema_get_contact_points( $options );
+        if ( ! empty( $contacts ) ) {
+            $node['contactPoint'] = $contacts;
+        }
+
+        if ( ai_fr_schema_has_place( $options ) ) {
+            $node['location'] = [ '@id' => ai_fr_schema_home_id( 'place' ) ];
+        }
+
+        $certifications = ai_fr_schema_get_certifications( $options );
+        if ( ! empty( $certifications ) ) {
+            $node['hasCertification'] = $certifications;
+        }
+
+        $identifiers = ai_fr_schema_get_identifiers( $options );
+        if ( ! empty( $identifiers ) ) {
+            $node['identifier'] = $identifiers;
         }
 
         $founders = ai_fr_schema_parse_founders( (string) ( $options['schema_founders'] ?? '' ) );
@@ -299,6 +319,139 @@ function ai_fr_schema_get_contact_point( array $options ): array {
     return $contact;
 }
 
+function ai_fr_schema_get_contact_points( array $options ): array {
+    $rows = isset( $options['schema_contacts'] ) && is_array( $options['schema_contacts'] ) ? $options['schema_contacts'] : [];
+    if ( empty( $rows ) ) {
+        $legacy = ai_fr_schema_get_contact_point( $options );
+        return empty( $legacy ) ? [] : [ $legacy ];
+    }
+
+    $contacts = [];
+    foreach ( $rows as $row ) {
+        if ( ! is_array( $row ) ) {
+            continue;
+        }
+        $contact = [ '@type' => 'ContactPoint' ];
+        foreach ( [ 'contactType', 'telephone' ] as $key ) {
+            $value = sanitize_text_field( (string) ( $row[ $key ] ?? '' ) );
+            if ( $value !== '' ) {
+                $contact[ $key ] = $value;
+            }
+        }
+        $email = sanitize_email( (string) ( $row['email'] ?? '' ) );
+        if ( $email !== '' ) {
+            $contact['email'] = $email;
+        }
+        $contact_hours = sanitize_text_field( (string) ( $row['hoursAvailable'] ?? '' ) );
+        if ( $contact_hours !== '' ) {
+            $contact['hoursAvailable'] = [ '@type' => 'OpeningHoursSpecification', 'description' => $contact_hours ];
+        }
+        $languages = ai_fr_schema_split_lines( (string) ( $row['availableLanguage'] ?? '' ) );
+        if ( ! empty( $languages ) ) {
+            $contact['availableLanguage'] = $languages;
+        }
+        if ( count( $contact ) > 1 ) {
+            $contacts[] = $contact;
+        }
+    }
+    return $contacts;
+}
+
+function ai_fr_schema_get_opening_hours( array $options ): array {
+    $rows = isset( $options['schema_opening_hours'] ) && is_array( $options['schema_opening_hours'] ) ? $options['schema_opening_hours'] : [];
+    $specifications = [];
+    foreach ( $rows as $row ) {
+        if ( ! is_array( $row ) ) {
+            continue;
+        }
+        $spec = [ '@type' => 'OpeningHoursSpecification' ];
+        $days = ai_fr_schema_split_lines( (string) ( $row['dayOfWeek'] ?? '' ) );
+        if ( ! empty( $days ) ) {
+            $spec['dayOfWeek'] = $days;
+        }
+        foreach ( [ 'opens', 'closes', 'validFrom', 'validThrough' ] as $key ) {
+            $value = sanitize_text_field( (string) ( $row[ $key ] ?? '' ) );
+            if ( $value !== '' ) {
+                $spec[ $key ] = $value;
+            }
+        }
+        if ( count( $spec ) > 1 ) {
+            $specifications[] = $spec;
+        }
+    }
+    return $specifications;
+}
+
+function ai_fr_schema_has_place( array $options ): bool {
+    return ai_fr_schema_get_address( $options ) !== []
+        || trim( (string) ( $options['schema_latitude'] ?? '' ) ) !== ''
+        || trim( (string) ( $options['schema_longitude'] ?? '' ) ) !== '';
+}
+
+function ai_fr_schema_get_place_node( array $options ): array {
+    if ( ! ai_fr_schema_has_place( $options ) ) {
+        return [];
+    }
+    $place_type = ai_fr_schema_sanitize_schema_type( (string) ( $options['schema_place_type'] ?? 'Place' ) ) ?: 'Place';
+    $node = [ '@type' => $place_type, '@id' => ai_fr_schema_home_id( 'place' ) ];
+    $name = trim( (string) ( $options['schema_place_name'] ?? '' ) );
+    if ( $name !== '' ) {
+        $node['name'] = $name;
+    }
+    $address = ai_fr_schema_get_address( $options );
+    if ( ! empty( $address ) ) {
+        $node['address'] = $address;
+    }
+    $lat = trim( (string) ( $options['schema_latitude'] ?? '' ) );
+    $lng = trim( (string) ( $options['schema_longitude'] ?? '' ) );
+    if ( is_numeric( $lat ) && is_numeric( $lng ) ) {
+        $node['geo'] = [ '@type' => 'GeoCoordinates', 'latitude' => (float) $lat, 'longitude' => (float) $lng ];
+    }
+    $transport = trim( (string) ( $options['schema_public_transportation_access'] ?? '' ) );
+    if ( $transport !== '' ) {
+        $node['publicAccess'] = true;
+        $node['amenityFeature'] = [
+            '@type' => 'LocationFeatureSpecification',
+            'name'   => 'Public transportation access',
+            'value'  => $transport,
+        ];
+    }
+    $hours = ai_fr_schema_get_opening_hours( $options );
+    if ( ! empty( $hours ) ) {
+        $node['openingHoursSpecification'] = $hours;
+    }
+    return $node;
+}
+
+function ai_fr_schema_get_certifications( array $options ): array {
+    $rows = isset( $options['schema_certifications'] ) && is_array( $options['schema_certifications'] ) ? $options['schema_certifications'] : [];
+    $items = [];
+    foreach ( $rows as $row ) {
+        if ( ! is_array( $row ) || trim( (string) ( $row['name'] ?? '' ) ) === '' ) {
+            continue;
+        }
+        $item = [ '@type' => 'Certification', 'name' => sanitize_text_field( (string) $row['name'] ) ];
+        if ( ! empty( $row['identifier'] ) ) $item['certificationIdentification'] = sanitize_text_field( (string) $row['identifier'] );
+        if ( ! empty( $row['issuedBy'] ) ) $item['issuedBy'] = [ '@type' => 'Organization', 'name' => sanitize_text_field( (string) $row['issuedBy'] ) ];
+        if ( ! empty( $row['url'] ) ) $item['url'] = esc_url_raw( (string) $row['url'] );
+        $items[] = $item;
+    }
+    return $items;
+}
+
+function ai_fr_schema_get_identifiers( array $options ): array {
+    $rows = isset( $options['schema_identifiers'] ) && is_array( $options['schema_identifiers'] ) ? $options['schema_identifiers'] : [];
+    $items = [];
+    foreach ( $rows as $row ) {
+        $property = sanitize_text_field( (string) ( $row['propertyID'] ?? '' ) );
+        $value = sanitize_text_field( (string) ( $row['value'] ?? '' ) );
+        if ( $property !== '' && $value !== '' ) {
+            $items[] = [ '@type' => 'PropertyValue', 'propertyID' => $property, 'value' => $value ];
+        }
+    }
+    return $items;
+}
+
 function ai_fr_schema_parse_founders( string $value ): array {
     $rows = preg_split( '/\r\n|\r|\n/', $value );
     if ( ! is_array( $rows ) ) {
@@ -381,6 +534,7 @@ function ai_fr_schema_has_offer_catalog( array $options ): bool {
 
 function ai_fr_schema_get_offer_catalog_source( array $options ): array {
     $services = [];
+    $catalog_name = '';
     if ( isset( $options['schema_services'] ) && is_array( $options['schema_services'] ) ) {
         $services = $options['schema_services'];
     }
@@ -388,14 +542,139 @@ function ai_fr_schema_get_offer_catalog_source( array $options ): array {
     if ( empty( $services ) ) {
         $legacy = ai_fr_schema_parse_legacy_offer_catalog( (string) ( $options['schema_offer_catalog'] ?? '' ) );
         if ( ! empty( $legacy['services'] ) ) {
-            return $legacy;
+            $services = $legacy['services'];
+            $catalog_name = (string) ( $legacy['name'] ?? '' );
+        }
+    }
+
+    $services = ai_fr_schema_normalize_service_inputs( $services );
+    $sources = isset( $options['schema_offer_sources'] ) && is_array( $options['schema_offer_sources'] )
+        ? $options['schema_offer_sources']
+        : [];
+    foreach ( $sources as $source ) {
+        $resolved = ai_fr_schema_resolve_offer_source( (string) $source );
+        if ( ! empty( $resolved ) ) {
+            $services[] = $resolved;
         }
     }
 
     return [
-        'name'     => '',
-        'services' => ai_fr_schema_normalize_service_inputs( $services ),
+        'name'     => $catalog_name,
+        'services' => ai_fr_schema_dedupe_service_inputs( $services ),
     ];
+}
+
+function ai_fr_schema_resolve_offer_source( string $source ): array {
+    $source = trim( $source );
+    if ( $source === '' ) {
+        return [];
+    }
+
+    $term = null;
+    $post = null;
+    if ( ctype_digit( $source ) ) {
+        $candidate = get_term( intval( $source ) );
+        $term = ! is_wp_error( $candidate ) && $candidate instanceof WP_Term ? $candidate : null;
+    } elseif ( ! str_contains( $source, '://' ) && str_contains( $source, ':' ) ) {
+        [ $taxonomy, $locator ] = array_map( 'trim', explode( ':', $source, 2 ) );
+        if ( taxonomy_exists( $taxonomy ) && $locator !== '' ) {
+            $candidate = ctype_digit( $locator )
+                ? get_term( intval( $locator ), $taxonomy )
+                : get_term_by( 'slug', sanitize_title( $locator ), $taxonomy );
+            $term = ! is_wp_error( $candidate ) && $candidate instanceof WP_Term ? $candidate : null;
+        }
+    } elseif ( filter_var( $source, FILTER_VALIDATE_URL ) ) {
+        $source_host = strtolower( (string) wp_parse_url( $source, PHP_URL_HOST ) );
+        $site_host = strtolower( (string) wp_parse_url( home_url( '/' ), PHP_URL_HOST ) );
+        if ( $source_host === '' || $site_host === '' || $source_host !== $site_host ) {
+            return [];
+        }
+        $post_id = url_to_postid( $source );
+        if ( $post_id > 0 ) {
+            $candidate = get_post( $post_id );
+            $post = $candidate instanceof WP_Post ? $candidate : null;
+        }
+        if ( ! $post instanceof WP_Post ) {
+            $term = ai_fr_schema_find_term_by_url( $source );
+        }
+    }
+
+    if ( $term instanceof WP_Term ) {
+        $url = get_term_link( $term );
+        if ( is_wp_error( $url ) ) {
+            return [];
+        }
+        $taxonomy = get_taxonomy( $term->taxonomy );
+        return ai_fr_schema_normalize_service_input(
+            [
+                'name' => $term->name,
+                'url' => $url,
+                'description' => wp_strip_all_tags( term_description( $term ), true ),
+                'serviceType' => $taxonomy && ! empty( $taxonomy->labels->singular_name ) ? $taxonomy->labels->singular_name : '',
+            ]
+        );
+    }
+
+    if ( $post instanceof WP_Post ) {
+        $post_type = get_post_type_object( $post->post_type );
+        $description = has_excerpt( $post )
+            ? get_the_excerpt( $post )
+            : wp_trim_words( wp_strip_all_tags( strip_shortcodes( $post->post_content ), true ), 40 );
+        return ai_fr_schema_normalize_service_input(
+            [
+                'name' => get_the_title( $post ),
+                'url' => get_permalink( $post ),
+                'description' => $description,
+                'serviceType' => $post_type && ! empty( $post_type->labels->singular_name ) ? $post_type->labels->singular_name : '',
+            ]
+        );
+    }
+
+    return [];
+}
+
+function ai_fr_schema_find_term_by_url( string $url ): ?WP_Term {
+    $path = (string) wp_parse_url( $url, PHP_URL_PATH );
+    $slug = sanitize_title( rawurldecode( basename( untrailingslashit( $path ) ) ) );
+    if ( $slug === '' ) {
+        return null;
+    }
+    $target_path = untrailingslashit( strtolower( $path ) );
+    foreach ( get_taxonomies( [ 'public' => true ], 'names' ) as $taxonomy ) {
+        $terms = get_terms( [ 'taxonomy' => $taxonomy, 'hide_empty' => false, 'slug' => $slug, 'number' => 5 ] );
+        if ( is_wp_error( $terms ) ) {
+            continue;
+        }
+        foreach ( $terms as $term ) {
+            if ( ! $term instanceof WP_Term ) {
+                continue;
+            }
+            $term_url = get_term_link( $term );
+            if ( is_wp_error( $term_url ) ) {
+                continue;
+            }
+            $term_path = (string) wp_parse_url( $term_url, PHP_URL_PATH );
+            if ( untrailingslashit( strtolower( $term_path ) ) === $target_path ) {
+                return $term;
+            }
+        }
+    }
+    return null;
+}
+
+function ai_fr_schema_dedupe_service_inputs( array $services ): array {
+    $unique = [];
+    $seen = [];
+    foreach ( ai_fr_schema_normalize_service_inputs( $services ) as $service ) {
+        $url = untrailingslashit( strtolower( (string) ( $service['url'] ?? '' ) ) );
+        $fingerprint = $url !== '' ? 'url:' . $url : 'name:' . strtolower( (string) ( $service['name'] ?? '' ) );
+        if ( isset( $seen[ $fingerprint ] ) ) {
+            continue;
+        }
+        $seen[ $fingerprint ] = true;
+        $unique[] = $service;
+    }
+    return $unique;
 }
 
 function ai_fr_schema_parse_legacy_offer_catalog( string $raw ): array {
@@ -690,12 +969,25 @@ function ai_fr_schema_get_graph(): array {
         $graph[] = $offer_catalog;
     }
 
+    $place = ai_fr_schema_get_place_node( $options );
+    if ( ! empty( $place ) ) {
+        $graph[] = $place;
+    }
+
     if ( is_singular() ) {
         $post = get_post();
         if ( $post instanceof WP_Post ) {
             $extra = ai_fr_schema_get_singular_extra_node( $post, $options );
+            $breakdance_faq = function_exists( 'ai_fr_faq_get_node_for_post' ) ? ai_fr_faq_get_node_for_post( $post ) : [];
+            if ( ! empty( $extra ) && ( $extra['@type'] ?? '' ) === 'FAQPage' && ! empty( $breakdance_faq ) ) {
+                $extra = ai_fr_schema_merge_faq_nodes( $extra, $breakdance_faq );
+                $breakdance_faq = [];
+            }
             if ( ! empty( $extra ) ) {
                 $graph[] = $extra;
+            }
+            if ( ! empty( $breakdance_faq ) ) {
+                $graph[] = $breakdance_faq;
             }
         }
     }
@@ -861,6 +1153,11 @@ function ai_fr_schema_cleanup_graph( array $graph ): array {
 }
 
 function ai_fr_schema_get_singular_extra_node( WP_Post $post, array $options ): array {
+    $configured = ai_fr_schema_get_content_node( $post );
+    if ( ! empty( $configured ) ) {
+        return $configured;
+    }
+
     $license = trim( (string) ( $options['schema_license'] ?? '' ) );
     if ( $license === '' || $post->post_type !== 'post' ) {
         return [];
@@ -880,6 +1177,116 @@ function ai_fr_schema_get_singular_extra_node( WP_Post $post, array $options ): 
         'author'   => [ '@id' => ai_fr_schema_get_identity_node()['@id'] ],
         'isPartOf' => [ '@id' => trailingslashit( $url ) . '#webpage' ],
     ];
+}
+
+function ai_fr_schema_get_content_node( WP_Post $post ): array {
+    $schema = get_post_meta( $post->ID, '_ai_fr_schema', true );
+    if ( ! is_array( $schema ) ) {
+        return [];
+    }
+    $type = (string) ( $schema['type'] ?? '' );
+    if ( ! in_array( $type, [ 'Course', 'Event', 'Service', 'FAQPage' ], true ) ) {
+        return [];
+    }
+    $url = get_permalink( $post );
+    if ( ! is_string( $url ) || $url === '' ) {
+        return [];
+    }
+    $metadata = class_exists( 'AiFrMetadata' ) ? AiFrMetadata::extract( $post ) : [];
+    $name = trim( (string) ( $schema['name'] ?? '' ) ) ?: (string) ( $metadata['title'] ?? get_the_title( $post ) );
+    $description = trim( (string) ( $schema['description'] ?? '' ) ) ?: (string) ( $metadata['description'] ?? '' );
+    $fragments = [ 'Course' => 'course', 'Event' => 'event', 'Service' => 'service', 'FAQPage' => 'faq' ];
+    $fragment = $fragments[ $type ];
+    $node = [
+        '@type' => $type,
+        '@id' => trailingslashit( $url ) . '#' . $fragment,
+        'url' => $url,
+        'name' => $name,
+        'inLanguage' => get_locale(),
+        'mainEntityOfPage' => [ '@id' => trailingslashit( $url ) . '#webpage' ],
+    ];
+    if ( $description !== '' ) {
+        $node['description'] = $description;
+    }
+    if ( ! empty( $metadata['featured_image'] ) ) {
+        $node['image'] = esc_url_raw( (string) $metadata['featured_image'] );
+    }
+
+    if ( $type === 'Course' ) {
+        foreach ( [ 'courseCode', 'educationalLevel' ] as $key ) {
+            $value = trim( (string) ( $schema[ $key ] ?? '' ) );
+            if ( $value !== '' ) $node[ $key ] = $value;
+        }
+        $node['provider'] = [ '@id' => ai_fr_schema_get_identity_node()['@id'] ];
+    } elseif ( $type === 'Event' ) {
+        foreach ( [ 'startDate', 'endDate' ] as $key ) {
+            $value = trim( (string) ( $schema[ $key ] ?? '' ) );
+            if ( $value !== '' ) {
+                try {
+                    $node[ $key ] = ( new DateTimeImmutable( $value, wp_timezone() ) )->format( DATE_W3C );
+                } catch ( Exception $exception ) {
+                    unset( $node[ $key ] );
+                }
+            }
+        }
+        $location_name = trim( (string) ( $schema['locationName'] ?? '' ) );
+        $location_address = trim( (string) ( $schema['locationAddress'] ?? '' ) );
+        if ( $location_name !== '' || $location_address !== '' ) {
+            $node['location'] = [ '@type' => 'Place' ];
+            if ( $location_name !== '' ) $node['location']['name'] = $location_name;
+            if ( $location_address !== '' ) $node['location']['address'] = $location_address;
+        } elseif ( ai_fr_schema_has_place( ai_fr_schema_get_options() ) ) {
+            $node['location'] = [ '@id' => ai_fr_schema_home_id( 'place' ) ];
+        }
+        $node['organizer'] = [ '@id' => ai_fr_schema_get_identity_node()['@id'] ];
+    } elseif ( $type === 'Service' ) {
+        foreach ( [ 'serviceType', 'areaServed' ] as $key ) {
+            $value = trim( (string) ( $schema[ $key ] ?? '' ) );
+            if ( $value !== '' ) $node[ $key ] = $value;
+        }
+        $node['provider'] = [ '@id' => ai_fr_schema_get_identity_node()['@id'] ];
+    } else {
+        $node['mainEntity'] = [];
+        $rows = preg_split( '/\r\n|\r|\n/', (string) ( $schema['faq'] ?? '' ) );
+        foreach ( is_array( $rows ) ? $rows : [] as $index => $row ) {
+            $parts = array_map( 'trim', explode( '|', $row, 2 ) );
+            if ( count( $parts ) !== 2 || $parts[0] === '' || $parts[1] === '' ) continue;
+            $node['mainEntity'][] = [
+                '@type' => 'Question',
+                '@id' => trailingslashit( $url ) . '#faq-manual-' . ( $index + 1 ),
+                'name' => sanitize_text_field( $parts[0] ),
+                'acceptedAnswer' => [ '@type' => 'Answer', 'text' => wp_kses_post( $parts[1] ) ],
+            ];
+        }
+        if ( empty( $node['mainEntity'] ) ) return [];
+    }
+    return (array) apply_filters( 'ai_fr_schema_content_node', $node, $post, $schema );
+}
+
+function ai_fr_schema_merge_faq_nodes( array $manual, array $automatic ): array {
+    $merged = $manual;
+    foreach ( $automatic as $key => $value ) {
+        if ( $key !== 'mainEntity' && ( ! isset( $merged[ $key ] ) || $merged[ $key ] === '' ) ) {
+            $merged[ $key ] = $value;
+        }
+    }
+    $entities = [];
+    $seen = [];
+    foreach ( [ (array) ( $manual['mainEntity'] ?? [] ), (array) ( $automatic['mainEntity'] ?? [] ) ] as $source ) {
+        foreach ( $source as $entity ) {
+            if ( ! is_array( $entity ) ) {
+                continue;
+            }
+            $question = strtolower( trim( (string) ( $entity['name'] ?? '' ) ) );
+            if ( $question === '' || isset( $seen[ $question ] ) ) {
+                continue;
+            }
+            $seen[ $question ] = true;
+            $entities[] = $entity;
+        }
+    }
+    $merged['mainEntity'] = $entities;
+    return $merged;
 }
 
 function ai_fr_schema_as_json_ld( array $graph ): array {

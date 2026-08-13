@@ -2,9 +2,9 @@
 Contributors: sernicolalabs
 Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.9.2
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ AI Friendly provides:
 * Optional static Markdown files with regeneration workflows.
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
 * Admin tools for preview, snapshots, diagnostics, and bulk operations.
-* Optional Semantic Schema JSON-LD layer for Person/Organization identity, corporate identifiers, logo, address, contact point, founders, business context, OfferCatalog services, sameAs profiles, knowsAbout topics, known languages, ProfilePage, license, and Yoast/Rank Math graph extension.
+* Optional Semantic Schema JSON-LD layer with multi-type organizations, repeatable contacts, Place/Geo, opening hours, certifications, generic identifiers, automatic Breakdance FAQPage, WordPress-powered OfferCatalog sources, and Yoast/Rank Math graph extension.
 * Native WordPress updates from public GitHub Releases.
 
 == Installation ==
@@ -43,6 +43,17 @@ Yes. Fill the editor and disable automatic content listing.
 No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON-LD graph and merges nodes with the same @id to avoid duplicate Person or Organization entities.
 
 == Changelog ==
+
+= 2.0.0 =
+* Fixed a critical error on singular pages when automatic Breakdance FAQ detection was enabled.
+* Refined the admin UI with WordPress-color-scheme-independent buttons, neutral cards, balanced Schema modules, compact media controls, contextual Person/Organization fields, and explicit empty states for repeaters.
+* Unified the full AI Content Hub admin interface with shared cards, forms, repeaters, responsive behavior, accessible focus states, and an unsaved-changes bar.
+* Replaced the placeholder onboarding with a five-step setup based on detected site data, session recovery, final review, protected AJAX saving, and initial static generation or dynamic validation.
+* Added multi-type Organization output, repeatable contacts and opening hours.
+* Added Place/Geo, certifications, and generic organization identifiers.
+* Added per-content Course, Event, Service, and FAQPage schema metaboxes.
+* Added automatic Breakdance FAQ extraction, including Global Blocks and manual FAQ merging; its default-enabled option is shown only while Breakdance is active.
+* Added OfferCatalog sources resolved from WordPress term IDs, taxonomy references, and permalinks.
 
 = 1.9.2 =
 * Added editable WebSite creator attribution for a person or organization.

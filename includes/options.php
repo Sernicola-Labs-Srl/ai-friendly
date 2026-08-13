@@ -35,7 +35,7 @@ function ai_fr_get_default_options(): array {
 
         // UI Hub
         'onboarding_done'       => '',
-        'ui_version'            => 'hub-v1',
+        'ui_version'            => 'hub-v2',
 
         // Notifiche
         'notify_admin_notice'   => '1',
@@ -44,6 +44,7 @@ function ai_fr_get_default_options(): array {
 
         // JSON-LD / Semantic identity
         'schema_enabled'        => '',
+        'schema_breakdance_faq_enabled' => '1',
         'schema_mode'           => 'auto',
         'schema_creator_type'   => 'Organization',
         'schema_creator_name'   => '',
@@ -55,6 +56,7 @@ function ai_fr_get_default_options(): array {
         'schema_disambiguating_description' => '',
         'schema_job_title'      => '',
         'schema_additional_type' => '',
+        'schema_types'          => [],
         'schema_slogan'         => '',
         'schema_founding_date'  => '',
         'schema_legal_name'     => '',
@@ -71,9 +73,19 @@ function ai_fr_get_default_options(): array {
         'schema_contact_type'   => '',
         'schema_contact_email'  => '',
         'schema_contact_languages' => '',
+        'schema_contacts'       => [],
+        'schema_opening_hours'  => [],
+        'schema_place_name'     => '',
+        'schema_place_type'     => 'Place',
+        'schema_latitude'       => '',
+        'schema_longitude'      => '',
+        'schema_public_transportation_access' => '',
+        'schema_certifications' => [],
+        'schema_identifiers'    => [],
         'schema_founders'       => '',
         'schema_area_served'    => '',
         'schema_services'       => [],
+        'schema_offer_sources'  => [],
         'schema_offer_catalog'  => '',
         'schema_image_id'       => 0,
         'schema_same_as'        => '',
@@ -82,4 +94,26 @@ function ai_fr_get_default_options(): array {
         'schema_license'        => '',
         'schema_profile_page_id' => 0,
     ];
+}
+
+function ai_fr_is_breakdance_active(): bool {
+    if ( defined( 'BREAKDANCE_VERSION' ) || defined( '__BREAKDANCE_VERSION' ) ) {
+        return true;
+    }
+
+    $active_plugins = (array) get_option( 'active_plugins', [] );
+    if ( is_multisite() ) {
+        $active_plugins = array_merge( $active_plugins, array_keys( (array) get_site_option( 'active_sitewide_plugins', [] ) ) );
+    }
+
+    $active = false;
+    foreach ( $active_plugins as $plugin_file ) {
+        $plugin_file = strtolower( str_replace( '\\', '/', (string) $plugin_file ) );
+        if ( preg_match( '#(^|/)breakdance(?:/|[-_.])#', $plugin_file ) ) {
+            $active = true;
+            break;
+        }
+    }
+
+    return (bool) apply_filters( 'ai_fr_breakdance_active', $active, $active_plugins );
 }

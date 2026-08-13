@@ -1,6 +1,6 @@
 ﻿# AI Friendly
 
-**Version:** 1.9.2
+**Version:** 2.0.0
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v2 or later
@@ -46,6 +46,16 @@ Il plugin include anche un pannello admin (AI Content Hub) per gestire regole, r
 1. Carica lo zip del plugin da WordPress (`Plugin > Aggiungi nuovo > Carica plugin`)
 2. Attiva il plugin
 3. Apri `Impostazioni > AI Friendly`
+
+### Configurazione guidata e interfaccia Hub
+
+Al primo accesso, la configurazione guidata analizza il sito e accompagna attraverso cinque passaggi: rilevamento, contenuti inclusi, Markdown e automazione, Semantic Schema e riepilogo. Pagine e Articoli sono proposti come inclusione iniziale; CPT e prodotti devono essere scelti esplicitamente.
+
+Le scelte restano nel browser durante la sessione e vengono salvate nel database solo con **Salva e genera**. Se i file statici sono attivi viene eseguita la prima generazione; altrimenti viene verificato l'output dinamico. **Configura più tardi** chiude il pannello senza modificare le impostazioni e la procedura può essere riaperta dall'header usando i valori correnti.
+
+Le sezioni Overview, Content, Rules, Schema e Automation condividono lo stesso sistema visivo. Nelle sezioni modificabili, la barra inferiore segnala le modifiche non salvate.
+
+La sezione Schema mostra soltanto i moduli pertinenti al tipo di entità selezionato (`Person` o `Organization`) senza cancellare i valori temporaneamente nascosti. I campi ripetibili partono da uno stato vuoto esplicito e possono essere aggiunti o rimossi senza righe segnaposto.
 
 ### Aggiornamento
 
@@ -180,18 +190,26 @@ Dalla sezione **Schema** dell'AI Content Hub puoi configurare:
 - entità principale: `Person` oppure `Organization`
 - nome, nome alternativo e descrizione
 - descrizione disambiguante (`disambiguatingDescription`)
-- tipo aggiuntivo per `Organization`, ad esempio `ProfessionalService`
+- tipi aggiuntivi ripetibili per `Organization`, emessi come vero array `@type`
 - slogan, data di fondazione e aree servite per `Organization`
 - ragione sociale, partita IVA, codice fiscale, LEI con `iso6523Code` e ticker per `Organization`
-- logo aziendale dedicato, sede postale e punto di contatto pubblico
+- logo aziendale dedicato, sede `Place` con coordinate, trasporto pubblico e orari
+- punti di contatto ripetibili per reparti con telefono, email, lingue e disponibilità
+- certificazioni e identificatori generici come RUNTS, REA e ATECO
 - fondatori opzionali, con ruolo separato e non obbligatorio
-- catalogo servizi opzionale come `OfferCatalog`, compilabile con campi ripetibili
+- catalogo servizi opzionale come `OfferCatalog`, compilabile manualmente o da ID/permalink di termini, pagine e CPT WordPress
 - immagine identitaria
 - profili esterni `sameAs`
 - competenze o argomenti autorevoli `knowsAbout`
 - lingue `knowsLanguage`
 - pagina profilo `ProfilePage`
 - URL di licenza dei contenuti
+
+Nel metabox del singolo post, pagina o CPT puoi inoltre attivare un nodo `Course`, `Event`, `Service` o `FAQPage`. Titolo, permalink, descrizione, immagine e date editoriali vengono riusati dal contenuto; il metabox richiede solo i campi specifici del tipo scelto.
+
+Quando il plugin Breakdance è installato e attivo, AI Friendly mostra l'opzione dedicata — attiva per impostazione predefinita — e legge automaticamente le coppie domanda/risposta dal tree del builder. Segue gli eventuali Global Block e genera `FAQPage` senza snippet. Se Breakdance non è attivo, l'opzione non viene mostrata e la lettura non viene eseguita. Le FAQ configurate nel metabox vengono fuse nello stesso nodo e hanno precedenza sulle domande duplicate.
+
+Le sorgenti WordPress dell'`OfferCatalog` accettano un ID termine, una forma esplicita `taxonomy:slug`, il permalink di una categoria/tassonomia oppure il permalink di una pagina o CPT. Nome, URL, descrizione e tipo vengono ricavati dai dati WordPress correnti; le righe manuali possono completare il catalogo e prevalgono sui duplicati con lo stesso URL.
 
 ### Pulizia e compatibilità
 
@@ -290,6 +308,14 @@ Permette di modificare il nodo `Person` / `Organization` prima dell'output.
 ### `ai_fr_schema_graph`
 
 Permette di modificare il grafo AI Friendly prima della stampa standalone o della fusione con Yoast/Rank Math.
+
+### `ai_fr_faq_enabled`, `ai_fr_faq_items`, `ai_fr_faq_answer_html`, `ai_fr_faq_node`
+
+Controllano rispettivamente l'attivazione della lettura FAQ Breakdance, le coppie estratte, il markup HTML ammesso nelle risposte e il nodo `FAQPage` finale.
+
+### `ai_fr_breakdance_active`
+
+Permette di personalizzare il rilevamento del plugin Breakdance attivo in installazioni con directory o bootstrap non standard.
 
 ---
 

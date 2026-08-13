@@ -25,6 +25,7 @@ require_once AI_FR_PLUGIN_DIR . '/includes/scheduler.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/intercept.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/head.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/schema.php';
+require_once AI_FR_PLUGIN_DIR . '/includes/schema-faq.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/admin-telemetry.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/admin-diagnostics.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/admin-dashboard.php';

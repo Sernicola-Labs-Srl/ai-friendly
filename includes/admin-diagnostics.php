@@ -96,6 +96,20 @@ function ai_fr_run_diagnostics(): array {
                 'message' => 'Semantic Schema: il catalogo servizi legacy non contiene JSON valido e non verra aggiunto al grafo.',
             ];
         }
+
+        $offer_sources = isset( $options['schema_offer_sources'] ) && is_array( $options['schema_offer_sources'] ) ? $options['schema_offer_sources'] : [];
+        $unresolved_sources = [];
+        foreach ( $offer_sources as $source ) {
+            if ( function_exists( 'ai_fr_schema_resolve_offer_source' ) && empty( ai_fr_schema_resolve_offer_source( (string) $source ) ) ) {
+                $unresolved_sources[] = (string) $source;
+            }
+        }
+        if ( ! empty( $unresolved_sources ) ) {
+            $warnings[] = [
+                'code'    => 'schema_offer_sources_unresolved',
+                'message' => 'Semantic Schema: sorgenti OfferCatalog non risolte: ' . implode( ', ', array_slice( $unresolved_sources, 0, 3 ) ),
+            ];
+        }
     }
 
     if ( function_exists( 'ai_fr_updater_get_latest_release' ) ) {
