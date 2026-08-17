@@ -1,9 +1,9 @@
-﻿# AI Friendly
+# AI Friendly
 
 **Version:** 2.0.0
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
-**License:** GPL v2 or later
+**License:** GPL v3 or later
 
 ---
 
@@ -33,9 +33,17 @@ AI Friendly espone contenuti WordPress in un formato più leggibile per sistemi 
 - endpoint `.md` per singoli contenuti pubblici
 - (se disponibile) endpoint `.md` per archive CPT pubblici, ad esempio `/podcast.md`
 - layer opzionale Semantic Schema JSON-LD per identità, profili e contesto AI-friendly
-- aggiornamenti nativi WordPress tramite GitHub Releases pubbliche
+- aggiornamenti nativi tramite la directory ufficiale wordpress.org
 
 Il plugin include anche un pannello admin (AI Content Hub) per gestire regole, rigenerazione, snapshot e diagnostica.
+
+### Privacy e dati locali
+
+AI Friendly non contatta servizi esterni e non trasmette telemetria o dati di utilizzo. Il registro attività contiene solo eventi tecnici, non include identificativi utente, resta nel database WordPress locale ed è limitato a 200 elementi. Le notifiche email sono opzionali e passano esclusivamente dal sistema email configurato nel sito.
+
+L'estrazione dei campi ACF è disattivata per impostazione predefinita. Deve essere abilitata solo quando tutti i valori testuali ACF dei contenuti inclusi sono destinati all'output pubblico `.md`.
+
+La rimozione del plugin da WordPress elimina opzioni, log, snapshot, file generati, eventi pianificati e metadati creati da AI Friendly.
 
 ---
 
@@ -66,7 +74,7 @@ La sezione Schema mostra soltanto i moduli pertinenti al tipo di entità selezio
 Note:
 - Le opzioni restano nel database (`ai_fr_options`)
 - In hosting con OPcache/FPM può servire un reload del pool PHP dopo update manuali
-- Gli aggiornamenti automatici usano le release pubbliche GitHub del repository `Sernicola-Labs-Srl/ai-friendly`; ogni release deve includere uno zip installabile, preferibilmente `ai-friendly.zip`
+- Dopo la pubblicazione nella directory ufficiale, gli aggiornamenti automatici sono gestiti da wordpress.org
 
 ---
 
@@ -355,7 +363,7 @@ Usa questa checklist ad ogni nuova release.
 - Aggiorna `Version:` in `ai-friendly.php`
 - Aggiorna `AI_FR_VERSION` in `ai-friendly.php`
 - Aggiorna `CHANGELOG.md`
-- Usa preferibilmente un tag nel formato `v1.9.0` (l'updater accetta anche il formato storico `v.1.9.0`)
+- Usa tag coerenti con la versione del plugin, nel formato `v2.0.0`
 
 2. **Documentazione**
 - Verifica coerenza `README.md` con feature reali
@@ -363,8 +371,8 @@ Usa questa checklist ad ogni nuova release.
 
 3. **Packaging**
 - Il push di un tag `v*` avvia la GitHub Action che crea e allega `ai-friendly.zip` alla release
-- Verifica che lo ZIP abbia come cartella radice `ai-friendly/` e contenga `ai-friendly.php`, `includes/`, `admin/`, `README.md`, `readme.txt`, `CHANGELOG.md`
-- Escludi file non necessari al runtime (es. `.git`, file locali IDE)
+- Verifica che lo ZIP abbia come cartella radice `ai-friendly/` e contenga `ai-friendly.php`, `uninstall.php`, `includes/`, `admin/`, `README.md`, `readme.txt`, `CHANGELOG.md`
+- Escludi file non necessari al runtime (es. `.git`, `.github`, `.agents`, `.gitignore` e file locali IDE)
 
 4. **Deploy**
 - Aggiorna plugin su ambiente test/staging

@@ -29,7 +29,8 @@ function ai_fr_maybe_notify_regeneration_errors( array $stats, string $trigger )
     }
 
     $message = sprintf(
-        'AI Friendly: rigenerazione con %d errori (%s). Processati %d, rigenerati %d, saltati %d.',
+        /* translators: 1: error count, 2: trigger, 3: processed items, 4: regenerated items, 5: skipped items. */
+        __( 'AI Friendly: rigenerazione con %1$d errori (%2$s). Processati %3$d, rigenerati %4$d, saltati %5$d.', 'ai-friendly' ),
         $errors,
         $trigger,
         intval( $stats['processed'] ?? 0 ),
@@ -47,7 +48,7 @@ function ai_fr_maybe_notify_regeneration_errors( array $stats, string $trigger )
             $to = (string) get_option( 'admin_email', '' );
         }
         if ( is_email( $to ) ) {
-            wp_mail( $to, 'AI Friendly - Rigenerazione con errori', $message );
+            wp_mail( $to, __( 'AI Friendly - Rigenerazione con errori', 'ai-friendly' ), $message );
         }
     }
 }

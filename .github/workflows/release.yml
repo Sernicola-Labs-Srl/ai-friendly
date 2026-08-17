@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p build/ai-friendly
-          cp ai-friendly.php README.md readme.txt CHANGELOG.md LICENSE build/ai-friendly/
+          cp ai-friendly.php uninstall.php README.md readme.txt CHANGELOG.md LICENSE build/ai-friendly/
           cp -R admin includes build/ai-friendly/
           cd build
           zip -r ../ai-friendly.zip ai-friendly

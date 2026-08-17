@@ -11,6 +11,20 @@ function ai_fr_get_event_log(): array {
     if ( ! is_array( $log ) ) {
         return [];
     }
+
+    // Versions prior to 2.0 stored the acting user ID. It is not needed for diagnostics.
+    $changed = false;
+    foreach ( $log as &$entry ) {
+        if ( is_array( $entry ) && array_key_exists( 'user_id', $entry ) ) {
+            unset( $entry['user_id'] );
+            $changed = true;
+        }
+    }
+    unset( $entry );
+    if ( $changed ) {
+        update_option( 'ai_fr_event_log', $log, false );
+    }
+
     return $log;
 }
 
@@ -28,7 +42,6 @@ function ai_fr_add_event( string $type, array $payload = [], string $level = 'in
             'type'    => sanitize_key( $type ),
             'level'   => sanitize_key( $level ),
             'payload' => $payload,
-            'user_id' => get_current_user_id(),
         ]
     );
 

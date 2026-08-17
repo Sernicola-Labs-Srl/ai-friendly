@@ -34,7 +34,7 @@ add_action( 'add_meta_boxes', function () {
     foreach ( $schema_types as $type ) {
         add_meta_box(
             'ai_fr_schema_meta',
-            'AI Friendly Schema',
+            __( 'AI Friendly Schema', 'ai-friendly' ),
             'ai_fr_render_schema_metabox',
             $type,
             'normal',
@@ -53,12 +53,12 @@ function ai_fr_render_metabox( WP_Post $post ): void {
                name="_ai_fr_exclude"
                value="1"
                <?php checked( $excluded, '1' ); ?> />
-        Escludi da llms.txt e versione .md
+        <?php esc_html_e( 'Escludi da llms.txt e dalla versione Markdown', 'ai-friendly' ); ?>
     </label>
     
     <?php if ( $last_generated ) : ?>
     <p style="margin-top:10px; color:#666; font-size:12px;">
-        <strong>Ultima generazione MD:</strong><br>
+        <strong><?php esc_html_e( 'Ultima generazione Markdown:', 'ai-friendly' ); ?></strong><br>
         <?php echo esc_html( $last_generated ); ?>
     </p>
     <?php endif; ?>
@@ -71,22 +71,22 @@ function ai_fr_render_schema_metabox( WP_Post $post ): void {
     $schema = is_array( $schema ) ? $schema : [];
     $type = (string) ( $schema['type'] ?? '' );
     ?>
-    <p>Genera un nodo per questo contenuto riusando automaticamente titolo, permalink, excerpt/descrizione, immagine in evidenza e date WordPress.</p>
+    <p><?php esc_html_e( 'Genera un nodo per questo contenuto riusando automaticamente titolo, permalink, riassunto, descrizione, immagine in evidenza e date WordPress.', 'ai-friendly' ); ?></p>
     <table class="form-table" style="margin-top:0">
-        <tr><th><label for="ai-fr-schema-type">Tipo Schema</label></th><td>
+        <tr><th><label for="ai-fr-schema-type"><?php esc_html_e( 'Tipo Schema', 'ai-friendly' ); ?></label></th><td>
             <select id="ai-fr-schema-type" name="_ai_fr_schema[type]">
-                <option value="">Nessuno</option>
+                <option value=""><?php esc_html_e( 'Nessuno', 'ai-friendly' ); ?></option>
                 <?php foreach ( [ 'Course', 'Event', 'Service', 'FAQPage' ] as $allowed ) : ?>
                     <option value="<?php echo esc_attr( $allowed ); ?>" <?php selected( $type, $allowed ); ?>><?php echo esc_html( $allowed ); ?></option>
                 <?php endforeach; ?>
             </select>
         </td></tr>
-        <tr><th><label>Nome alternativo</label></th><td><input class="widefat" name="_ai_fr_schema[name]" value="<?php echo esc_attr( $schema['name'] ?? '' ); ?>" placeholder="Lascia vuoto per usare il titolo"></td></tr>
-        <tr><th><label>Descrizione alternativa</label></th><td><textarea class="widefat" rows="3" name="_ai_fr_schema[description]" placeholder="Lascia vuoto per usare excerpt o meta description"><?php echo esc_textarea( $schema['description'] ?? '' ); ?></textarea></td></tr>
-        <tr><th>Course</th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_ai_fr_schema[courseCode]" value="<?php echo esc_attr( $schema['courseCode'] ?? '' ); ?>" placeholder="Codice corso"><input name="_ai_fr_schema[educationalLevel]" value="<?php echo esc_attr( $schema['educationalLevel'] ?? '' ); ?>" placeholder="Livello"></td></tr>
-        <tr><th>Event</th><td style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"><input type="datetime-local" name="_ai_fr_schema[startDate]" value="<?php echo esc_attr( $schema['startDate'] ?? '' ); ?>"><input type="datetime-local" name="_ai_fr_schema[endDate]" value="<?php echo esc_attr( $schema['endDate'] ?? '' ); ?>"><input name="_ai_fr_schema[locationName]" value="<?php echo esc_attr( $schema['locationName'] ?? '' ); ?>" placeholder="Nome luogo"><input name="_ai_fr_schema[locationAddress]" value="<?php echo esc_attr( $schema['locationAddress'] ?? '' ); ?>" placeholder="Indirizzo"></td></tr>
-        <tr><th>Service</th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_ai_fr_schema[serviceType]" value="<?php echo esc_attr( $schema['serviceType'] ?? '' ); ?>" placeholder="Tipo servizio"><input name="_ai_fr_schema[areaServed]" value="<?php echo esc_attr( $schema['areaServed'] ?? '' ); ?>" placeholder="Area servita"></td></tr>
-        <tr><th><label>FAQPage</label></th><td><textarea class="widefat" rows="6" name="_ai_fr_schema[faq]" placeholder="Una FAQ per riga: Domanda | Risposta"><?php echo esc_textarea( $schema['faq'] ?? '' ); ?></textarea><p class="description">Una coppia domanda/risposta per riga, separata da <code>|</code>.</p></td></tr>
+        <tr><th><label><?php esc_html_e( 'Nome alternativo', 'ai-friendly' ); ?></label></th><td><input class="widefat" name="_ai_fr_schema[name]" value="<?php echo esc_attr( $schema['name'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Lascia vuoto per usare il titolo', 'ai-friendly' ); ?>"></td></tr>
+        <tr><th><label><?php esc_html_e( 'Descrizione alternativa', 'ai-friendly' ); ?></label></th><td><textarea class="widefat" rows="3" name="_ai_fr_schema[description]" placeholder="<?php esc_attr_e( 'Lascia vuoto per usare il riassunto o la meta description', 'ai-friendly' ); ?>"><?php echo esc_textarea( $schema['description'] ?? '' ); ?></textarea></td></tr>
+        <tr><th>Course</th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_ai_fr_schema[courseCode]" value="<?php echo esc_attr( $schema['courseCode'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Codice corso', 'ai-friendly' ); ?>"><input name="_ai_fr_schema[educationalLevel]" value="<?php echo esc_attr( $schema['educationalLevel'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Livello', 'ai-friendly' ); ?>"></td></tr>
+        <tr><th>Event</th><td style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"><input type="datetime-local" name="_ai_fr_schema[startDate]" value="<?php echo esc_attr( $schema['startDate'] ?? '' ); ?>"><input type="datetime-local" name="_ai_fr_schema[endDate]" value="<?php echo esc_attr( $schema['endDate'] ?? '' ); ?>"><input name="_ai_fr_schema[locationName]" value="<?php echo esc_attr( $schema['locationName'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Nome luogo', 'ai-friendly' ); ?>"><input name="_ai_fr_schema[locationAddress]" value="<?php echo esc_attr( $schema['locationAddress'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Indirizzo', 'ai-friendly' ); ?>"></td></tr>
+        <tr><th>Service</th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_ai_fr_schema[serviceType]" value="<?php echo esc_attr( $schema['serviceType'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Tipo servizio', 'ai-friendly' ); ?>"><input name="_ai_fr_schema[areaServed]" value="<?php echo esc_attr( $schema['areaServed'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Area servita', 'ai-friendly' ); ?>"></td></tr>
+        <tr><th><label>FAQPage</label></th><td><textarea class="widefat" rows="6" name="_ai_fr_schema[faq]" placeholder="<?php esc_attr_e( 'Una FAQ per riga: Domanda | Risposta', 'ai-friendly' ); ?>"><?php echo esc_textarea( $schema['faq'] ?? '' ); ?></textarea><p class="description"><?php esc_html_e( 'Una coppia domanda/risposta per riga, separata da |.', 'ai-friendly' ); ?></p></td></tr>
     </table>
     <?php
 }
@@ -112,7 +112,7 @@ add_action( 'save_post', function ( int $post_id ): void {
     if ( ! $can_save_schema ) return;
 
     $raw_schema = isset( $_POST['_ai_fr_schema'] ) && is_array( $_POST['_ai_fr_schema'] )
-        ? wp_unslash( $_POST['_ai_fr_schema'] )
+        ? map_deep( wp_unslash( $_POST['_ai_fr_schema'] ), 'sanitize_textarea_field' )
         : [];
     $allowed_types = [ 'Course', 'Event', 'Service', 'FAQPage' ];
     $schema_type = sanitize_text_field( (string) ( $raw_schema['type'] ?? '' ) );

@@ -253,56 +253,50 @@ class AiFrVersioning {
             return self::clearAll();
         }
 
-        $post_types = array_values( get_post_types( [], 'names' ) );
-        $post_ids = get_posts(
-            [
-                'post_type'              => $post_types,
-                'post_status'            => array_keys( get_post_stati() ),
-                'posts_per_page'         => -1,
-                'fields'                 => 'ids',
-                'meta_key'               => '_ai_fr_md_filename',
-                'no_found_rows'          => true,
-                'suppress_filters'       => true,
-                'update_post_meta_cache' => true,
-                'update_post_term_cache' => false,
-            ]
-        );
-
         $filter = new AiFrContentFilter();
-        $referenced = [];
         $deleted = 0;
-
-        foreach ( $post_ids as $post_id ) {
-            $post = get_post( $post_id );
-            $filename = (string) get_post_meta( $post_id, '_ai_fr_md_filename', true );
-            $is_current = $post instanceof WP_Post
-                && $post->post_status === 'publish'
-                && $filter->shouldInclude( $post )
-                && $filename !== ''
-                && hash_equals( self::getFilename( $post ), $filename );
-
-            if ( ! $is_current ) {
-                if ( self::deleteFileByFilename( $filename ) ) {
-                    $deleted++;
-                }
-                delete_post_meta( $post_id, '_ai_fr_md_checksum' );
-                delete_post_meta( $post_id, '_ai_fr_md_generated' );
-                delete_post_meta( $post_id, '_ai_fr_md_filename' );
-                continue;
-            }
-
-            $referenced[ $filename ] = true;
-        }
+        $post_types = array_values( get_post_types( [], 'names' ) );
+        usort(
+            $post_types,
+            static fn( string $left, string $right ): int => strlen( $right ) <=> strlen( $left )
+        );
 
         $version_files = glob( AI_FR_VERSIONS_DIR . '/*.md' );
         $version_files = is_array( $version_files ) ? $version_files : [];
         foreach ( $version_files as $file ) {
-            if ( isset( $referenced[ basename( $file ) ] ) ) {
+            $filename = basename( $file );
+            $post_id = 0;
+            foreach ( $post_types as $post_type ) {
+                $prefix = sanitize_file_name( $post_type ) . '-';
+                if ( ! str_starts_with( $filename, $prefix ) ) {
+                    continue;
+                }
+                if ( preg_match( '/\A([1-9][0-9]*)-/', substr( $filename, strlen( $prefix ) ), $matches ) ) {
+                    $post_id = (int) $matches[1];
+                }
+                break;
+            }
+
+            $post = $post_id > 0 ? get_post( $post_id ) : null;
+            $stored_filename = $post_id > 0 ? (string) get_post_meta( $post_id, '_ai_fr_md_filename', true ) : '';
+            $is_current = $post instanceof WP_Post
+                && $post->post_status === 'publish'
+                && $filter->shouldInclude( $post )
+                && hash_equals( $stored_filename, $filename )
+                && hash_equals( self::getFilename( $post ), $filename );
+
+            if ( $is_current ) {
                 continue;
             }
-            wp_delete_file( $file );
-            if ( ! file_exists( $file ) ) {
+
+            if ( self::deleteFileByFilename( $filename ) ) {
                 $deleted++;
+            }
+
+            if ( $post_id > 0 && hash_equals( $stored_filename, $filename ) ) {
+                delete_post_meta( $post_id, '_ai_fr_md_checksum' );
+                delete_post_meta( $post_id, '_ai_fr_md_generated' );
+                delete_post_meta( $post_id, '_ai_fr_md_filename' );
             }
         }
 

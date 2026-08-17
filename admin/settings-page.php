@@ -63,8 +63,106 @@ add_action(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'ai_fr_admin_nonce' ),
                 'i18n'    => [
-                    'loading' => 'Caricamento...',
-                    'error'   => 'Si e verificato un errore.',
+                    'loading'             => __( 'Caricamento...', 'ai-friendly' ),
+                    'error'               => __( 'Si è verificato un errore.', 'ai-friendly' ),
+                    'noHeadings'          => __( 'Nessun heading trovato.', 'ai-friendly' ),
+                    'noWarnings'          => __( 'Nessun avviso.', 'ai-friendly' ),
+                    'included'            => __( 'Inclusa', 'ai-friendly' ),
+                    'excluded'            => __( 'Esclusa', 'ai-friendly' ),
+                    'include'             => __( 'Includi', 'ai-friendly' ),
+                    'excludeContent'      => __( 'Escludi', 'ai-friendly' ),
+                    'untitled'            => __( '(Senza titolo)', 'ai-friendly' ),
+                    'noContent'           => __( 'Nessun contenuto.', 'ai-friendly' ),
+                    'page'                => __( 'Pagina', 'ai-friendly' ),
+                    'noEvents'            => __( 'Nessun evento.', 'ai-friendly' ),
+                    'restore'             => __( 'Ripristina', 'ai-friendly' ),
+                    'noSnapshots'         => __( 'Nessuno snapshot.', 'ai-friendly' ),
+                    'selectTwoSnapshots'  => __( 'Seleziona esattamente 2 snapshot.', 'ai-friendly' ),
+                    'noDifferences'       => __( 'Nessuna differenza.', 'ai-friendly' ),
+                    'remove'              => __( 'Rimuovi', 'ai-friendly' ),
+                    'noImage'             => __( 'Nessuna immagine', 'ai-friendly' ),
+                    'noLogo'              => __( 'Nessun logo', 'ai-friendly' ),
+                    'saving'              => __( 'Salvataggio in corso…', 'ai-friendly' ),
+                    'saveAndGenerate'      => __( 'Salva e genera', 'ai-friendly' ),
+                    'setupComplete'        => __( 'Configurazione completata. L’output è stato verificato.', 'ai-friendly' ),
+                    'requestFailed'        => __( 'Impossibile completare la richiesta. Riprova senza perdere le scelte effettuate.', 'ai-friendly' ),
+                    'regenerationComplete' => __( 'Rigenerazione completata.', 'ai-friendly' ),
+                    'forcedComplete'       => __( 'Rigenerazione forzata completata.', 'ai-friendly' ),
+                    'confirmDeleteFiles'   => __( 'Eliminare tutti i file Markdown salvati?', 'ai-friendly' ),
+                    'service'              => __( 'Servizio', 'ai-friendly' ),
+                    'name'                 => __( 'Nome', 'ai-friendly' ),
+                    'pageUrl'              => __( 'URL pagina', 'ai-friendly' ),
+                    'serviceType'          => __( 'Tipo servizio', 'ai-friendly' ),
+                    'areaServed'           => __( 'Area servita', 'ai-friendly' ),
+                    'description'          => __( 'Descrizione', 'ai-friendly' ),
+                    'price'                => __( 'Prezzo', 'ai-friendly' ),
+                    'currency'             => __( 'Valuta', 'ai-friendly' ),
+                    'noManualServices'     => __( 'Nessun servizio manuale configurato.', 'ai-friendly' ),
+                    'additionalType'       => __( 'Tipo aggiuntivo', 'ai-friendly' ),
+                    'schemaType'           => __( 'Tipo Schema.org', 'ai-friendly' ),
+                    'contact'              => __( 'Contatto', 'ai-friendly' ),
+                    'department'           => __( 'Reparto / funzione', 'ai-friendly' ),
+                    'phone'                => __( 'Telefono', 'ai-friendly' ),
+                    'languages'            => __( 'Lingue', 'ai-friendly' ),
+                    'availability'         => __( 'Disponibilità', 'ai-friendly' ),
+                    'timeSlot'             => __( 'Fascia oraria', 'ai-friendly' ),
+                    'days'                 => __( 'Giorni', 'ai-friendly' ),
+                    'opens'                => __( 'Apertura', 'ai-friendly' ),
+                    'closes'               => __( 'Chiusura', 'ai-friendly' ),
+                    'validFrom'            => __( 'Valida dal', 'ai-friendly' ),
+                    'validThrough'         => __( 'Valida fino al', 'ai-friendly' ),
+                    'certification'        => __( 'Certificazione', 'ai-friendly' ),
+                    'identifier'           => __( 'Identificatore', 'ai-friendly' ),
+                    'source'               => __( 'Sorgente WordPress', 'ai-friendly' ),
+                    'noConfiguredItem'     => __( 'Nessun elemento configurato.', 'ai-friendly' ),
+                    'none'                 => __( 'Nessuno', 'ai-friendly' ),
+                    'staticOutput'         => __( 'File Markdown statici', 'ai-friendly' ),
+                    'dynamicOutput'        => __( 'Output dinamico', 'ai-friendly' ),
+                    'scheduledDisabled'    => __( 'Rigenerazione pianificata disattivata', 'ai-friendly' ),
+                    'disabled'             => __( 'Disattivato', 'ai-friendly' ),
+                    'enabled'              => __( 'Attivato', 'ai-friendly' ),
+                    'acfFields'            => __( 'Campi ACF', 'ai-friendly' ),
+                    'includedContent'      => __( 'Contenuti inclusi', 'ai-friendly' ),
+                    'output'               => __( 'Output', 'ai-friendly' ),
+                    'automation'           => __( 'Automazione', 'ai-friendly' ),
+                    'semanticSchema'       => __( 'Semantic Schema', 'ai-friendly' ),
+                    'selectIdentityImage'  => __( 'Seleziona immagine identitaria', 'ai-friendly' ),
+                    'useImage'             => __( 'Usa questa immagine', 'ai-friendly' ),
+                    'selectLogo'           => __( 'Seleziona logo aziendale', 'ai-friendly' ),
+                    'useLogo'              => __( 'Usa questo logo', 'ai-friendly' ),
+                    'issuesSingular'        => __( 'problema', 'ai-friendly' ),
+                    'issuesPlural'          => __( 'problemi', 'ai-friendly' ),
+                    'sitemap'               => __( 'Sitemap', 'ai-friendly' ),
+                    'robots'                => __( 'Robots', 'ai-friendly' ),
+                    'notAvailable'          => __( 'n/d', 'ai-friendly' ),
+                    'token'                 => __( 'token', 'ai-friendly' ),
+                    'lines'                 => __( 'Linee', 'ai-friendly' ),
+                    'tokenDelta'            => __( 'Delta token', 'ai-friendly' ),
+                    'score'                 => __( 'Punteggio', 'ai-friendly' ),
+                    'duplicates'            => __( 'Duplicati', 'ai-friendly' ),
+                    'certificateNumber'     => __( 'Numero certificato', 'ai-friendly' ),
+                    'certificationIssuer'   => __( 'Ente certificatore', 'ai-friendly' ),
+                    'identifierNumber'      => __( 'Numero identificativo', 'ai-friendly' ),
+                    'sourceReference'       => __( 'ID termine, taxonomy:slug o permalink WordPress', 'ai-friendly' ),
+                    'value'                 => __( 'Valore', 'ai-friendly' ),
+                    'noAdditionalTypes'     => __( 'Nessun tipo aggiuntivo configurato.', 'ai-friendly' ),
+                    'noContacts'            => __( 'Nessun contatto configurato.', 'ai-friendly' ),
+                    'noTimeSlots'           => __( 'Nessuna fascia oraria configurata.', 'ai-friendly' ),
+                    'noCertifications'      => __( 'Nessuna certificazione configurata.', 'ai-friendly' ),
+                    'noIdentifiers'         => __( 'Nessun identificatore aggiuntivo configurato.', 'ai-friendly' ),
+                    'noOfferSources'        => __( 'Nessuna sorgente WordPress configurata.', 'ai-friendly' ),
+                    'every'                 => __( 'Ogni', 'ai-friendly' ),
+                    'hoursBatch'            => __( 'ore, batch da', 'ai-friendly' ),
+                    'nameNotProvided'       => __( 'nome non indicato', 'ai-friendly' ),
+                    'savingAndVerifying'    => __( 'Salvataggio delle impostazioni e verifica dell’output in corso.', 'ai-friendly' ),
+                    'generationFailed'      => __( 'Generazione non riuscita. Le impostazioni salvate restano attive.', 'ai-friendly' ),
+                    'batchComplete'         => __( 'Batch completato.', 'ai-friendly' ),
+                    'processed'             => __( 'Processati', 'ai-friendly' ),
+                    'regenerated'           => __( 'rigenerati', 'ai-friendly' ),
+                    'deletedFiles'          => __( 'File eliminati', 'ai-friendly' ),
+                    'unsavedChanges'        => __( 'Modifiche non salvate', 'ai-friendly' ),
+                    'allChangesSaved'       => __( 'Tutte le modifiche sono salvate', 'ai-friendly' ),
+                    'serviceDescription'    => __( 'Descrizione breve del servizio.', 'ai-friendly' ),
                 ],
             ]
         );
@@ -74,7 +172,7 @@ add_action(
 function ai_fr_admin_require_permissions(): void {
     check_ajax_referer( 'ai_fr_admin_nonce', 'nonce' );
     if ( ! current_user_can( 'manage_options' ) ) {
-        wp_send_json_error( 'Permessi insufficienti' );
+        wp_send_json_error( __( 'Permessi insufficienti.', 'ai-friendly' ) );
     }
 }
 
@@ -219,7 +317,7 @@ add_action(
         $exclude = ai_fr_post_bool( 'exclude' );
         $post    = get_post( $post_id );
         if ( ! $post ) {
-            wp_send_json_error( 'Contenuto non trovato.' );
+            wp_send_json_error( __( 'Contenuto non trovato.', 'ai-friendly' ) );
         }
 
         if ( $exclude ) {
@@ -294,7 +392,7 @@ add_action(
         $result  = ai_fr_create_llms_snapshot( $content, $reason );
 
         if ( empty( $result['saved'] ) ) {
-            wp_send_json_error( 'Impossibile creare snapshot.' );
+            wp_send_json_error( __( 'Impossibile creare snapshot.', 'ai-friendly' ) );
         }
 
         ai_fr_add_event(
@@ -324,7 +422,7 @@ add_action(
         $result = ai_fr_restore_llms_snapshot( $id );
 
         if ( empty( $result['restored'] ) ) {
-            wp_send_json_error( $result['message'] ?? 'Ripristino fallito.' );
+            wp_send_json_error( $result['message'] ?? __( 'Ripristino fallito.', 'ai-friendly' ) );
         }
 
         ai_fr_add_event( 'llms_snapshot_restore', [ 'id' => $id ] );
@@ -340,13 +438,13 @@ add_action(
         $right_id = ai_fr_post_text( 'right_id', '' );
 
         if ( $left_id === '' || $right_id === '' ) {
-            wp_send_json_error( 'Seleziona due snapshot da confrontare.' );
+            wp_send_json_error( __( 'Seleziona due snapshot da confrontare.', 'ai-friendly' ) );
         }
 
         $left_content  = ai_fr_get_llms_snapshot_content( $left_id );
         $right_content = ai_fr_get_llms_snapshot_content( $right_id );
         if ( ! is_string( $left_content ) || ! is_string( $right_content ) ) {
-            wp_send_json_error( 'Uno o entrambi gli snapshot non sono disponibili.' );
+            wp_send_json_error( __( 'Uno o entrambi gli snapshot non sono disponibili.', 'ai-friendly' ) );
         }
 
         wp_send_json_success( ai_fr_diff_llms_content( $left_content, $right_content ) );
@@ -394,6 +492,7 @@ add_action(
         $options['include_posts']     = in_array( 'post', $types, true ) ? '1' : '';
         $options['include_products']  = class_exists( 'WooCommerce' ) && in_array( 'product', $types, true ) ? '1' : '';
         $options['include_cpt']       = array_values( array_diff( $types, [ 'page', 'post', 'product' ] ) );
+        $options['include_acf_fields'] = ai_fr_post_bool( 'include_acf_fields' ) ? '1' : '';
         $options['exclude_noindex']   = ai_fr_post_bool( 'exclude_noindex' ) ? '1' : '';
         $options['exclude_password']  = ai_fr_post_bool( 'exclude_password' ) ? '1' : '';
         $options['llms_include_auto'] = ai_fr_post_bool( 'llms_include_auto' ) ? '1' : '';
@@ -450,7 +549,7 @@ add_action(
             wp_send_json_error(
                 [
                     'saved'      => true,
-                    'message'    => 'Le impostazioni sono state salvate, ma la prima generazione non e riuscita.',
+                    'message'    => __( 'Le impostazioni sono state salvate, ma la prima generazione non è riuscita.', 'ai-friendly' ),
                     'diagnostics'=> ai_fr_run_diagnostics(),
                 ]
             );
@@ -497,6 +596,7 @@ function ai_fr_render_options_page(): void {
         $options['include_posts']        = ai_fr_post_bool( 'include_posts' ) ? '1' : '';
         $options['include_products']     = ai_fr_post_bool( 'include_products' ) ? '1' : '';
         $options['include_cpt']          = array_map( 'sanitize_key', ai_fr_post_array( 'include_cpt' ) );
+        $options['include_acf_fields']   = ai_fr_post_bool( 'include_acf_fields' ) ? '1' : '';
         $options['exclude_categories']   = array_map( 'intval', ai_fr_post_array( 'exclude_categories' ) );
         $options['exclude_tags']         = array_map( 'intval', ai_fr_post_array( 'exclude_tags' ) );
         $options['exclude_templates']    = array_map( 'sanitize_text_field', ai_fr_post_array( 'exclude_templates' ) );
@@ -654,15 +754,15 @@ function ai_fr_render_options_page(): void {
     <div class="wrap ai-fr-wrap">
         <div class="ai-fr-header">
             <div>
-                <p class="ai-fr-eyebrow">AI Friendly</p>
-                <h1>AI Content Hub <small class="ai-fr-version">v<?php echo esc_html( AI_FR_VERSION ); ?></small></h1>
+                <p class="ai-fr-eyebrow"><?php esc_html_e( 'AI Friendly', 'ai-friendly' ); ?></p>
+                <h1><?php esc_html_e( 'AI Content Hub', 'ai-friendly' ); ?> <small class="ai-fr-version">v<?php echo esc_html( AI_FR_VERSION ); ?></small></h1>
             </div>
-            <button type="button" class="button ai-fr-header-wizard<?php echo $onboarding_done ? '' : ' is-hidden'; ?>" id="ai-fr-reopen-wizard">Riapri configurazione guidata</button>
+            <button type="button" class="button ai-fr-header-wizard<?php echo $onboarding_done ? '' : ' is-hidden'; ?>" id="ai-fr-reopen-wizard"><?php esc_html_e( 'Riapri configurazione guidata', 'ai-friendly' ); ?></button>
             <?php if ( $settings_saved ) : ?>
                 <div class="ai-fr-save-notice" role="status" aria-live="polite">
                     <span class="ai-fr-save-notice-icon" aria-hidden="true"></span>
-                    <span>Impostazioni salvate</span>
-                    <button type="button" class="ai-fr-save-notice-dismiss" aria-label="Nascondi notifica" onclick="this.closest('.ai-fr-save-notice').hidden = true;">&times;</button>
+                    <span><?php esc_html_e( 'Impostazioni salvate', 'ai-friendly' ); ?></span>
+                    <button type="button" class="ai-fr-save-notice-dismiss" aria-label="<?php esc_attr_e( 'Nascondi notifica', 'ai-friendly' ); ?>" onclick="this.closest('.ai-fr-save-notice').hidden = true;"><?php esc_html_e( '×', 'ai-friendly' ); ?></button>
                 </div>
             <?php endif; ?>
         </div>
@@ -670,34 +770,50 @@ function ai_fr_render_options_page(): void {
         <div class="ai-fr-onboarding<?php echo $onboarding_done ? ' is-hidden' : ''; ?>" id="ai-fr-onboarding" data-initial-step="1">
             <div class="ai-fr-wizard-topline">
                 <div>
-                    <p class="ai-fr-eyebrow">Configurazione guidata</p>
-                    <h2>Prepariamo l’Hub sui dati reali del sito.</h2>
+                    <p class="ai-fr-eyebrow"><?php esc_html_e( 'Configurazione guidata', 'ai-friendly' ); ?></p>
+                    <h2><?php esc_html_e( 'Prepariamo l’Hub sui dati reali del sito.', 'ai-friendly' ); ?></h2>
                 </div>
-                <button type="button" class="button-link" id="ai-fr-onboarding-dismiss">Configura più tardi</button>
+                <button type="button" class="button-link" id="ai-fr-onboarding-dismiss"><?php esc_html_e( 'Configura più tardi', 'ai-friendly' ); ?></button>
             </div>
-            <ol class="ai-fr-stepper" aria-label="Avanzamento configurazione">
-                <?php foreach ( [ 'Analisi', 'Contenuti', 'Markdown', 'Schema', 'Riepilogo' ] as $index => $label ) : ?>
+            <ol class="ai-fr-stepper" aria-label="<?php esc_attr_e( 'Avanzamento configurazione', 'ai-friendly' ); ?>">
+                <?php
+                $wizard_steps = [
+                    __( 'Analisi', 'ai-friendly' ),
+                    __( 'Contenuti', 'ai-friendly' ),
+                    __( 'Markdown', 'ai-friendly' ),
+                    __( 'Schema', 'ai-friendly' ),
+                    __( 'Riepilogo', 'ai-friendly' ),
+                ];
+                foreach ( $wizard_steps as $index => $label ) :
+                ?>
                     <li data-wizard-marker="<?php echo esc_attr( $index + 1 ); ?>"><span><?php echo esc_html( $index + 1 ); ?></span><?php echo esc_html( $label ); ?></li>
                 <?php endforeach; ?>
             </ol>
 
             <div class="ai-fr-wizard-panel" data-wizard-step="1">
-                <div class="ai-fr-section-heading"><span>01</span><div><h3>Analisi del sito</h3><p>Questi dati sono stati rilevati da WordPress e dai plugin attivi.</p></div></div>
+                <div class="ai-fr-section-heading"><span>01</span><div><h3><?php esc_html_e( 'Analisi del sito', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Questi dati sono stati rilevati da WordPress e dai plugin attivi.', 'ai-friendly' ); ?></p></div></div>
                 <div class="ai-fr-analysis-grid">
-                    <div><small>Sito</small><strong><?php echo esc_html( get_bloginfo( 'name' ) ); ?></strong><code><?php echo esc_html( home_url( '/' ) ); ?></code></div>
-                    <div><small>Provider SEO</small><strong><?php echo esc_html( $schema_provider === 'none' ? 'Nessuno rilevato' : $schema_provider ); ?></strong></div>
-                    <div><small>WooCommerce</small><strong><?php echo class_exists( 'WooCommerce' ) ? 'Attivo' : 'Non rilevato'; ?></strong></div>
-                    <div><small>Breakdance</small><strong><?php echo ai_fr_is_breakdance_active() ? 'Attivo' : 'Non rilevato'; ?></strong></div>
+                    <div><small><?php esc_html_e( 'Sito', 'ai-friendly' ); ?></small><strong><?php echo esc_html( get_bloginfo( 'name' ) ); ?></strong><code><?php echo esc_html( home_url( '/' ) ); ?></code></div>
+                    <div><small><?php esc_html_e( 'Provider SEO', 'ai-friendly' ); ?></small><strong><?php echo esc_html( $schema_provider === 'none' ? __( 'Nessuno rilevato', 'ai-friendly' ) : $schema_provider ); ?></strong></div>
+                    <div><small><?php esc_html_e( 'WooCommerce', 'ai-friendly' ); ?></small><strong><?php echo class_exists( 'WooCommerce' ) ? esc_html__( 'Attivo', 'ai-friendly' ) : esc_html__( 'Non rilevato', 'ai-friendly' ); ?></strong></div>
+                    <div><small><?php esc_html_e( 'Breakdance', 'ai-friendly' ); ?></small><strong><?php echo ai_fr_is_breakdance_active() ? esc_html__( 'Attivo', 'ai-friendly' ) : esc_html__( 'Non rilevato', 'ai-friendly' ); ?></strong></div>
                 </div>
                 <div class="ai-fr-detected-types">
                     <?php foreach ( $wizard_post_types as $post_type ) : $counts = wp_count_posts( $post_type->name ); ?>
-                        <span><strong><?php echo esc_html( $post_type->labels->name ); ?></strong> <?php echo intval( $counts->publish ?? 0 ); ?> pubblicati</span>
+                        <span><strong><?php echo esc_html( $post_type->labels->name ); ?></strong> <?php
+                        $published_count = intval( $counts->publish ?? 0 );
+                        printf(
+                            /* translators: %s: formatted number of published items. */
+                            esc_html( _n( '%s pubblicato', '%s pubblicati', $published_count, 'ai-friendly' ) ),
+                            esc_html( number_format_i18n( $published_count ) )
+                        );
+                        ?></span>
                     <?php endforeach; ?>
                 </div>
             </div>
 
             <div class="ai-fr-wizard-panel" data-wizard-step="2" hidden>
-                <div class="ai-fr-section-heading"><span>02</span><div><h3>Contenuti da esporre</h3><p>Scegli solo i tipi destinati alla consultazione pubblica.</p></div></div>
+                <div class="ai-fr-section-heading"><span>02</span><div><h3><?php esc_html_e( 'Contenuti da esporre', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Scegli solo i tipi destinati alla consultazione pubblica.', 'ai-friendly' ); ?></p></div></div>
                 <div class="ai-fr-choice-grid">
                     <?php foreach ( $wizard_post_types as $post_type ) :
                         $is_first_setup = ! $onboarding_done;
@@ -706,50 +822,60 @@ function ai_fr_render_options_page(): void {
                         <label class="ai-fr-choice"><input type="checkbox" data-wizard-field="content_types" value="<?php echo esc_attr( $post_type->name ); ?>" <?php checked( $selected ); ?>><span><strong><?php echo esc_html( $post_type->labels->name ); ?></strong><small><?php echo esc_html( $post_type->name ); ?></small></span></label>
                     <?php endforeach; ?>
                 </div>
+                <div class="ai-fr-wizard-acf">
+                    <label class="ai-fr-setting">
+                        <input type="checkbox" data-wizard-field="include_acf_fields" <?php checked( $options['include_acf_fields'] ); ?>>
+                        <span>
+                            <strong><?php esc_html_e( 'Includi i campi ACF nell’output Markdown', 'ai-friendly' ); ?></strong>
+                            <small><?php esc_html_e( 'Disattivato per impostazione predefinita: i valori estratti diventano pubblici negli endpoint .md.', 'ai-friendly' ); ?></small>
+                        </span>
+                    </label>
+                    <p class="description"><strong><?php esc_html_e( 'Attenzione:', 'ai-friendly' ); ?></strong> <?php esc_html_e( 'attiva questa opzione solo se tutti i campi testuali ACF dei contenuti inclusi sono destinati alla pubblicazione.', 'ai-friendly' ); ?></p>
+                </div>
                 <div class="ai-fr-inline-options">
-                    <label><input type="checkbox" data-wizard-field="exclude_noindex" <?php checked( $options['exclude_noindex'] ); ?>> Escludi contenuti noindex</label>
-                    <label><input type="checkbox" data-wizard-field="exclude_password" <?php checked( $options['exclude_password'] ); ?>> Escludi contenuti protetti da password</label>
+                    <label><input type="checkbox" data-wizard-field="exclude_noindex" <?php checked( $options['exclude_noindex'] ); ?>> <?php esc_html_e( 'Escludi contenuti noindex', 'ai-friendly' ); ?></label>
+                    <label><input type="checkbox" data-wizard-field="exclude_password" <?php checked( $options['exclude_password'] ); ?>> <?php esc_html_e( 'Escludi contenuti protetti da password', 'ai-friendly' ); ?></label>
                 </div>
             </div>
 
             <div class="ai-fr-wizard-panel" data-wizard-step="3" hidden>
-                <div class="ai-fr-section-heading"><span>03</span><div><h3>Markdown e automazione</h3><p>Le impostazioni proposte mantengono l’output aggiornato ogni 24 ore.</p></div></div>
+                <div class="ai-fr-section-heading"><span>03</span><div><h3><?php esc_html_e( 'Markdown e automazione', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Le impostazioni proposte mantengono l’output aggiornato ogni 24 ore.', 'ai-friendly' ); ?></p></div></div>
                 <div class="ai-fr-settings-grid">
-                    <label class="ai-fr-setting"><input type="checkbox" data-wizard-field="llms_include_auto" <?php checked( $onboarding_done ? $options['llms_include_auto'] : '1' ); ?>><span><strong>Lista automatica</strong><small>Aggiunge i contenuti selezionati a llms.txt.</small></span></label>
-                    <label class="ai-fr-setting"><input type="checkbox" data-wizard-field="static_md_files" <?php checked( $onboarding_done ? $options['static_md_files'] : '1' ); ?>><span><strong>File Markdown statici</strong><small>Genera e serve copie .md persistenti.</small></span></label>
-                    <label class="ai-fr-setting"><input type="checkbox" data-wizard-field="auto_regenerate" <?php checked( $onboarding_done ? $options['auto_regenerate'] : '1' ); ?>><span><strong>Rigenerazione automatica</strong><small>Esegue il processo tramite cron WordPress.</small></span></label>
-                    <label class="ai-fr-setting"><input type="checkbox" data-wizard-field="regenerate_on_save" <?php checked( $options['regenerate_on_save'] ); ?>><span><strong>Trigger su modifica</strong><small>Avvia la rigenerazione quando salvi un contenuto.</small></span></label>
+                    <label class="ai-fr-setting"><input type="checkbox" data-wizard-field="llms_include_auto" <?php checked( $onboarding_done ? $options['llms_include_auto'] : '1' ); ?>><span><strong><?php esc_html_e( 'Lista automatica', 'ai-friendly' ); ?></strong><small><?php esc_html_e( 'Aggiunge i contenuti selezionati a llms.txt.', 'ai-friendly' ); ?></small></span></label>
+                    <label class="ai-fr-setting"><input type="checkbox" data-wizard-field="static_md_files" <?php checked( $onboarding_done ? $options['static_md_files'] : '1' ); ?>><span><strong><?php esc_html_e( 'File Markdown statici', 'ai-friendly' ); ?></strong><small><?php esc_html_e( 'Genera e serve copie .md persistenti.', 'ai-friendly' ); ?></small></span></label>
+                    <label class="ai-fr-setting"><input type="checkbox" data-wizard-field="auto_regenerate" <?php checked( $onboarding_done ? $options['auto_regenerate'] : '1' ); ?>><span><strong><?php esc_html_e( 'Rigenerazione automatica', 'ai-friendly' ); ?></strong><small><?php esc_html_e( 'Esegue il processo tramite cron WordPress.', 'ai-friendly' ); ?></small></span></label>
+                    <label class="ai-fr-setting"><input type="checkbox" data-wizard-field="regenerate_on_save" <?php checked( $options['regenerate_on_save'] ); ?>><span><strong><?php esc_html_e( 'Trigger su modifica', 'ai-friendly' ); ?></strong><small><?php esc_html_e( 'Avvia la rigenerazione quando salvi un contenuto.', 'ai-friendly' ); ?></small></span></label>
                 </div>
                 <div class="ai-fr-number-fields">
-                    <label>Intervallo (ore)<input type="number" min="1" max="168" data-wizard-field="regenerate_interval" value="<?php echo esc_attr( $onboarding_done ? $options['regenerate_interval'] : 24 ); ?>"></label>
-                    <label>Contenuti per esecuzione<input type="number" min="10" max="1000" data-wizard-field="regenerate_batch_size" value="<?php echo esc_attr( $onboarding_done ? $options['regenerate_batch_size'] : 100 ); ?>"></label>
-                    <label class="ai-fr-compact-check"><input type="checkbox" data-wizard-field="regenerate_on_change" <?php checked( $options['regenerate_on_change'] ); ?>> Solo se il checksum cambia</label>
+                    <label><?php esc_html_e( 'Intervallo (ore)', 'ai-friendly' ); ?><input type="number" min="1" max="168" data-wizard-field="regenerate_interval" value="<?php echo esc_attr( $onboarding_done ? $options['regenerate_interval'] : 24 ); ?>"></label>
+                    <label><?php esc_html_e( 'Contenuti per esecuzione', 'ai-friendly' ); ?><input type="number" min="10" max="1000" data-wizard-field="regenerate_batch_size" value="<?php echo esc_attr( $onboarding_done ? $options['regenerate_batch_size'] : 100 ); ?>"></label>
+                    <label class="ai-fr-compact-check"><input type="checkbox" data-wizard-field="regenerate_on_change" <?php checked( $options['regenerate_on_change'] ); ?>> <?php esc_html_e( 'Solo se il checksum cambia', 'ai-friendly' ); ?></label>
                 </div>
             </div>
 
             <div class="ai-fr-wizard-panel" data-wizard-step="4" hidden>
-                <div class="ai-fr-section-heading"><span>04</span><div><h3>Semantic Schema</h3><p>Puoi attivarlo ora e completare i dettagli nella sezione Schema.</p></div></div>
-                <label class="ai-fr-setting ai-fr-setting-primary"><input type="checkbox" data-wizard-field="schema_enabled" <?php checked( $options['schema_enabled'] ); ?>><span><strong>Abilita Semantic Schema</strong><small>Modalità automatica, compatibile con il provider SEO rilevato.</small></span></label>
+                <div class="ai-fr-section-heading"><span>04</span><div><h3><?php esc_html_e( 'Semantic Schema', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Puoi attivarlo ora e completare i dettagli nella sezione Schema.', 'ai-friendly' ); ?></p></div></div>
+                <label class="ai-fr-setting ai-fr-setting-primary"><input type="checkbox" data-wizard-field="schema_enabled" <?php checked( $options['schema_enabled'] ); ?>><span><strong><?php esc_html_e( 'Abilita Semantic Schema', 'ai-friendly' ); ?></strong><small><?php esc_html_e( 'Modalità automatica, compatibile con il provider SEO rilevato.', 'ai-friendly' ); ?></small></span></label>
                 <div class="ai-fr-number-fields ai-fr-schema-setup-fields">
-                    <label>Entità principale<select data-wizard-field="schema_entity_type"><option value="Organization" <?php selected( $options['schema_entity_type'], 'Organization' ); ?>>Organization</option><option value="Person" <?php selected( $options['schema_entity_type'], 'Person' ); ?>>Person</option></select></label>
-                    <label>Nome<input type="text" data-wizard-field="schema_name" value="<?php echo esc_attr( $options['schema_name'] ?: get_bloginfo( 'name' ) ); ?>"></label>
-                    <label class="ai-fr-field-wide">sameAs, un URL per riga<textarea rows="4" data-wizard-field="schema_same_as"><?php echo esc_textarea( $options['schema_same_as'] ); ?></textarea></label>
-                    <?php if ( ai_fr_is_breakdance_active() ) : ?><label class="ai-fr-compact-check"><input type="checkbox" data-wizard-field="schema_breakdance_faq_enabled" <?php checked( $options['schema_breakdance_faq_enabled'] ); ?>> Rileva automaticamente le FAQ di Breakdance</label><?php endif; ?>
+                    <label><?php esc_html_e( 'Entità principale', 'ai-friendly' ); ?><select data-wizard-field="schema_entity_type"><option value="Organization" <?php selected( $options['schema_entity_type'], 'Organization' ); ?>><?php esc_html_e( 'Organization', 'ai-friendly' ); ?></option><option value="Person" <?php selected( $options['schema_entity_type'], 'Person' ); ?>><?php esc_html_e( 'Person', 'ai-friendly' ); ?></option></select></label>
+                    <label><?php esc_html_e( 'Nome', 'ai-friendly' ); ?><input type="text" data-wizard-field="schema_name" value="<?php echo esc_attr( $options['schema_name'] ?: get_bloginfo( 'name' ) ); ?>"></label>
+                    <label class="ai-fr-field-wide"><?php esc_html_e( 'sameAs, un URL per riga', 'ai-friendly' ); ?><textarea rows="4" data-wizard-field="schema_same_as"><?php echo esc_textarea( $options['schema_same_as'] ); ?></textarea></label>
+                    <?php if ( ai_fr_is_breakdance_active() ) : ?><label class="ai-fr-compact-check"><input type="checkbox" data-wizard-field="schema_breakdance_faq_enabled" <?php checked( $options['schema_breakdance_faq_enabled'] ); ?>> <?php esc_html_e( 'Rileva automaticamente le FAQ di Breakdance', 'ai-friendly' ); ?></label><?php endif; ?>
                 </div>
             </div>
 
             <div class="ai-fr-wizard-panel" data-wizard-step="5" hidden>
-                <div class="ai-fr-section-heading"><span>05</span><div><h3>Riepilogo</h3><p>Controlla le scelte prima del salvataggio e della prima generazione.</p></div></div>
+                <div class="ai-fr-section-heading"><span>05</span><div><h3><?php esc_html_e( 'Riepilogo', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Controlla le scelte prima del salvataggio e della prima generazione.', 'ai-friendly' ); ?></p></div></div>
                 <div id="ai-fr-wizard-summary" class="ai-fr-review-grid"></div>
                 <div id="ai-fr-wizard-result" class="ai-fr-wizard-result" role="status" aria-live="polite"></div>
             </div>
 
             <div class="ai-fr-wizard-actions">
-                <button type="button" class="button" id="ai-fr-wizard-prev" hidden>Indietro</button>
+                <button type="button" class="button" id="ai-fr-wizard-prev" hidden><?php esc_html_e( 'Indietro', 'ai-friendly' ); ?></button>
                 <span class="ai-fr-wizard-spacer"></span>
-                <button type="button" class="button button-primary" id="ai-fr-wizard-next">Continua</button>
-                <button type="button" class="button button-primary" id="ai-fr-wizard-complete" hidden>Salva e genera</button>
-                <button type="button" class="button" id="ai-fr-wizard-retry" hidden>Riprova generazione</button>
+                <button type="button" class="button button-primary" id="ai-fr-wizard-next"><?php esc_html_e( 'Continua', 'ai-friendly' ); ?></button>
+                <button type="button" class="button button-primary" id="ai-fr-wizard-complete" hidden><?php esc_html_e( 'Salva e genera', 'ai-friendly' ); ?></button>
+                <button type="button" class="button" id="ai-fr-wizard-retry" hidden><?php esc_html_e( 'Riprova generazione', 'ai-friendly' ); ?></button>
             </div>
         </div>
 
@@ -758,135 +884,136 @@ function ai_fr_render_options_page(): void {
             <input type="hidden" name="onboarding_done" id="onboarding_done" value="<?php echo $onboarding_done ? '1' : ''; ?>">
             <input type="hidden" id="ai-fr-wizard-step" value="1">
 
-            <nav class="ai-fr-nav" role="tablist" aria-label="Sezioni AI Content Hub">
-                <button type="button" class="ai-fr-nav-item is-active" data-section="overview">Overview</button>
-                <button type="button" class="ai-fr-nav-item" data-section="content">Content</button>
-                <button type="button" class="ai-fr-nav-item" data-section="rules">Rules</button>
-                <button type="button" class="ai-fr-nav-item" data-section="schema">Schema</button>
-                <button type="button" class="ai-fr-nav-item" data-section="automation">Automation</button>
+            <nav class="ai-fr-nav" role="tablist" aria-label="<?php esc_attr_e( 'Sezioni AI Content Hub', 'ai-friendly' ); ?>">
+                <button type="button" class="ai-fr-nav-item is-active" data-section="overview"><?php esc_html_e( 'Overview', 'ai-friendly' ); ?></button>
+                <button type="button" class="ai-fr-nav-item" data-section="content"><?php esc_html_e( 'Content', 'ai-friendly' ); ?></button>
+                <button type="button" class="ai-fr-nav-item" data-section="rules"><?php esc_html_e( 'Rules', 'ai-friendly' ); ?></button>
+                <button type="button" class="ai-fr-nav-item" data-section="schema"><?php esc_html_e( 'Schema', 'ai-friendly' ); ?></button>
+                <button type="button" class="ai-fr-nav-item" data-section="automation"><?php esc_html_e( 'Automation', 'ai-friendly' ); ?></button>
             </nav>
 
             <section id="ai-fr-section-overview" class="ai-fr-section is-active">
-                <div class="ai-fr-section-heading"><span>01</span><div><h3>Overview</h3><p>Stato dell’output, diagnostica e azioni principali.</p></div></div>
+                <div class="ai-fr-section-heading"><span>01</span><div><h3><?php esc_html_e( 'Overview', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Stato dell’output, diagnostica e azioni principali.', 'ai-friendly' ); ?></p></div></div>
                 <div class="ai-fr-card-grid">
                     <article class="ai-fr-card">
-                        <h3>Stato llms.txt</h3>
+                        <h3><?php esc_html_e( 'Stato llms.txt', 'ai-friendly' ); ?></h3>
                         <p><code><?php echo esc_html( $overview['llms']['url'] ); ?></code></p>
-                        <p>Caratteri: <strong id="ai-fr-llms-chars"><?php echo intval( $overview['llms']['chars'] ); ?></strong></p>
-                        <p>Righe: <strong id="ai-fr-llms-lines"><?php echo intval( $overview['llms']['lines'] ); ?></strong></p>
-                        <p>Ultima rigenerazione: <strong id="ai-fr-last-regen"><?php echo esc_html( $overview['llms']['last_regen_time'] ?: 'n/d' ); ?></strong></p>
-                        <a href="<?php echo esc_url( home_url( '/llms.txt' ) ); ?>" target="_blank" class="button button-secondary">Anteprima llms.txt</a>
+                        <p><?php esc_html_e( 'Caratteri:', 'ai-friendly' ); ?> <strong id="ai-fr-llms-chars"><?php echo intval( $overview['llms']['chars'] ); ?></strong></p>
+                        <p><?php esc_html_e( 'Righe:', 'ai-friendly' ); ?> <strong id="ai-fr-llms-lines"><?php echo intval( $overview['llms']['lines'] ); ?></strong></p>
+                        <p><?php esc_html_e( 'Ultima rigenerazione:', 'ai-friendly' ); ?> <strong id="ai-fr-last-regen"><?php echo esc_html( $overview['llms']['last_regen_time'] ?: __( 'n/d', 'ai-friendly' ) ); ?></strong></p>
+                        <a href="<?php echo esc_url( home_url( '/llms.txt' ) ); ?>" target="_blank" class="button button-secondary"><?php esc_html_e( 'Anteprima llms.txt', 'ai-friendly' ); ?></a>
                     </article>
 
                     <article class="ai-fr-card">
-                        <h3>Markdown Pack</h3>
-                        <p>Static mode:
+                        <h3><?php esc_html_e( 'Markdown Pack', 'ai-friendly' ); ?></h3>
+                        <p><?php esc_html_e( 'Static mode:', 'ai-friendly' ); ?>
                             <span class="ai-fr-badge <?php echo ! empty( $overview['markdown']['static_enabled'] ) ? 'is-ok' : 'is-muted'; ?>">
-                                <?php echo ! empty( $overview['markdown']['static_enabled'] ) ? 'attivo' : 'disattivo'; ?>
+                                <?php echo ! empty( $overview['markdown']['static_enabled'] ) ? esc_html__( 'attivo', 'ai-friendly' ) : esc_html__( 'disattivo', 'ai-friendly' ); ?>
                             </span>
                         </p>
-                        <p>File: <strong><?php echo intval( $overview['markdown']['count'] ); ?></strong></p>
-                        <p>Spazio: <strong><?php echo esc_html( size_format( intval( $overview['markdown']['size'] ) ) ); ?></strong></p>
-                        <button type="button" id="ai-fr-regenerate-overview" class="button button-secondary">Rigenera llms/MD</button>
+                        <p><?php esc_html_e( 'File:', 'ai-friendly' ); ?> <strong><?php echo intval( $overview['markdown']['count'] ); ?></strong></p>
+                        <p><?php esc_html_e( 'Spazio:', 'ai-friendly' ); ?> <strong><?php echo esc_html( size_format( intval( $overview['markdown']['size'] ) ) ); ?></strong></p>
+                        <button type="button" id="ai-fr-regenerate-overview" class="button button-secondary"><?php esc_html_e( 'Rigenera llms/MD', 'ai-friendly' ); ?></button>
                     </article>
 
                     <article class="ai-fr-card">
-                        <h3>Avvisi rapidi</h3>
+                        <h3><?php esc_html_e( 'Avvisi rapidi', 'ai-friendly' ); ?></h3>
                         <ul id="ai-fr-overview-warnings" class="ai-fr-list">
                             <?php foreach ( $overview['diagnostics']['warnings'] as $warning ) : ?>
                                 <li><?php echo esc_html( $warning['message'] ?? '' ); ?></li>
                             <?php endforeach; ?>
                         </ul>
-                        <button type="button" id="ai-fr-refresh-diagnostics" class="button">Aggiorna diagnostica</button>
                         <p class="description" id="ai-fr-sr-info"></p>
+                        <button type="button" id="ai-fr-refresh-diagnostics" class="button"><?php esc_html_e( 'Aggiorna diagnostica', 'ai-friendly' ); ?></button>
                     </article>
 
                     <article class="ai-fr-card">
-                        <h3>Semantic Schema</h3>
-                        <p>Stato:
+                        <h3><?php esc_html_e( 'Semantic Schema', 'ai-friendly' ); ?></h3>
+                        <p><?php esc_html_e( 'Stato:', 'ai-friendly' ); ?>
                             <span class="ai-fr-badge <?php echo ! empty( $options['schema_enabled'] ) ? 'is-ok' : 'is-muted'; ?>">
-                                <?php echo ! empty( $options['schema_enabled'] ) ? 'attivo' : 'disattivo'; ?>
+                                <?php echo ! empty( $options['schema_enabled'] ) ? esc_html__( 'attivo', 'ai-friendly' ) : esc_html__( 'disattivo', 'ai-friendly' ); ?>
                             </span>
                         </p>
-                        <p>Provider SEO: <strong><?php echo esc_html( $schema_provider ); ?></strong></p>
-                        <p>Output: <strong><?php echo esc_html( $schema_mode ); ?></strong></p>
-                        <button type="button" class="button button-secondary" data-section-jump="schema">Configura Schema</button>
+                        <p><?php esc_html_e( 'Provider SEO:', 'ai-friendly' ); ?> <strong><?php echo esc_html( $schema_provider ); ?></strong></p>
+                        <p><?php esc_html_e( 'Output:', 'ai-friendly' ); ?> <strong><?php echo esc_html( $schema_mode ); ?></strong></p>
+                        <button type="button" class="button button-secondary" data-section-jump="schema"><?php esc_html_e( 'Configura Schema', 'ai-friendly' ); ?></button>
                     </article>
                 </div>
 
                 <div class="ai-fr-quick-actions">
-                    <button type="button" class="button button-primary" data-section-jump="content">Modifica llms.txt</button>
-                    <button type="button" class="button" id="ai-fr-refresh-overview">Aggiorna Overview</button>
-                    <button type="button" class="button" id="ai-fr-run-now">Rigenera adesso</button>
+                    <button type="button" class="button button-primary" data-section-jump="content"><?php esc_html_e( 'Modifica llms.txt', 'ai-friendly' ); ?></button>
+                    <button type="button" class="button" id="ai-fr-refresh-overview"><?php esc_html_e( 'Aggiorna Overview', 'ai-friendly' ); ?></button>
+                    <button type="button" class="button" id="ai-fr-run-now"><?php esc_html_e( 'Rigenera adesso', 'ai-friendly' ); ?></button>
                 </div>
             </section>
 
             <section id="ai-fr-section-content" class="ai-fr-section">
-                <div class="ai-fr-section-heading"><span>02</span><div><h3>Content</h3><p>Modifica llms.txt, controlla l’anteprima e gestisci i contenuti esposti.</p></div></div>
+                <div class="ai-fr-section-heading"><span>02</span><div><h3><?php esc_html_e( 'Content', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Modifica llms.txt, controlla l’anteprima e gestisci i contenuti esposti.', 'ai-friendly' ); ?></p></div></div>
                 <div class="ai-fr-editor-layout">
                     <aside class="ai-fr-panel ai-fr-panel-left">
-                        <h3>Struttura documento</h3>
+                        <h3><?php esc_html_e( 'Struttura documento', 'ai-friendly' ); ?></h3>
                         <ul id="ai-fr-toc" class="ai-fr-list"></ul>
                     </aside>
 
                     <div class="ai-fr-panel ai-fr-panel-center">
-                        <h3>Editor llms.txt</h3>
+                        <h3><?php esc_html_e( 'Editor llms.txt', 'ai-friendly' ); ?></h3>
                         <textarea
                             name="llms_content"
                             id="llms_content"
                             rows="16"
                             class="large-text code"
-                            placeholder="# Nome sito&#10;> Sintesi del sito"
+                            placeholder="<?php esc_attr_e( '# Nome sito
+> Sintesi del sito', 'ai-friendly' ); ?>"
                         ><?php echo esc_textarea( $options['llms_content'] ); ?></textarea>
-                        <p class="description">Contenuto custom Markdown. Se vuoto, il plugin genera in automatico.</p>
+                        <p class="description"><?php esc_html_e( 'Contenuto custom Markdown. Se vuoto, il plugin genera in automatico.', 'ai-friendly' ); ?></p>
                         <label>
                             <input type="checkbox" name="llms_include_auto" value="1" <?php checked( $options['llms_include_auto'] ); ?>>
-                            Aggiungi lista automatica dopo il contenuto custom
+                            <?php esc_html_e( 'Aggiungi lista automatica dopo il contenuto custom', 'ai-friendly' ); ?>
                         </label>
                         <div class="ai-fr-preview-split">
-                            <div class="ai-fr-preview-head">Anteprima live</div>
+                            <div class="ai-fr-preview-head"><?php esc_html_e( 'Anteprima live', 'ai-friendly' ); ?></div>
                             <div id="ai-fr-preview-pane"></div>
                         </div>
                     </div>
 
                     <aside class="ai-fr-panel ai-fr-panel-right">
-                        <h3>Helper</h3>
-                        <p>Token stimati: <strong id="ai-fr-token-count">0</strong></p>
-                        <p>Validazione link: <strong id="ai-fr-link-validation">0 issue</strong></p>
+                        <h3><?php esc_html_e( 'Helper', 'ai-friendly' ); ?></h3>
+                        <p><?php esc_html_e( 'Token stimati:', 'ai-friendly' ); ?> <strong id="ai-fr-token-count">0</strong></p>
+                        <p><?php esc_html_e( 'Validazione link:', 'ai-friendly' ); ?> <strong id="ai-fr-link-validation"><?php esc_html_e( '0 issue', 'ai-friendly' ); ?></strong></p>
                         <ul class="ai-fr-list">
-                            <li><button type="button" class="button-link ai-fr-insert-snippet" data-snippet="# Chi siamo">+ Heading</button></li>
-                            <li><button type="button" class="button-link ai-fr-insert-snippet" data-snippet="<?php echo esc_attr( '- [Servizi](' . $services_md_url . ')' ); ?>">+ Link sezione</button></li>
-                            <li><button type="button" class="button-link ai-fr-insert-snippet" data-snippet="> Sintesi per AI in 1-2 frasi.">+ Sintesi</button></li>
+                            <li><button type="button" class="button-link ai-fr-insert-snippet" data-snippet="# Chi siamo"><?php esc_html_e( '+ Heading', 'ai-friendly' ); ?></button></li>
+                            <li><button type="button" class="button-link ai-fr-insert-snippet" data-snippet="<?php echo esc_attr( '- [Servizi](' . $services_md_url . ')' ); ?>"><?php esc_html_e( '+ Link sezione', 'ai-friendly' ); ?></button></li>
+                            <li><button type="button" class="button-link ai-fr-insert-snippet" data-snippet="> <?php esc_html_e( 'Sintesi per AI in 1-2 frasi.">+ Sintesi', 'ai-friendly' ); ?></button></li>
                         </ul>
-                        <p>Variabili utili:</p>
+                        <p><?php esc_html_e( 'Variabili utili:', 'ai-friendly' ); ?></p>
                         <ul class="ai-fr-list ai-fr-small">
                             <li><code><?php echo esc_html( get_bloginfo( 'name' ) ); ?></code></li>
                             <li><code><?php echo esc_html( home_url() ); ?></code></li>
                             <li><code><?php echo esc_html( get_locale() ); ?></code></li>
                         </ul>
-                        <button type="button" id="ai-fr-run-simulation" class="button">AI Simulation</button>
+                        <button type="button" id="ai-fr-run-simulation" class="button"><?php esc_html_e( 'AI Simulation', 'ai-friendly' ); ?></button>
                         <div id="ai-fr-simulation-result" class="ai-fr-simulation"></div>
                     </aside>
                 </div>
 
                 <div class="ai-fr-history">
-                    <h3>Versioning llms</h3>
+                    <h3><?php esc_html_e( 'Versioning llms', 'ai-friendly' ); ?></h3>
                     <div class="ai-fr-history-actions">
-                        <button type="button" id="ai-fr-create-snapshot" class="button">Crea snapshot</button>
-                        <button type="button" id="ai-fr-load-snapshots" class="button button-secondary">Aggiorna lista</button>
-                        <button type="button" id="ai-fr-compare-snapshots" class="button">Confronta selezionati</button>
+                        <button type="button" id="ai-fr-create-snapshot" class="button"><?php esc_html_e( 'Crea snapshot', 'ai-friendly' ); ?></button>
+                        <button type="button" id="ai-fr-load-snapshots" class="button button-secondary"><?php esc_html_e( 'Aggiorna lista', 'ai-friendly' ); ?></button>
+                        <button type="button" id="ai-fr-compare-snapshots" class="button"><?php esc_html_e( 'Confronta selezionati', 'ai-friendly' ); ?></button>
                     </div>
                     <ul id="ai-fr-snapshot-list" class="ai-fr-list"></ul>
                     <div class="ai-fr-diff-wrap">
                         <div class="ai-fr-diff-summary" id="ai-fr-diff-summary"></div>
                         <div class="ai-fr-diff-columns">
                             <div>
-                                <h4>Diff affiancato</h4>
+                                <h4><?php esc_html_e( 'Diff affiancato', 'ai-friendly' ); ?></h4>
                                 <table class="widefat striped ai-fr-diff-table">
                                     <thead>
                                         <tr>
-                                            <th>Sinistra</th>
-                                            <th>Destra</th>
+                                            <th><?php esc_html_e( 'Sinistra', 'ai-friendly' ); ?></th>
+                                            <th><?php esc_html_e( 'Destra', 'ai-friendly' ); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody id="ai-fr-diff-rows"></tbody>
@@ -897,63 +1024,63 @@ function ai_fr_render_options_page(): void {
                 </div>
 
                 <div class="ai-fr-content-manager">
-                    <h3>Pagine del sito</h3>
+                    <h3><?php esc_html_e( 'Pagine del sito', 'ai-friendly' ); ?></h3>
                     <div class="ai-fr-filters">
-                        <input type="text" id="ai-fr-content-search" placeholder="Cerca titolo">
+                        <input type="text" id="ai-fr-content-search" placeholder="<?php esc_attr_e( 'Cerca titolo', 'ai-friendly' ); ?>">
                         <select id="ai-fr-content-type">
-                            <option value="all">Tutti i tipi</option>
-                            <option value="page">Pagine</option>
-                            <option value="post">Post</option>
-                            <option value="product">Prodotti</option>
+                            <option value="all"><?php esc_html_e( 'Tutti i tipi', 'ai-friendly' ); ?></option>
+                            <option value="page"><?php esc_html_e( 'Pagine', 'ai-friendly' ); ?></option>
+                            <option value="post"><?php esc_html_e( 'Post', 'ai-friendly' ); ?></option>
+                            <option value="product"><?php esc_html_e( 'Prodotti', 'ai-friendly' ); ?></option>
                         </select>
                         <select id="ai-fr-content-status">
-                            <option value="any">Tutti gli stati</option>
-                            <option value="publish">Pubblicato</option>
-                            <option value="draft">Bozza</option>
-                            <option value="private">Privato</option>
+                            <option value="any"><?php esc_html_e( 'Tutti gli stati', 'ai-friendly' ); ?></option>
+                            <option value="publish"><?php esc_html_e( 'Pubblicato', 'ai-friendly' ); ?></option>
+                            <option value="draft"><?php esc_html_e( 'Bozza', 'ai-friendly' ); ?></option>
+                            <option value="private"><?php esc_html_e( 'Privato', 'ai-friendly' ); ?></option>
                         </select>
-                        <button type="button" id="ai-fr-content-apply" class="button">Filtra</button>
+                        <button type="button" id="ai-fr-content-apply" class="button"><?php esc_html_e( 'Filtra', 'ai-friendly' ); ?></button>
                     </div>
                     <table class="widefat striped">
                         <thead>
                             <tr>
-                                <th>Inclusa/Esclusa</th>
-                                <th>Titolo</th>
-                                <th>Tipo</th>
-                                <th>Lingua</th>
-                                <th>Stato</th>
-                                <th>Token</th>
-                                <th>Azione</th>
+                                <th><?php esc_html_e( 'Inclusa/Esclusa', 'ai-friendly' ); ?></th>
+                                <th><?php esc_html_e( 'Titolo', 'ai-friendly' ); ?></th>
+                                <th><?php esc_html_e( 'Tipo', 'ai-friendly' ); ?></th>
+                                <th><?php esc_html_e( 'Lingua', 'ai-friendly' ); ?></th>
+                                <th><?php esc_html_e( 'Stato', 'ai-friendly' ); ?></th>
+                                <th><?php esc_html_e( 'Token', 'ai-friendly' ); ?></th>
+                                <th><?php esc_html_e( 'Azione', 'ai-friendly' ); ?></th>
                             </tr>
                         </thead>
                         <tbody id="ai-fr-content-tbody"></tbody>
                     </table>
                     <div class="ai-fr-pagination">
-                        <button type="button" class="button" id="ai-fr-prev-page">Precedente</button>
-                        <span id="ai-fr-page-info">Pagina 1</span>
-                        <button type="button" class="button" id="ai-fr-next-page">Successiva</button>
+                        <button type="button" class="button" id="ai-fr-prev-page"><?php esc_html_e( 'Precedente', 'ai-friendly' ); ?></button>
+                        <span id="ai-fr-page-info"><?php esc_html_e( 'Pagina 1', 'ai-friendly' ); ?></span>
+                        <button type="button" class="button" id="ai-fr-next-page"><?php esc_html_e( 'Successiva', 'ai-friendly' ); ?></button>
                     </div>
                 </div>
             </section>
 
             <section id="ai-fr-section-rules" class="ai-fr-section">
-                <div class="ai-fr-section-heading"><span>03</span><div><h3>Filtri & esclusioni</h3><p>Definisci cosa entra nell’output pubblico e cosa deve restarne fuori.</p></div></div>
+                <div class="ai-fr-section-heading"><span>03</span><div><h3><?php esc_html_e( 'Filtri & esclusioni', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Definisci cosa entra nell’output pubblico e cosa deve restarne fuori.', 'ai-friendly' ); ?></p></div></div>
                 <div class="ai-fr-settings-cards">
                     <article class="ai-fr-settings-card">
-                        <div class="ai-fr-card-head"><span>01</span><div><h4>Tipi di contenuto</h4><p>Seleziona le raccolte pubbliche da esporre.</p></div></div>
+                        <div class="ai-fr-card-head"><span>01</span><div><h4><?php esc_html_e( 'Tipi di contenuto', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Seleziona le raccolte pubbliche da esporre.', 'ai-friendly' ); ?></p></div></div>
                         <div class="ai-fr-option-list">
                             <label>
                                 <input type="checkbox" name="include_pages" value="1" <?php checked( $options['include_pages'] ); ?>>
-                                Pagine
+                                <?php esc_html_e( 'Pagine', 'ai-friendly' ); ?>
                             </label>
                             <label>
                                 <input type="checkbox" name="include_posts" value="1" <?php checked( $options['include_posts'] ); ?>>
-                                Articoli (Post)
+                                <?php esc_html_e( 'Articoli (Post)', 'ai-friendly' ); ?>
                             </label>
                             <?php if ( class_exists( 'WooCommerce' ) ) : ?>
                                 <label>
                                     <input type="checkbox" name="include_products" value="1" <?php checked( $options['include_products'] ); ?>>
-                                    Prodotti WooCommerce
+                                    <?php esc_html_e( 'Prodotti WooCommerce', 'ai-friendly' ); ?>
                                 </label>
                             <?php endif; ?>
                             <?php if ( ! empty( $all_cpt ) ) : ?>
@@ -968,22 +1095,27 @@ function ai_fr_render_options_page(): void {
                         </div>
                     </article>
                     <article class="ai-fr-settings-card">
-                        <div class="ai-fr-card-head"><span>02</span><div><h4>Protezioni</h4><p>Rispetta indicazioni SEO e accessi riservati.</p></div></div>
+                        <div class="ai-fr-card-head"><span>02</span><div><h4><?php esc_html_e( 'Protezioni', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Rispetta indicazioni SEO e accessi riservati.', 'ai-friendly' ); ?></p></div></div>
                         <div class="ai-fr-option-list">
                             <label>
                                 <input type="checkbox" name="exclude_noindex" value="1" <?php checked( $options['exclude_noindex'] ); ?>>
-                                Escludi pagine con meta <code>noindex</code>
+                                <?php esc_html_e( 'Escludi pagine con meta', 'ai-friendly' ); ?> <code><?php esc_html_e( 'noindex', 'ai-friendly' ); ?></code>
                             </label>
                             <label>
                                 <input type="checkbox" name="exclude_password" value="1" <?php checked( $options['exclude_password'] ); ?>>
-                                Escludi contenuti protetti da password
+                                <?php esc_html_e( 'Escludi contenuti protetti da password', 'ai-friendly' ); ?>
                             </label>
+                            <label>
+                                <input type="checkbox" name="include_acf_fields" value="1" <?php checked( $options['include_acf_fields'] ); ?>>
+                                <?php esc_html_e( 'Includi i valori testuali dei campi ACF nell\'output pubblico', 'ai-friendly' ); ?>
+                            </label>
+                            <p class="description"><?php esc_html_e( 'Disattivato per impostazione predefinita: abilitalo solo se tutti i campi ACF dei contenuti inclusi sono destinati alla pubblicazione.', 'ai-friendly' ); ?></p>
                         </div>
                     </article>
                     <article class="ai-fr-settings-card ai-fr-settings-card-wide">
-                        <div class="ai-fr-card-head"><span>03</span><div><h4>Esclusioni granulari</h4><p>Categorie, tag, template e pattern URL.</p></div></div>
+                        <div class="ai-fr-card-head"><span>03</span><div><h4><?php esc_html_e( 'Esclusioni granulari', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Categorie, tag, template e pattern URL.', 'ai-friendly' ); ?></p></div></div>
                         <div class="ai-fr-field-grid">
-                            <?php if ( ! empty( $all_categories ) ) : ?><label class="ai-fr-field"><span>Categorie</span><select name="exclude_categories[]" multiple size="6">
+                            <?php if ( ! empty( $all_categories ) ) : ?><label class="ai-fr-field"><span><?php esc_html_e( 'Categorie', 'ai-friendly' ); ?></span><select name="exclude_categories[]" multiple size="6">
                                 <?php foreach ( $all_categories as $cat ) : ?>
                                     <option value="<?php echo esc_attr( $cat->term_id ); ?>"
                                         <?php selected( in_array( $cat->term_id, (array) $options['exclude_categories'], false ) ); ?>>
@@ -991,7 +1123,7 @@ function ai_fr_render_options_page(): void {
                                     </option>
                                 <?php endforeach; ?>
                             </select></label><?php endif; ?>
-                            <?php if ( ! empty( $all_tags ) ) : ?><label class="ai-fr-field"><span>Tag</span><select name="exclude_tags[]" multiple size="6">
+                            <?php if ( ! empty( $all_tags ) ) : ?><label class="ai-fr-field"><span><?php esc_html_e( 'Tag', 'ai-friendly' ); ?></span><select name="exclude_tags[]" multiple size="6">
                                 <?php foreach ( $all_tags as $tag ) : ?>
                                     <option value="<?php echo esc_attr( $tag->term_id ); ?>"
                                         <?php selected( in_array( $tag->term_id, (array) $options['exclude_tags'], false ) ); ?>>
@@ -999,7 +1131,7 @@ function ai_fr_render_options_page(): void {
                                     </option>
                                 <?php endforeach; ?>
                             </select></label><?php endif; ?>
-                            <?php if ( ! empty( $all_templates ) ) : ?><label class="ai-fr-field"><span>Template</span><select name="exclude_templates[]" multiple size="6">
+                            <?php if ( ! empty( $all_templates ) ) : ?><label class="ai-fr-field"><span><?php esc_html_e( 'Template', 'ai-friendly' ); ?></span><select name="exclude_templates[]" multiple size="6">
                                 <?php foreach ( $all_templates as $file => $name ) : ?>
                                     <option value="<?php echo esc_attr( $file ); ?>"
                                         <?php selected( in_array( $file, (array) $options['exclude_templates'], true ) ); ?>>
@@ -1007,7 +1139,7 @@ function ai_fr_render_options_page(): void {
                                     </option>
                                 <?php endforeach; ?>
                             </select></label><?php endif; ?>
-                            <label class="ai-fr-field ai-fr-field-wide"><span>Pattern URL</span><textarea name="exclude_url_patterns" id="exclude_url_patterns" rows="5" class="code"><?php echo esc_textarea( $options['exclude_url_patterns'] ); ?></textarea><small>Un pattern per riga, con wildcard <code>*</code>.</small></label>
+                            <label class="ai-fr-field ai-fr-field-wide"><span><?php esc_html_e( 'Pattern URL', 'ai-friendly' ); ?></span><textarea name="exclude_url_patterns" id="exclude_url_patterns" rows="5" class="code"><?php echo esc_textarea( $options['exclude_url_patterns'] ); ?></textarea><small><?php esc_html_e( 'Un pattern per riga, con wildcard', 'ai-friendly' ); ?> <code>*</code>.</small></label>
                         </div>
                     </article>
                 </div>
@@ -1017,43 +1149,43 @@ function ai_fr_render_options_page(): void {
                 <div class="ai-fr-schema-head ai-fr-section-heading">
                     <span>04</span>
                     <div>
-                        <h3>Semantic Schema</h3>
-                        <p class="description">Aggiunge identità, profili e contesto AI-friendly al JSON-LD, senza duplicare il lavoro del plugin SEO.</p>
+                        <h3><?php esc_html_e( 'Semantic Schema', 'ai-friendly' ); ?></h3>
+                        <p class="description"><?php esc_html_e( 'Aggiunge identità, profili e contesto AI-friendly al JSON-LD, senza duplicare il lavoro del plugin SEO.', 'ai-friendly' ); ?></p>
                     </div>
-                    <div class="ai-fr-schema-status" aria-label="Stato Semantic Schema">
+                    <div class="ai-fr-schema-status" aria-label="<?php esc_attr_e( 'Stato Semantic Schema', 'ai-friendly' ); ?>">
                         <span class="ai-fr-badge <?php echo ! empty( $options['schema_enabled'] ) ? 'is-ok' : 'is-muted'; ?>">
-                            <?php echo ! empty( $options['schema_enabled'] ) ? 'Attivo' : 'Disattivo'; ?>
+                            <?php echo ! empty( $options['schema_enabled'] ) ? esc_html__( 'Attivo', 'ai-friendly' ) : esc_html__( 'Disattivo', 'ai-friendly' ); ?>
                         </span>
-                        <span>Provider: <code><?php echo esc_html( $schema_provider ); ?></code></span>
-                        <span>Output: <code><?php echo esc_html( $schema_mode ); ?></code></span>
-                        <a class="button button-secondary" href="<?php echo esc_url( $schema_validator_url ); ?>" target="_blank" rel="noopener noreferrer">Apri Schema Validator</a>
+                        <span><?php esc_html_e( 'Provider:', 'ai-friendly' ); ?> <code><?php echo esc_html( $schema_provider ); ?></code></span>
+                        <span><?php esc_html_e( 'Output:', 'ai-friendly' ); ?> <code><?php echo esc_html( $schema_mode ); ?></code></span>
+                        <a class="button button-secondary" href="<?php echo esc_url( $schema_validator_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Apri Schema Validator', 'ai-friendly' ); ?></a>
                     </div>
                 </div>
 
                 <div class="ai-fr-schema-grid">
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Output</h4>
-                            <p>Decidi se AI Friendly deve estendere Yoast/Rank Math o stampare un grafo autonomo.</p>
+                            <h4><?php esc_html_e( 'Output', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Decidi se AI Friendly deve estendere Yoast/Rank Math o stampare un grafo autonomo.', 'ai-friendly' ); ?></p>
                         </div>
                         <div class="ai-fr-schema-fields ai-fr-schema-fields-inline">
                             <label class="ai-fr-field ai-fr-field-check">
                                 <input type="checkbox" name="schema_enabled" value="1" <?php checked( $options['schema_enabled'] ); ?>>
-                                <span>Abilita JSON-LD semantico AI Friendly</span>
+                                <span><?php esc_html_e( 'Abilita JSON-LD semantico AI Friendly', 'ai-friendly' ); ?></span>
                             </label>
                             <?php if ( ai_fr_is_breakdance_active() ) : ?>
                                 <label class="ai-fr-field ai-fr-field-check">
                                     <input type="checkbox" name="schema_breakdance_faq_enabled" value="1" <?php checked( $options['schema_breakdance_faq_enabled'] ); ?>>
-                                    <span>Rileva automaticamente le FAQ di Breakdance</span>
+                                    <span><?php esc_html_e( 'Rileva automaticamente le FAQ di Breakdance', 'ai-friendly' ); ?></span>
                                 </label>
                             <?php endif; ?>
                             <label class="ai-fr-field">
-                                <span>Modalità</span>
+                                <span><?php esc_html_e( 'Modalità', 'ai-friendly' ); ?></span>
                                 <select name="schema_mode">
-                                    <option value="auto" <?php selected( $options['schema_mode'], 'auto' ); ?>>Auto</option>
-                                    <option value="standalone" <?php selected( $options['schema_mode'], 'standalone' ); ?>>Standalone</option>
-                                    <option value="extend_yoast" <?php selected( $options['schema_mode'], 'extend_yoast' ); ?>>Estendi Yoast</option>
-                                    <option value="extend_rank_math" <?php selected( $options['schema_mode'], 'extend_rank_math' ); ?>>Estendi Rank Math</option>
+                                    <option value="auto" <?php selected( $options['schema_mode'], 'auto' ); ?>><?php esc_html_e( 'Auto', 'ai-friendly' ); ?></option>
+                                    <option value="standalone" <?php selected( $options['schema_mode'], 'standalone' ); ?>><?php esc_html_e( 'Standalone', 'ai-friendly' ); ?></option>
+                                    <option value="extend_yoast" <?php selected( $options['schema_mode'], 'extend_yoast' ); ?>><?php esc_html_e( 'Estendi Yoast', 'ai-friendly' ); ?></option>
+                                    <option value="extend_rank_math" <?php selected( $options['schema_mode'], 'extend_rank_math' ); ?>><?php esc_html_e( 'Estendi Rank Math', 'ai-friendly' ); ?></option>
                                 </select>
                             </label>
                         </div>
@@ -1061,68 +1193,68 @@ function ai_fr_render_options_page(): void {
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide ai-fr-schema-identity">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Identità principale</h4>
-                            <p>Il nodo `Person` o `Organization` che rappresenta il sito o il brand.</p>
+                            <h4><?php esc_html_e( 'Identità principale', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Il nodo `Person` o `Organization` che rappresenta il sito o il brand.', 'ai-friendly' ); ?></p>
                         </div>
                         <div class="ai-fr-schema-fields">
                             <label class="ai-fr-field ai-fr-field-short">
-                                <span>Tipo</span>
+                                <span><?php esc_html_e( 'Tipo', 'ai-friendly' ); ?></span>
                                 <select name="schema_entity_type" id="ai-fr-schema-entity-type">
-                                    <option value="Person" <?php selected( $options['schema_entity_type'], 'Person' ); ?>>Person</option>
-                                    <option value="Organization" <?php selected( $options['schema_entity_type'], 'Organization' ); ?>>Organization</option>
+                                    <option value="Person" <?php selected( $options['schema_entity_type'], 'Person' ); ?>><?php esc_html_e( 'Person', 'ai-friendly' ); ?></option>
+                                    <option value="Organization" <?php selected( $options['schema_entity_type'], 'Organization' ); ?>><?php esc_html_e( 'Organization', 'ai-friendly' ); ?></option>
                                 </select>
                             </label>
                             <label class="ai-fr-field">
-                                <span>Nome</span>
+                                <span><?php esc_html_e( 'Nome', 'ai-friendly' ); ?></span>
                                 <input type="text" name="schema_name" value="<?php echo esc_attr( $options['schema_name'] ); ?>" placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
                             </label>
                             <label class="ai-fr-field">
-                                <span>Nome alternativo</span>
+                                <span><?php esc_html_e( 'Nome alternativo', 'ai-friendly' ); ?></span>
                                 <input type="text" name="schema_alternate_name" value="<?php echo esc_attr( $options['schema_alternate_name'] ); ?>">
                             </label>
                             <label class="ai-fr-field" data-entity-scope="person">
-                                <span>Ruolo / job title</span>
+                                <span><?php esc_html_e( 'Ruolo / job title', 'ai-friendly' ); ?></span>
                                 <input type="text" name="schema_job_title" value="<?php echo esc_attr( $options['schema_job_title'] ); ?>">
                             </label>
                             <div class="ai-fr-field" data-entity-scope="organization">
-                                <span>Tipi aggiuntivi</span>
+                                <span><?php esc_html_e( 'Tipi aggiuntivi', 'ai-friendly' ); ?></span>
                                 <div class="ai-fr-schema-repeaters" data-repeater="types">
                                     <?php foreach ( $schema_types as $index => $schema_type ) : ?>
                                         <div class="ai-fr-schema-repeater-row">
-                                            <input type="text" data-field="value" name="schema_types[<?php echo esc_attr( $index ); ?>]" value="<?php echo esc_attr( $schema_type ); ?>" placeholder="EducationalOrganization">
-                                            <button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>
+                                            <input type="text" data-field="value" name="schema_types[<?php echo esc_attr( $index ); ?>]" value="<?php echo esc_attr( $schema_type ); ?>" placeholder="<?php esc_attr_e( 'EducationalOrganization', 'ai-friendly' ); ?>">
+                                            <button type="button" class="button-link-delete ai-fr-repeater-remove"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
-                                <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="types">Aggiungi tipo</button>
+                                <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="types"><?php esc_html_e( 'Aggiungi tipo', 'ai-friendly' ); ?></button>
                                 <input type="hidden" name="schema_additional_type" value="">
-                                <small>Genera un vero array <code>@type</code>, per esempio Organization + EducationalOrganization + NGO.</small>
+                                <small><?php esc_html_e( 'Genera un vero array', 'ai-friendly' ); ?> <code><?php esc_html_e( '@type', 'ai-friendly' ); ?></code><?php esc_html_e( ', per esempio Organization + EducationalOrganization + NGO.', 'ai-friendly' ); ?></small>
                             </div>
                         </div>
-                        <aside class="ai-fr-identity-assets" aria-label="Immagini dell'identità">
+                        <aside class="ai-fr-identity-assets" aria-label="<?php esc_attr_e( 'Immagini dell\'identità', 'ai-friendly' ); ?>">
                             <div class="ai-fr-media-block" data-entity-scope="organization">
-                                <div class="ai-fr-media-block-head"><strong>Logo aziendale</strong><span>Usato nel nodo Organization.</span></div>
+                                <div class="ai-fr-media-block-head"><strong><?php esc_html_e( 'Logo aziendale', 'ai-friendly' ); ?></strong><span><?php esc_html_e( 'Usato nel nodo Organization.', 'ai-friendly' ); ?></span></div>
                                 <input type="hidden" name="schema_logo_id" id="ai-fr-schema-logo-id" value="<?php echo esc_attr( intval( $options['schema_logo_id'] ) ); ?>">
                                 <div class="ai-fr-schema-media">
                                     <div class="ai-fr-schema-image-preview" id="ai-fr-schema-logo-preview">
-                                        <?php if ( $schema_logo_url !== '' ) : ?><img src="<?php echo esc_url( $schema_logo_url ); ?>" alt="" /><?php else : ?><span>Nessun logo</span><?php endif; ?>
+                                        <?php if ( $schema_logo_url !== '' ) : ?><img src="<?php echo esc_url( $schema_logo_url ); ?>" alt="" /><?php else : ?><span><?php esc_html_e( 'Nessun logo', 'ai-friendly' ); ?></span><?php endif; ?>
                                     </div>
                                     <div class="ai-fr-schema-media-actions">
-                                        <button type="button" class="button" id="ai-fr-schema-logo-select">Seleziona</button>
-                                        <button type="button" class="button ai-fr-button-danger" id="ai-fr-schema-logo-clear">Rimuovi</button>
+                                        <button type="button" class="button" id="ai-fr-schema-logo-select"><?php esc_html_e( 'Seleziona', 'ai-friendly' ); ?></button>
+                                        <button type="button" class="button ai-fr-button-danger" id="ai-fr-schema-logo-clear"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                     </div>
                                 </div>
                             </div>
                             <div class="ai-fr-media-block">
-                                <div class="ai-fr-media-block-head"><strong>Immagine principale</strong><span>Logo, ritratto o immagine identitaria.</span></div>
+                                <div class="ai-fr-media-block-head"><strong><?php esc_html_e( 'Immagine principale', 'ai-friendly' ); ?></strong><span><?php esc_html_e( 'Logo, ritratto o immagine identitaria.', 'ai-friendly' ); ?></span></div>
                                 <input type="hidden" name="schema_image_id" id="ai-fr-schema-image-id" value="<?php echo esc_attr( intval( $options['schema_image_id'] ) ); ?>">
                                 <div class="ai-fr-schema-media">
                                     <div class="ai-fr-schema-image-preview" id="ai-fr-schema-entity-image-preview">
-                                        <?php if ( $schema_image_url !== '' ) : ?><img src="<?php echo esc_url( $schema_image_url ); ?>" alt="" /><?php else : ?><span>Nessuna immagine</span><?php endif; ?>
+                                        <?php if ( $schema_image_url !== '' ) : ?><img src="<?php echo esc_url( $schema_image_url ); ?>" alt="" /><?php else : ?><span><?php esc_html_e( 'Nessuna immagine', 'ai-friendly' ); ?></span><?php endif; ?>
                                     </div>
                                     <div class="ai-fr-schema-media-actions">
-                                        <button type="button" class="button" id="ai-fr-schema-image-select">Seleziona</button>
-                                        <button type="button" class="button ai-fr-button-danger" id="ai-fr-schema-image-clear">Rimuovi</button>
+                                        <button type="button" class="button" id="ai-fr-schema-image-select"><?php esc_html_e( 'Seleziona', 'ai-friendly' ); ?></button>
+                                        <button type="button" class="button ai-fr-button-danger" id="ai-fr-schema-image-clear"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                     </div>
                                 </div>
                             </div>
@@ -1131,34 +1263,34 @@ function ai_fr_render_options_page(): void {
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide" data-entity-scope="organization">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Dati societari</h4>
-                            <p>Campi opzionali per <code>Organization</code>. Inserisci solo dati ufficiali e pubblicamente verificabili.</p>
+                            <h4><?php esc_html_e( 'Dati societari', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Campi opzionali per', 'ai-friendly' ); ?> <code><?php esc_html_e( 'Organization', 'ai-friendly' ); ?></code><?php esc_html_e( '. Inserisci solo dati ufficiali e pubblicamente verificabili.', 'ai-friendly' ); ?></p>
                         </div>
                         <div class="ai-fr-schema-fields">
-                            <label class="ai-fr-field"><span>Ragione sociale</span><input type="text" name="schema_legal_name" value="<?php echo esc_attr( $options['schema_legal_name'] ); ?>" placeholder="Azienda S.p.A."></label>
-                            <label class="ai-fr-field"><span>Partita IVA</span><input type="text" name="schema_vat_id" value="<?php echo esc_attr( $options['schema_vat_id'] ); ?>" placeholder="IT01234567890"></label>
-                            <label class="ai-fr-field"><span>Codice fiscale / taxID</span><input type="text" name="schema_tax_id" value="<?php echo esc_attr( $options['schema_tax_id'] ); ?>"></label>
-                            <label class="ai-fr-field"><span>Codice LEI</span><input type="text" name="schema_lei_code" value="<?php echo esc_attr( $options['schema_lei_code'] ); ?>" placeholder="Codice LEI (20 caratteri)"></label>
-                            <label class="ai-fr-field"><span>Simbolo di borsa</span><input type="text" name="schema_ticker_symbol" value="<?php echo esc_attr( $options['schema_ticker_symbol'] ); ?>" placeholder="ACME"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Ragione sociale', 'ai-friendly' ); ?></span><input type="text" name="schema_legal_name" value="<?php echo esc_attr( $options['schema_legal_name'] ); ?>" placeholder="<?php esc_attr_e( 'Azienda S.p.A.', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Partita IVA', 'ai-friendly' ); ?></span><input type="text" name="schema_vat_id" value="<?php echo esc_attr( $options['schema_vat_id'] ); ?>" placeholder="<?php esc_attr_e( 'IT01234567890', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Codice fiscale / taxID', 'ai-friendly' ); ?></span><input type="text" name="schema_tax_id" value="<?php echo esc_attr( $options['schema_tax_id'] ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Codice LEI', 'ai-friendly' ); ?></span><input type="text" name="schema_lei_code" value="<?php echo esc_attr( $options['schema_lei_code'] ); ?>" placeholder="<?php esc_attr_e( 'Codice LEI (20 caratteri)', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Simbolo di borsa', 'ai-friendly' ); ?></span><input type="text" name="schema_ticker_symbol" value="<?php echo esc_attr( $options['schema_ticker_symbol'] ); ?>" placeholder="<?php esc_attr_e( 'ACME', 'ai-friendly' ); ?>"></label>
                         </div>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide" data-entity-scope="organization">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Sede fisica</h4>
-                            <p>Indirizzo, tipologia del luogo, coordinate e indicazioni per raggiungerlo.</p>
+                            <h4><?php esc_html_e( 'Sede fisica', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Indirizzo, tipologia del luogo, coordinate e indicazioni per raggiungerlo.', 'ai-friendly' ); ?></p>
                         </div>
                         <div class="ai-fr-schema-fields">
-                            <label class="ai-fr-field"><span>Indirizzo</span><input type="text" name="schema_street_address" value="<?php echo esc_attr( $options['schema_street_address'] ); ?>" placeholder="Via Esempio 10"></label>
-                            <label class="ai-fr-field"><span>CAP</span><input type="text" name="schema_postal_code" value="<?php echo esc_attr( $options['schema_postal_code'] ); ?>" placeholder="00000"></label>
-                            <label class="ai-fr-field"><span>Città</span><input type="text" name="schema_address_locality" value="<?php echo esc_attr( $options['schema_address_locality'] ); ?>" placeholder="Esempiopoli"></label>
-                            <label class="ai-fr-field"><span>Provincia / regione</span><input type="text" name="schema_address_region" value="<?php echo esc_attr( $options['schema_address_region'] ); ?>" placeholder="MI"></label>
-                            <label class="ai-fr-field"><span>Paese (codice ISO)</span><input type="text" name="schema_address_country" value="<?php echo esc_attr( $options['schema_address_country'] ); ?>" placeholder="IT"></label>
-                            <label class="ai-fr-field"><span>Nome sede</span><input type="text" name="schema_place_name" value="<?php echo esc_attr( $options['schema_place_name'] ); ?>" placeholder="Sede principale"></label>
-                            <label class="ai-fr-field"><span>Tipo sede Schema.org</span><input type="text" name="schema_place_type" value="<?php echo esc_attr( $options['schema_place_type'] ); ?>" placeholder="PerformingArtsTheater"></label>
-                            <label class="ai-fr-field"><span>Latitudine</span><input type="text" name="schema_latitude" value="<?php echo esc_attr( $options['schema_latitude'] ); ?>" placeholder="45.4642"></label>
-                            <label class="ai-fr-field"><span>Longitudine</span><input type="text" name="schema_longitude" value="<?php echo esc_attr( $options['schema_longitude'] ); ?>" placeholder="9.1900"></label>
-                            <label class="ai-fr-field"><span>Accesso con trasporto pubblico</span><textarea name="schema_public_transportation_access" rows="3" placeholder="Metro M2, fermata ..."><?php echo esc_textarea( $options['schema_public_transportation_access'] ); ?></textarea></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Indirizzo', 'ai-friendly' ); ?></span><input type="text" name="schema_street_address" value="<?php echo esc_attr( $options['schema_street_address'] ); ?>" placeholder="<?php esc_attr_e( 'Via Esempio 10', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'CAP', 'ai-friendly' ); ?></span><input type="text" name="schema_postal_code" value="<?php echo esc_attr( $options['schema_postal_code'] ); ?>" placeholder="00000"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Città', 'ai-friendly' ); ?></span><input type="text" name="schema_address_locality" value="<?php echo esc_attr( $options['schema_address_locality'] ); ?>" placeholder="<?php esc_attr_e( 'Esempiopoli', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Provincia / regione', 'ai-friendly' ); ?></span><input type="text" name="schema_address_region" value="<?php echo esc_attr( $options['schema_address_region'] ); ?>" placeholder="<?php esc_attr_e( 'MI', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Paese (codice ISO)', 'ai-friendly' ); ?></span><input type="text" name="schema_address_country" value="<?php echo esc_attr( $options['schema_address_country'] ); ?>" placeholder="<?php esc_attr_e( 'IT', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Nome sede', 'ai-friendly' ); ?></span><input type="text" name="schema_place_name" value="<?php echo esc_attr( $options['schema_place_name'] ); ?>" placeholder="<?php esc_attr_e( 'Sede principale', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Tipo sede Schema.org', 'ai-friendly' ); ?></span><input type="text" name="schema_place_type" value="<?php echo esc_attr( $options['schema_place_type'] ); ?>" placeholder="<?php esc_attr_e( 'PerformingArtsTheater', 'ai-friendly' ); ?>"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Latitudine', 'ai-friendly' ); ?></span><input type="text" name="schema_latitude" value="<?php echo esc_attr( $options['schema_latitude'] ); ?>" placeholder="45.4642"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Longitudine', 'ai-friendly' ); ?></span><input type="text" name="schema_longitude" value="<?php echo esc_attr( $options['schema_longitude'] ); ?>" placeholder="9.1900"></label>
+                            <label class="ai-fr-field"><span><?php esc_html_e( 'Accesso con trasporto pubblico', 'ai-friendly' ); ?></span><textarea name="schema_public_transportation_access" rows="3" placeholder="<?php esc_attr_e( 'Metro M2, fermata ...', 'ai-friendly' ); ?>"><?php echo esc_textarea( $options['schema_public_transportation_access'] ); ?></textarea></label>
                             <input type="hidden" name="schema_contact_type" value="">
                             <input type="hidden" name="schema_contact_email" value="">
                             <input type="hidden" name="schema_contact_languages" value="">
@@ -1166,70 +1298,71 @@ function ai_fr_render_options_page(): void {
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide" data-entity-scope="organization">
-                        <div class="ai-fr-schema-card-head"><h4>Reparti e contatti</h4><p>ContactPoint ripetibili con telefono, email, lingue e orari specifici.</p></div>
+                        <div class="ai-fr-schema-card-head"><h4><?php esc_html_e( 'Reparti e contatti', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'ContactPoint ripetibili con telefono, email, lingue e orari specifici.', 'ai-friendly' ); ?></p></div>
                         <div class="ai-fr-schema-repeaters" data-repeater="contacts">
                             <?php foreach ( $schema_contacts as $index => $contact ) : ?>
                                 <div class="ai-fr-schema-repeater-row ai-fr-schema-repeater-grid">
-                                    <input data-field="contactType" name="schema_contacts[<?php echo esc_attr( $index ); ?>][contactType]" value="<?php echo esc_attr( $contact['contactType'] ?? '' ); ?>" placeholder="segreteria corsi">
+                                    <input data-field="contactType" name="schema_contacts[<?php echo esc_attr( $index ); ?>][contactType]" value="<?php echo esc_attr( $contact['contactType'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'segreteria corsi', 'ai-friendly' ); ?>">
                                     <input data-field="telephone" name="schema_contacts[<?php echo esc_attr( $index ); ?>][telephone]" value="<?php echo esc_attr( $contact['telephone'] ?? '' ); ?>" placeholder="+39 02 ...">
-                                    <input type="email" data-field="email" name="schema_contacts[<?php echo esc_attr( $index ); ?>][email]" value="<?php echo esc_attr( $contact['email'] ?? '' ); ?>" placeholder="email@example.com">
-                                    <input data-field="availableLanguage" name="schema_contacts[<?php echo esc_attr( $index ); ?>][availableLanguage]" value="<?php echo esc_attr( $contact['availableLanguage'] ?? '' ); ?>" placeholder="it, en">
-                                    <input data-field="hoursAvailable" name="schema_contacts[<?php echo esc_attr( $index ); ?>][hoursAvailable]" value="<?php echo esc_attr( $contact['hoursAvailable'] ?? '' ); ?>" placeholder="Mo-Fr 09:00-18:00">
-                                    <button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>
+                                    <input type="email" data-field="email" name="schema_contacts[<?php echo esc_attr( $index ); ?>][email]" value="<?php echo esc_attr( $contact['email'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'email@example.com', 'ai-friendly' ); ?>">
+                                    <input data-field="availableLanguage" name="schema_contacts[<?php echo esc_attr( $index ); ?>][availableLanguage]" value="<?php echo esc_attr( $contact['availableLanguage'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'it, en', 'ai-friendly' ); ?>">
+                                    <input data-field="hoursAvailable" name="schema_contacts[<?php echo esc_attr( $index ); ?>][hoursAvailable]" value="<?php echo esc_attr( $contact['hoursAvailable'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Mo-Fr 09:00-18:00', 'ai-friendly' ); ?>">
+                                    <button type="button" class="button-link-delete ai-fr-repeater-remove"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="contacts">Aggiungi contatto</button>
+                        <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="contacts"><?php esc_html_e( 'Aggiungi contatto', 'ai-friendly' ); ?></button>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide" data-entity-scope="organization">
-                        <div class="ai-fr-schema-card-head"><h4>Orari di apertura</h4><p>Genera <code>openingHoursSpecification</code> sul nodo della sede fisica.</p></div>
+                        <div class="ai-fr-schema-card-head"><h4><?php esc_html_e( 'Orari di apertura', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Genera', 'ai-friendly' ); ?> <code><?php esc_html_e( 'openingHoursSpecification', 'ai-friendly' ); ?></code> <?php esc_html_e( 'sul nodo della sede fisica.', 'ai-friendly' ); ?></p></div>
                         <div class="ai-fr-schema-repeaters" data-repeater="hours">
                             <?php foreach ( $schema_opening_hours as $index => $hours ) : ?>
                                 <div class="ai-fr-schema-repeater-row ai-fr-schema-repeater-grid">
-                                    <input data-field="dayOfWeek" name="schema_opening_hours[<?php echo esc_attr( $index ); ?>][dayOfWeek]" value="<?php echo esc_attr( $hours['dayOfWeek'] ?? '' ); ?>" placeholder="Monday, Tuesday">
+                                    <input data-field="dayOfWeek" name="schema_opening_hours[<?php echo esc_attr( $index ); ?>][dayOfWeek]" value="<?php echo esc_attr( $hours['dayOfWeek'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Monday, Tuesday', 'ai-friendly' ); ?>">
                                     <input type="time" data-field="opens" name="schema_opening_hours[<?php echo esc_attr( $index ); ?>][opens]" value="<?php echo esc_attr( $hours['opens'] ?? '' ); ?>">
                                     <input type="time" data-field="closes" name="schema_opening_hours[<?php echo esc_attr( $index ); ?>][closes]" value="<?php echo esc_attr( $hours['closes'] ?? '' ); ?>">
                                     <input type="date" data-field="validFrom" name="schema_opening_hours[<?php echo esc_attr( $index ); ?>][validFrom]" value="<?php echo esc_attr( $hours['validFrom'] ?? '' ); ?>">
                                     <input type="date" data-field="validThrough" name="schema_opening_hours[<?php echo esc_attr( $index ); ?>][validThrough]" value="<?php echo esc_attr( $hours['validThrough'] ?? '' ); ?>">
-                                    <button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>
+                                    <button type="button" class="button-link-delete ai-fr-repeater-remove"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="hours">Aggiungi fascia oraria</button>
+                        <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="hours"><?php esc_html_e( 'Aggiungi fascia oraria', 'ai-friendly' ); ?></button>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide" data-entity-scope="organization">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Fondatori</h4>
-                            <p>Uno per riga nel formato `Nome | ruolo attuale`. Il ruolo è opzionale: omettilo se non è verificato o aggiornato.</p>
+                            <h4><?php esc_html_e( 'Fondatori', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Uno per riga nel formato `Nome | ruolo attuale`. Il ruolo è opzionale: omettilo se non è verificato o aggiornato.', 'ai-friendly' ); ?></p>
                         </div>
                         <label class="ai-fr-field">
-                            <span>Persone fondatrici</span>
-                            <textarea name="schema_founders" rows="4" placeholder="Mario Rossi&#10;Laura Bianchi | CEO"><?php echo esc_textarea( $options['schema_founders'] ); ?></textarea>
+                            <span><?php esc_html_e( 'Persone fondatrici', 'ai-friendly' ); ?></span>
+                            <textarea name="schema_founders" rows="4" placeholder="<?php esc_attr_e( 'Mario Rossi
+Laura Bianchi | CEO', 'ai-friendly' ); ?>"><?php echo esc_textarea( $options['schema_founders'] ); ?></textarea>
                         </label>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Descrizioni</h4>
-                            <p>Usale per chiarire chi sei e distinguerti da entità simili.</p>
+                            <h4><?php esc_html_e( 'Descrizioni', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Usale per chiarire chi sei e distinguerti da entità simili.', 'ai-friendly' ); ?></p>
                         </div>
                         <div class="ai-fr-schema-fields">
                             <label class="ai-fr-field">
-                                <span>Descrizione</span>
+                                <span><?php esc_html_e( 'Descrizione', 'ai-friendly' ); ?></span>
                                 <textarea name="schema_description" rows="4"><?php echo esc_textarea( $options['schema_description'] ); ?></textarea>
                             </label>
                             <label class="ai-fr-field">
-                                <span>Descrizione disambiguante</span>
+                                <span><?php esc_html_e( 'Descrizione disambiguante', 'ai-friendly' ); ?></span>
                                 <input type="text" name="schema_disambiguating_description" value="<?php echo esc_attr( $options['schema_disambiguating_description'] ); ?>">
                             </label>
                             <label class="ai-fr-field" data-entity-scope="organization">
-                                <span>Slogan</span>
-                                <input type="text" name="schema_slogan" value="<?php echo esc_attr( $options['schema_slogan'] ); ?>" placeholder="E-problem solving: sviluppo web fuori dagli schemi.">
+                                <span><?php esc_html_e( 'Slogan', 'ai-friendly' ); ?></span>
+                                <input type="text" name="schema_slogan" value="<?php echo esc_attr( $options['schema_slogan'] ); ?>" placeholder="<?php esc_attr_e( 'E-problem solving: sviluppo web fuori dagli schemi.', 'ai-friendly' ); ?>">
                             </label>
                             <label class="ai-fr-field" data-entity-scope="organization">
-                                <span>Data fondazione</span>
+                                <span><?php esc_html_e( 'Data fondazione', 'ai-friendly' ); ?></span>
                                 <input type="text" name="schema_founding_date" value="<?php echo esc_attr( $options['schema_founding_date'] ); ?>" placeholder="2015">
                             </label>
                         </div>
@@ -1237,156 +1370,160 @@ function ai_fr_render_options_page(): void {
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Profili e competenze</h4>
-                            <p>Una voce per riga. Sono i campi più utili per la disambiguazione.</p>
+                            <h4><?php esc_html_e( 'Profili e competenze', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Una voce per riga. Sono i campi più utili per la disambiguazione.', 'ai-friendly' ); ?></p>
                         </div>
                         <div class="ai-fr-schema-fields">
                             <label class="ai-fr-field">
-                                <span>sameAs / profili esterni</span>
-                                <textarea name="schema_same_as" rows="4" placeholder="https://www.linkedin.com/in/...&#10;https://github.com/..."><?php echo esc_textarea( $options['schema_same_as'] ); ?></textarea>
+                                <span><?php esc_html_e( 'sameAs / profili esterni', 'ai-friendly' ); ?></span>
+                                <textarea name="schema_same_as" rows="4" placeholder="<?php esc_attr_e( 'https://www.linkedin.com/in/...
+https://github.com/...', 'ai-friendly' ); ?>"><?php echo esc_textarea( $options['schema_same_as'] ); ?></textarea>
                             </label>
                             <label class="ai-fr-field">
-                                <span>knowsAbout</span>
-                                <textarea name="schema_knows_about" rows="4" placeholder="SEO tecnico&#10;AI content strategy"><?php echo esc_textarea( $options['schema_knows_about'] ); ?></textarea>
+                                <span><?php esc_html_e( 'knowsAbout', 'ai-friendly' ); ?></span>
+                                <textarea name="schema_knows_about" rows="4" placeholder="<?php esc_attr_e( 'SEO tecnico
+AI content strategy', 'ai-friendly' ); ?>"><?php echo esc_textarea( $options['schema_knows_about'] ); ?></textarea>
                             </label>
                             <label class="ai-fr-field">
-                                <span>knowsLanguage</span>
-                                <textarea name="schema_knows_language" rows="3" placeholder="it-IT&#10;en-US"><?php echo esc_textarea( $options['schema_knows_language'] ); ?></textarea>
+                                <span><?php esc_html_e( 'knowsLanguage', 'ai-friendly' ); ?></span>
+                                <textarea name="schema_knows_language" rows="3" placeholder="<?php esc_attr_e( 'it-IT
+en-US', 'ai-friendly' ); ?>"><?php echo esc_textarea( $options['schema_knows_language'] ); ?></textarea>
                             </label>
                             <label class="ai-fr-field" data-entity-scope="organization">
-                                <span>areaServed</span>
-                                <textarea name="schema_area_served" rows="3" placeholder="City: Esempiopoli&#10;Country: Italia"><?php echo esc_textarea( $options['schema_area_served'] ); ?></textarea>
+                                <span><?php esc_html_e( 'areaServed', 'ai-friendly' ); ?></span>
+                                <textarea name="schema_area_served" rows="3" placeholder="<?php esc_attr_e( 'City: Esempiopoli
+Country: Italia', 'ai-friendly' ); ?>"><?php echo esc_textarea( $options['schema_area_served'] ); ?></textarea>
                             </label>
                         </div>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide" data-entity-scope="organization">
-                        <div class="ai-fr-schema-card-head"><h4>Certificazioni</h4><p>Accreditamenti, norme ISO e iscrizioni ad albi come nodi <code>Certification</code>.</p></div>
+                        <div class="ai-fr-schema-card-head"><h4><?php esc_html_e( 'Certificazioni', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Accreditamenti, norme ISO e iscrizioni ad albi come nodi', 'ai-friendly' ); ?> <code><?php esc_html_e( 'Certification', 'ai-friendly' ); ?></code>.</p></div>
                         <div class="ai-fr-schema-repeaters" data-repeater="certifications">
                             <?php foreach ( $schema_certifications as $index => $certification ) : ?>
                                 <div class="ai-fr-schema-repeater-row ai-fr-schema-repeater-grid">
-                                    <input data-field="name" name="schema_certifications[<?php echo esc_attr( $index ); ?>][name]" value="<?php echo esc_attr( $certification['name'] ?? '' ); ?>" placeholder="ISO 9001">
-                                    <input data-field="identifier" name="schema_certifications[<?php echo esc_attr( $index ); ?>][identifier]" value="<?php echo esc_attr( $certification['identifier'] ?? '' ); ?>" placeholder="Certificato n.">
-                                    <input data-field="issuedBy" name="schema_certifications[<?php echo esc_attr( $index ); ?>][issuedBy]" value="<?php echo esc_attr( $certification['issuedBy'] ?? '' ); ?>" placeholder="Ente certificatore">
-                                    <input type="url" data-field="url" name="schema_certifications[<?php echo esc_attr( $index ); ?>][url]" value="<?php echo esc_attr( $certification['url'] ?? '' ); ?>" placeholder="https://...">
-                                    <button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>
+                                    <input data-field="name" name="schema_certifications[<?php echo esc_attr( $index ); ?>][name]" value="<?php echo esc_attr( $certification['name'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'ISO 9001', 'ai-friendly' ); ?>">
+                                    <input data-field="identifier" name="schema_certifications[<?php echo esc_attr( $index ); ?>][identifier]" value="<?php echo esc_attr( $certification['identifier'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Certificato n.', 'ai-friendly' ); ?>">
+                                    <input data-field="issuedBy" name="schema_certifications[<?php echo esc_attr( $index ); ?>][issuedBy]" value="<?php echo esc_attr( $certification['issuedBy'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Ente certificatore', 'ai-friendly' ); ?>">
+                                    <input type="url" data-field="url" name="schema_certifications[<?php echo esc_attr( $index ); ?>][url]" value="<?php echo esc_attr( $certification['url'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'https://...', 'ai-friendly' ); ?>">
+                                    <button type="button" class="button-link-delete ai-fr-repeater-remove"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="certifications">Aggiungi certificazione</button>
+                        <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="certifications"><?php esc_html_e( 'Aggiungi certificazione', 'ai-friendly' ); ?></button>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide" data-entity-scope="organization">
-                        <div class="ai-fr-schema-card-head"><h4>Identificatori aggiuntivi</h4><p>Coppie chiave-valore per RUNTS, REA, ATECO e registri di settore.</p></div>
+                        <div class="ai-fr-schema-card-head"><h4><?php esc_html_e( 'Identificatori aggiuntivi', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Coppie chiave-valore per RUNTS, REA, ATECO e registri di settore.', 'ai-friendly' ); ?></p></div>
                         <div class="ai-fr-schema-repeaters" data-repeater="identifiers">
                             <?php foreach ( $schema_identifiers as $index => $identifier ) : ?>
                                 <div class="ai-fr-schema-repeater-row">
-                                    <input data-field="propertyID" name="schema_identifiers[<?php echo esc_attr( $index ); ?>][propertyID]" value="<?php echo esc_attr( $identifier['propertyID'] ?? '' ); ?>" placeholder="RUNTS">
-                                    <input data-field="value" name="schema_identifiers[<?php echo esc_attr( $index ); ?>][value]" value="<?php echo esc_attr( $identifier['value'] ?? '' ); ?>" placeholder="Numero identificativo">
-                                    <button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>
+                                    <input data-field="propertyID" name="schema_identifiers[<?php echo esc_attr( $index ); ?>][propertyID]" value="<?php echo esc_attr( $identifier['propertyID'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'RUNTS', 'ai-friendly' ); ?>">
+                                    <input data-field="value" name="schema_identifiers[<?php echo esc_attr( $index ); ?>][value]" value="<?php echo esc_attr( $identifier['value'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Numero identificativo', 'ai-friendly' ); ?>">
+                                    <button type="button" class="button-link-delete ai-fr-repeater-remove"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="identifiers">Aggiungi identificatore</button>
+                        <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="identifiers"><?php esc_html_e( 'Aggiungi identificatore', 'ai-friendly' ); ?></button>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-wide" data-entity-scope="organization">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Catalogo servizi</h4>
-                            <p>Aggiunge un <code>OfferCatalog</code>. Le sorgenti WordPress compilano automaticamente nome, URL e descrizione; le righe manuali restano disponibili per integrazioni.</p>
+                            <h4><?php esc_html_e( 'Catalogo servizi', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Aggiunge un', 'ai-friendly' ); ?> <code><?php esc_html_e( 'OfferCatalog', 'ai-friendly' ); ?></code><?php esc_html_e( '. Le sorgenti WordPress compilano automaticamente nome, URL e descrizione; le righe manuali restano disponibili per integrazioni.', 'ai-friendly' ); ?></p>
                         </div>
                         <div class="ai-fr-field ai-fr-schema-source-field">
-                            <span>Sorgenti WordPress</span>
+                            <span><?php esc_html_e( 'Sorgenti WordPress', 'ai-friendly' ); ?></span>
                             <div class="ai-fr-schema-repeaters" data-repeater="offerSources">
                                 <?php foreach ( $schema_offer_sources as $index => $source ) : ?>
                                     <div class="ai-fr-schema-repeater-row">
-                                        <input data-field="value" name="schema_offer_sources[<?php echo esc_attr( $index ); ?>]" value="<?php echo esc_attr( $source ); ?>" placeholder="ID termine, taxonomy:slug o permalink WordPress">
-                                        <button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>
+                                        <input data-field="value" name="schema_offer_sources[<?php echo esc_attr( $index ); ?>]" value="<?php echo esc_attr( $source ); ?>" placeholder="<?php esc_attr_e( 'ID termine, taxonomy:slug o permalink WordPress', 'ai-friendly' ); ?>">
+                                        <button type="button" class="button-link-delete ai-fr-repeater-remove"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
-                            <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="offerSources">Aggiungi sorgente</button>
-                            <small>Accetta ID di termini, <code>taxonomy:slug</code>, permalink di categorie/tassonomie e permalink di pagine o CPT.</small>
+                            <button type="button" class="button button-secondary ai-fr-repeater-add" data-target="offerSources"><?php esc_html_e( 'Aggiungi sorgente', 'ai-friendly' ); ?></button>
+                            <small><?php esc_html_e( 'Accetta ID di termini,', 'ai-friendly' ); ?> <code><?php esc_html_e( 'taxonomy:slug', 'ai-friendly' ); ?></code><?php esc_html_e( ', permalink di categorie/tassonomie e permalink di pagine o CPT.', 'ai-friendly' ); ?></small>
                         </div>
                         <div class="ai-fr-schema-subsection-head">
-                            <strong>Voci manuali</strong>
-                            <span>Usale per completare o sostituire i dati ricavati dalle sorgenti WordPress.</span>
+                            <strong><?php esc_html_e( 'Voci manuali', 'ai-friendly' ); ?></strong>
+                            <span><?php esc_html_e( 'Usale per completare o sostituire i dati ricavati dalle sorgenti WordPress.', 'ai-friendly' ); ?></span>
                         </div>
                         <div class="ai-fr-schema-services" id="ai-fr-schema-services">
                             <?php foreach ( $schema_services as $index => $service ) : ?>
                                 <div class="ai-fr-schema-service" data-service-index="<?php echo esc_attr( $index ); ?>">
                                     <div class="ai-fr-schema-service-head">
-                                        <strong>Servizio</strong>
-                                        <button type="button" class="button button-link-delete ai-fr-schema-service-remove">Rimuovi</button>
+                                        <strong><?php esc_html_e( 'Servizio', 'ai-friendly' ); ?></strong>
+                                        <button type="button" class="button button-link-delete ai-fr-schema-service-remove"><?php esc_html_e( 'Rimuovi', 'ai-friendly' ); ?></button>
                                     </div>
                                     <div class="ai-fr-schema-service-grid">
                                         <label class="ai-fr-field">
-                                            <span>Nome</span>
-                                            <input type="text" data-service-field="name" name="schema_services[<?php echo esc_attr( $index ); ?>][name]" value="<?php echo esc_attr( $service['name'] ?? '' ); ?>" placeholder="UX e Graphic Design">
+                                            <span><?php esc_html_e( 'Nome', 'ai-friendly' ); ?></span>
+                                            <input type="text" data-service-field="name" name="schema_services[<?php echo esc_attr( $index ); ?>][name]" value="<?php echo esc_attr( $service['name'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'UX e Graphic Design', 'ai-friendly' ); ?>">
                                         </label>
                                         <label class="ai-fr-field">
-                                            <span>URL pagina</span>
-                                            <input type="url" data-service-field="url" name="schema_services[<?php echo esc_attr( $index ); ?>][url]" value="<?php echo esc_attr( $service['url'] ?? '' ); ?>" placeholder="https://example.com/servizio/">
+                                            <span><?php esc_html_e( 'URL pagina', 'ai-friendly' ); ?></span>
+                                            <input type="url" data-service-field="url" name="schema_services[<?php echo esc_attr( $index ); ?>][url]" value="<?php echo esc_attr( $service['url'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'https://example.com/servizio/', 'ai-friendly' ); ?>">
                                         </label>
                                         <label class="ai-fr-field">
-                                            <span>Tipo servizio</span>
-                                            <input type="text" data-service-field="serviceType" name="schema_services[<?php echo esc_attr( $index ); ?>][serviceType]" value="<?php echo esc_attr( $service['serviceType'] ?? '' ); ?>" placeholder="Web design, UX/UI design">
+                                            <span><?php esc_html_e( 'Tipo servizio', 'ai-friendly' ); ?></span>
+                                            <input type="text" data-service-field="serviceType" name="schema_services[<?php echo esc_attr( $index ); ?>][serviceType]" value="<?php echo esc_attr( $service['serviceType'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Web design, UX/UI design', 'ai-friendly' ); ?>">
                                         </label>
                                         <label class="ai-fr-field">
-                                            <span>Area servita</span>
-                                            <input type="text" data-service-field="areaServed" name="schema_services[<?php echo esc_attr( $index ); ?>][areaServed]" value="<?php echo esc_attr( $service['areaServed'] ?? '' ); ?>" placeholder="Italia">
+                                            <span><?php esc_html_e( 'Area servita', 'ai-friendly' ); ?></span>
+                                            <input type="text" data-service-field="areaServed" name="schema_services[<?php echo esc_attr( $index ); ?>][areaServed]" value="<?php echo esc_attr( $service['areaServed'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Italia', 'ai-friendly' ); ?>">
                                         </label>
                                         <label class="ai-fr-field ai-fr-schema-service-description">
-                                            <span>Descrizione</span>
-                                            <textarea data-service-field="description" name="schema_services[<?php echo esc_attr( $index ); ?>][description]" rows="3" placeholder="Descrizione breve del servizio."><?php echo esc_textarea( $service['description'] ?? '' ); ?></textarea>
+                                            <span><?php esc_html_e( 'Descrizione', 'ai-friendly' ); ?></span>
+                                            <textarea data-service-field="description" name="schema_services[<?php echo esc_attr( $index ); ?>][description]" rows="3" placeholder="<?php esc_attr_e( 'Descrizione breve del servizio.', 'ai-friendly' ); ?>"><?php echo esc_textarea( $service['description'] ?? '' ); ?></textarea>
                                         </label>
                                         <label class="ai-fr-field">
-                                            <span>Prezzo</span>
+                                            <span><?php esc_html_e( 'Prezzo', 'ai-friendly' ); ?></span>
                                             <input type="text" data-service-field="price" name="schema_services[<?php echo esc_attr( $index ); ?>][price]" value="<?php echo esc_attr( $service['price'] ?? '' ); ?>" placeholder="0">
                                         </label>
                                         <label class="ai-fr-field">
-                                            <span>Valuta</span>
-                                            <input type="text" data-service-field="priceCurrency" name="schema_services[<?php echo esc_attr( $index ); ?>][priceCurrency]" value="<?php echo esc_attr( $service['priceCurrency'] ?? '' ); ?>" placeholder="EUR">
+                                            <span><?php esc_html_e( 'Valuta', 'ai-friendly' ); ?></span>
+                                            <input type="text" data-service-field="priceCurrency" name="schema_services[<?php echo esc_attr( $index ); ?>][priceCurrency]" value="<?php echo esc_attr( $service['priceCurrency'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'EUR', 'ai-friendly' ); ?>">
                                         </label>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <button type="button" class="button button-secondary" id="ai-fr-schema-service-add">Aggiungi servizio</button>
+                        <button type="button" class="button button-secondary" id="ai-fr-schema-service-add"><?php esc_html_e( 'Aggiungi servizio', 'ai-friendly' ); ?></button>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-seven">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Realizzazione del sito</h4>
-                            <p>Indica facoltativamente la persona o l'organizzazione che ha sviluppato il sito. Il dato viene pubblicato come <code>creator</code> del nodo <code>WebSite</code>.</p>
+                            <h4><?php esc_html_e( 'Realizzazione del sito', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Indica facoltativamente la persona o l\'organizzazione che ha sviluppato il sito. Il dato viene pubblicato come', 'ai-friendly' ); ?> <code><?php esc_html_e( 'creator', 'ai-friendly' ); ?></code> <?php esc_html_e( 'del nodo', 'ai-friendly' ); ?> <code><?php esc_html_e( 'WebSite', 'ai-friendly' ); ?></code>.</p>
                         </div>
                         <div class="ai-fr-schema-fields">
                             <label class="ai-fr-field ai-fr-field-short">
-                                <span>Tipo</span>
+                                <span><?php esc_html_e( 'Tipo', 'ai-friendly' ); ?></span>
                                 <select name="schema_creator_type">
-                                    <option value="Organization" <?php selected( $options['schema_creator_type'], 'Organization' ); ?>>Organization</option>
-                                    <option value="Person" <?php selected( $options['schema_creator_type'], 'Person' ); ?>>Person</option>
+                                    <option value="Organization" <?php selected( $options['schema_creator_type'], 'Organization' ); ?>><?php esc_html_e( 'Organization', 'ai-friendly' ); ?></option>
+                                    <option value="Person" <?php selected( $options['schema_creator_type'], 'Person' ); ?>><?php esc_html_e( 'Person', 'ai-friendly' ); ?></option>
                                 </select>
                             </label>
                             <label class="ai-fr-field">
-                                <span>Nome sviluppatore / agenzia</span>
-                                <input type="text" name="schema_creator_name" value="<?php echo esc_attr( $options['schema_creator_name'] ); ?>" placeholder="Nome agenzia o professionista">
+                                <span><?php esc_html_e( 'Nome sviluppatore / agenzia', 'ai-friendly' ); ?></span>
+                                <input type="text" name="schema_creator_name" value="<?php echo esc_attr( $options['schema_creator_name'] ); ?>" placeholder="<?php esc_attr_e( 'Nome agenzia o professionista', 'ai-friendly' ); ?>">
                             </label>
                             <label class="ai-fr-field">
-                                <span>URL</span>
-                                <input type="url" name="schema_creator_url" value="<?php echo esc_attr( $options['schema_creator_url'] ); ?>" placeholder="https://www.esempio.it/">
+                                <span><?php esc_html_e( 'URL', 'ai-friendly' ); ?></span>
+                                <input type="url" name="schema_creator_url" value="<?php echo esc_attr( $options['schema_creator_url'] ); ?>" placeholder="<?php esc_attr_e( 'https://www.esempio.it/', 'ai-friendly' ); ?>">
                             </label>
                         </div>
                     </article>
 
                     <article class="ai-fr-schema-card ai-fr-schema-card-five">
                         <div class="ai-fr-schema-card-head">
-                            <h4>Profilo e licenza</h4>
-                            <p>Collega una pagina profilo e una licenza riutilizzabile sui contenuti.</p>
+                            <h4><?php esc_html_e( 'Profilo e licenza', 'ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Collega una pagina profilo e una licenza riutilizzabile sui contenuti.', 'ai-friendly' ); ?></p>
                         </div>
                         <div class="ai-fr-schema-fields">
                             <label class="ai-fr-field">
-                                <span>Pagina ProfilePage</span>
+                                <span><?php esc_html_e( 'Pagina ProfilePage', 'ai-friendly' ); ?></span>
                                 <?php
                                 wp_dropdown_pages(
                                     [
@@ -1399,8 +1536,8 @@ function ai_fr_render_options_page(): void {
                                 ?>
                             </label>
                             <label class="ai-fr-field">
-                                <span>License URL</span>
-                                <input type="url" name="schema_license" value="<?php echo esc_attr( $options['schema_license'] ); ?>" placeholder="https://creativecommons.org/licenses/by/4.0/">
+                                <span><?php esc_html_e( 'License URL', 'ai-friendly' ); ?></span>
+                                <input type="url" name="schema_license" value="<?php echo esc_attr( $options['schema_license'] ); ?>" placeholder="<?php esc_attr_e( 'https://creativecommons.org/licenses/by/4.0/', 'ai-friendly' ); ?>">
                             </label>
                         </div>
                     </article>
@@ -1408,80 +1545,81 @@ function ai_fr_render_options_page(): void {
             </section>
 
             <section id="ai-fr-section-automation" class="ai-fr-section">
-                <div class="ai-fr-section-heading"><span>05</span><div><h3>Automation</h3><p>Controlla generazione, frequenza, notifiche e cronologia operativa.</p></div></div>
+                <div class="ai-fr-section-heading"><span>05</span><div><h3><?php esc_html_e( 'Automation', 'ai-friendly' ); ?></h3><p><?php esc_html_e( 'Controlla generazione, frequenza, notifiche e cronologia operativa.', 'ai-friendly' ); ?></p></div></div>
                 <div class="ai-fr-settings-cards">
                     <article class="ai-fr-settings-card">
-                        <div class="ai-fr-card-head"><span>01</span><div><h4>Output statico</h4><p>Persistenza e spazio utilizzato dai file Markdown.</p></div></div>
+                        <div class="ai-fr-card-head"><span>01</span><div><h4><?php esc_html_e( 'Output statico', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Persistenza e spazio utilizzato dai file Markdown.', 'ai-friendly' ); ?></p></div></div>
                         <div class="ai-fr-option-list">
                             <label>
                                 <input type="checkbox" id="ai-fr-static-md-files" name="static_md_files" value="1" <?php checked( $options['static_md_files'] ); ?>>
-                                Salva e servi file MD statici
+                                <?php esc_html_e( 'Salva e servi file MD statici', 'ai-friendly' ); ?>
                             </label>
                             <p class="description ai-fr-statline">
-                                File salvati: <?php echo intval( $version_stats['count'] ); ?> |
-                                Spazio: <?php echo esc_html( size_format( intval( $version_stats['size'] ) ) ); ?>
+                                <?php esc_html_e( 'File salvati:', 'ai-friendly' ); ?> <?php echo intval( $version_stats['count'] ); ?> |
+                                <?php esc_html_e( 'Spazio:', 'ai-friendly' ); ?> <?php echo esc_html( size_format( intval( $version_stats['size'] ) ) ); ?>
                             </p>
                         </div>
                     </article>
                     <article class="ai-fr-settings-card">
-                        <div class="ai-fr-card-head"><span>02</span><div><h4>Rigenerazione automatica</h4><p>Programmazione e dimensione dei batch.</p></div></div>
+                        <div class="ai-fr-card-head"><span>02</span><div><h4><?php esc_html_e( 'Rigenerazione automatica', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Programmazione e dimensione dei batch.', 'ai-friendly' ); ?></p></div></div>
                         <div class="ai-fr-option-list">
                             <label>
                                 <input type="checkbox" id="ai-fr-auto-regenerate" name="auto_regenerate" value="1" <?php checked( $options['auto_regenerate'] ); ?>>
-                                Rigenera i file .md ad intervallo su tutto il sito (cron)
+                                <?php esc_html_e( 'Rigenera i file .md ad intervallo su tutto il sito (cron)', 'ai-friendly' ); ?>
                             </label>
                             <div class="ai-fr-number-fields">
-                                <label>Intervallo (ore)<input type="number" name="regenerate_interval" min="1" max="168" value="<?php echo esc_attr( $options['regenerate_interval'] ); ?>"></label>
-                                <label>Contenuti per esecuzione<input type="number" name="regenerate_batch_size" min="10" max="1000" value="<?php echo esc_attr( intval( $options['regenerate_batch_size'] ?? 100 ) ); ?>"></label>
+                                <label><?php esc_html_e( 'Intervallo (ore)', 'ai-friendly' ); ?><input type="number" name="regenerate_interval" min="1" max="168" value="<?php echo esc_attr( $options['regenerate_interval'] ); ?>"></label>
+                                <label><?php esc_html_e( 'Contenuti per esecuzione', 'ai-friendly' ); ?><input type="number" name="regenerate_batch_size" min="10" max="1000" value="<?php echo esc_attr( intval( $options['regenerate_batch_size'] ?? 100 ) ); ?>"></label>
                             </div>
-                            <p class="description">Per siti molto grandi, il cron processa solo questo numero di contenuti per run e continua dal successivo.</p>
+                            <p class="description"><?php esc_html_e( 'Per siti molto grandi, il cron processa solo questo numero di contenuti per run e continua dal successivo.', 'ai-friendly' ); ?></p>
                             <?php if ( $next_cron ) : ?>
-                                <p class="description">Prossima esecuzione: <?php echo esc_html( date_i18n( 'Y-m-d H:i:s', $next_cron ) ); ?></p>
+                                <p class="description"><?php esc_html_e( 'Prossima esecuzione:', 'ai-friendly' ); ?> <?php echo esc_html( date_i18n( 'Y-m-d H:i:s', $next_cron ) ); ?></p>
                             <?php endif; ?>
                         </div>
                     </article>
                     <article class="ai-fr-settings-card">
-                        <div class="ai-fr-card-head"><span>03</span><div><h4>Trigger su eventi</h4><p>Decidi quando un contenuto deve aggiornare l’output.</p></div></div>
+                        <div class="ai-fr-card-head"><span>03</span><div><h4><?php esc_html_e( 'Trigger su eventi', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Decidi quando un contenuto deve aggiornare l’output.', 'ai-friendly' ); ?></p></div></div>
                         <div class="ai-fr-option-list">
                             <label>
                                 <input type="checkbox" name="regenerate_on_save" value="1" <?php checked( $options['regenerate_on_save'] ); ?>>
-                                Rigenera quando un contenuto viene salvato/aggiornato
+                                <?php esc_html_e( 'Rigenera quando un contenuto viene salvato/aggiornato', 'ai-friendly' ); ?>
                             </label>
                             <label>
                                 <input type="checkbox" name="regenerate_on_change" value="1" <?php checked( $options['regenerate_on_change'] ); ?>>
-                                Rigenera solo se il contenuto e cambiato (checksum)
+                                <?php esc_html_e( 'Rigenera solo se il contenuto e cambiato (checksum)', 'ai-friendly' ); ?>
                             </label>
                         </div>
                     </article>
                     <article class="ai-fr-settings-card">
-                        <div class="ai-fr-card-head"><span>04</span><div><h4>Notifiche</h4><p>Segnala gli errori agli amministratori.</p></div></div>
+                        <div class="ai-fr-card-head"><span>04</span><div><h4><?php esc_html_e( 'Notifiche', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Segnala gli errori agli amministratori.', 'ai-friendly' ); ?></p></div></div>
                         <div class="ai-fr-option-list">
                             <label>
                                 <input type="checkbox" name="notify_admin_notice" value="1" <?php checked( $options['notify_admin_notice'] ?? '' ); ?>>
-                                Mostra notice admin quando una rigenerazione ha errori
+                                <?php esc_html_e( 'Mostra notice admin quando una rigenerazione ha errori', 'ai-friendly' ); ?>
                             </label>
                             <label>
                                 <input type="checkbox" name="notify_email" value="1" <?php checked( $options['notify_email'] ?? '' ); ?>>
-                                Invia email in caso di errori rigenerazione
+                                <?php esc_html_e( 'Invia email in caso di errori rigenerazione', 'ai-friendly' ); ?>
                             </label>
-                            <label class="ai-fr-stacked-label">Email destinatario
+                            <label class="ai-fr-stacked-label"><?php esc_html_e( 'Email destinatario', 'ai-friendly' ); ?>
                                 <input type="email" name="notify_email_to" value="<?php echo esc_attr( $options['notify_email_to'] ?? '' ); ?>" placeholder="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>">
                             </label>
                         </div>
                     </article>
                     <article class="ai-fr-settings-card ai-fr-settings-card-wide">
-                        <div class="ai-fr-card-head"><span>05</span><div><h4>Azioni manuali</h4><p>Genera, forza o rimuovi i file statici.</p></div></div>
+                        <div class="ai-fr-card-head"><span>05</span><div><h4><?php esc_html_e( 'Azioni manuali', 'ai-friendly' ); ?></h4><p><?php esc_html_e( 'Genera, forza o rimuovi i file statici.', 'ai-friendly' ); ?></p></div></div>
                         <div class="ai-fr-action-row">
-                            <button type="button" id="ai-fr-regenerate" class="button button-primary">Rigenera tutti i file MD</button>
-                            <button type="button" id="ai-fr-regenerate-force" class="button">Forza rigenerazione</button>
-                            <button type="button" id="ai-fr-clear-versions" class="button ai-fr-button-danger">Elimina tutti i file</button>
+                            <button type="button" id="ai-fr-regenerate" class="button button-primary"><?php esc_html_e( 'Rigenera tutti i file MD', 'ai-friendly' ); ?></button>
+                            <button type="button" id="ai-fr-regenerate-force" class="button"><?php esc_html_e( 'Forza rigenerazione', 'ai-friendly' ); ?></button>
+                            <button type="button" id="ai-fr-clear-versions" class="button ai-fr-button-danger"><?php esc_html_e( 'Elimina tutti i file', 'ai-friendly' ); ?></button>
                             <p id="ai-fr-action-status" role="status" aria-live="polite"></p>
                             <?php if ( ! empty( $last_regen['stats'] ) ) : ?>
                                 <p class="description">
-                                    Ultimo run: Processati <?php echo intval( $last_regen['stats']['processed'] ?? 0 ); ?>,
-                                    Rigenerati <?php echo intval( $last_regen['stats']['regenerated'] ?? 0 ); ?>,
-                                    Saltati <?php echo intval( $last_regen['stats']['skipped'] ?? 0 ); ?>,
-                                    Errori <?php echo intval( $last_regen['stats']['errors'] ?? 0 ); ?>.
+                                    <?php esc_html_e( 'Ultima esecuzione:', 'ai-friendly' ); ?>
+                                    <?php esc_html_e( 'Processati', 'ai-friendly' ); ?> <?php echo intval( $last_regen['stats']['processed'] ?? 0 ); ?>,
+                                    <?php esc_html_e( 'Rigenerati', 'ai-friendly' ); ?> <?php echo intval( $last_regen['stats']['regenerated'] ?? 0 ); ?>,
+                                    <?php esc_html_e( 'Saltati', 'ai-friendly' ); ?> <?php echo intval( $last_regen['stats']['skipped'] ?? 0 ); ?>,
+                                    <?php esc_html_e( 'Errori', 'ai-friendly' ); ?> <?php echo intval( $last_regen['stats']['errors'] ?? 0 ); ?>.
                                 </p>
                             <?php endif; ?>
                         </div>
@@ -1489,17 +1627,21 @@ function ai_fr_render_options_page(): void {
                 </div>
 
                 <div class="ai-fr-timeline">
-                    <h3>Timeline aggiornamenti</h3>
-                    <button type="button" id="ai-fr-refresh-timeline" class="button button-secondary">Aggiorna timeline</button>
+                    <h3><?php esc_html_e( 'Timeline aggiornamenti', 'ai-friendly' ); ?></h3>
+                    <button type="button" id="ai-fr-refresh-timeline" class="button button-secondary"><?php esc_html_e( 'Aggiorna timeline', 'ai-friendly' ); ?></button>
                     <ul id="ai-fr-timeline-list" class="ai-fr-list"></ul>
                 </div>
             </section>
 
             <div class="ai-fr-submit-wrap" id="ai-fr-submit-wrap" aria-live="polite">
-                <span id="ai-fr-dirty-state">Tutte le modifiche sono salvate</span>
-                <input type="submit" name="ai_fr_save" class="button button-primary" value="Salva impostazioni">
+                <span id="ai-fr-dirty-state"><?php esc_html_e( 'Tutte le modifiche sono salvate', 'ai-friendly' ); ?></span>
+                <input type="submit" name="ai_fr_save" class="button button-primary" value="<?php esc_attr_e( 'Salva impostazioni', 'ai-friendly' ); ?>">
             </div>
         </form>
+        <p class="ai-fr-credit">
+            <?php esc_html_e( 'Sviluppato da', 'ai-friendly' ); ?>
+            <a href="<?php echo esc_url( 'https://www.sernicola-labs.com/' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Sernicola Labs', 'ai-friendly' ); ?></a>
+        </p>
     </div>
     <?php
 }
@@ -1507,7 +1649,7 @@ function ai_fr_render_options_page(): void {
 add_filter(
     'plugin_action_links_' . plugin_basename( AI_FR_PLUGIN_FILE ),
     function ( array $links ): array {
-        $settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=ai-friendly' ) ) . '">Impostazioni</a>';
+        $settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=ai-friendly' ) ) . '">' . esc_html__( 'Impostazioni', 'ai-friendly' ) . '</a>';
         $github_link   = '<a href="https://github.com/Sernicola-Labs-Srl/ai-friendly" target="_blank" rel="noopener noreferrer">GitHub</a>';
         array_unshift( $links, $settings_link, $github_link );
         return $links;

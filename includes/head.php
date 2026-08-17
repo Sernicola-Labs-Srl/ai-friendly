@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'wp_head', function () {
 
-    echo '<link rel="alternate" type="text/plain" title="LLM Instructions" href="'
+    echo '<link rel="alternate" type="text/plain" title="' . esc_attr__( 'Istruzioni LLM', 'ai-friendly' ) . '" href="'
        . esc_url( home_url( '/llms.txt' ) )
        . '" />' . "\n";
 
@@ -20,7 +20,7 @@ add_action( 'wp_head', function () {
         if ( $post && $filter->shouldInclude( $post ) ) {
             $md_url = ai_fr_permalink_to_md( get_permalink( get_the_ID() ) );
 
-            echo '<link rel="alternate" type="text/markdown" title="Versione Markdown" href="'
+            echo '<link rel="alternate" type="text/markdown" title="' . esc_attr__( 'Versione Markdown', 'ai-friendly' ) . '" href="'
                . esc_url( $md_url )
                . '" />' . "\n";
         }

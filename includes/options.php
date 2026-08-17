@@ -14,6 +14,7 @@ function ai_fr_get_default_options(): array {
         'include_posts'     => '1',
         'include_products'  => '',
         'include_cpt'       => [],  // Array di CPT custom da includere
+        'include_acf_fields' => '', // Estrazione campi ACF: opt-in per evitare dati non destinati al frontend
         
         // Esclusioni
         'exclude_categories'    => [],      // ID categorie da escludere
