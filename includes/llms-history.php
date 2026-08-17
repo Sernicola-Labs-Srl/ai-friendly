@@ -141,7 +141,24 @@ add_action( 'init', 'ai_fr_migrate_llms_history_storage', 1 );
  */
 function ai_fr_get_llms_history_index(): array {
     $index = get_option( 'ai_fr_llms_history_index', [] );
-    return is_array( $index ) ? $index : [];
+    if ( ! is_array( $index ) ) {
+        return [];
+    }
+
+    // Versions prior to 2.0 stored the acting user ID, which is not needed.
+    $changed = false;
+    foreach ( $index as &$entry ) {
+        if ( is_array( $entry ) && array_key_exists( 'user_id', $entry ) ) {
+            unset( $entry['user_id'] );
+            $changed = true;
+        }
+    }
+    unset( $entry );
+    if ( $changed ) {
+        update_option( 'ai_fr_llms_history_index', $index, false );
+    }
+
+    return $index;
 }
 
 /**
@@ -169,7 +186,6 @@ function ai_fr_create_llms_snapshot( string $content, string $reason = 'manual' 
         'id'         => $id,
         'storage'    => 'option',
         'created_at' => current_time( 'mysql' ),
-        'user_id'    => get_current_user_id(),
         'reason'     => sanitize_text_field( $reason ),
         'chars'      => strlen( $content ),
         'tokens'     => ai_fr_estimate_tokens( $content ),
@@ -178,14 +194,15 @@ function ai_fr_create_llms_snapshot( string $content, string $reason = 'manual' 
     if ( is_string( $prev_text ) ) {
         $diff = ai_fr_diff_llms_content( $prev_text, $content );
         $entry['note'] = sprintf(
-            'Linee +%d / -%d, token %s%d',
+            /* translators: 1: added lines, 2: removed lines, 3: token delta sign, 4: token delta. */
+            __( 'Linee +%1$d / -%2$d, token %3$s%4$d', 'ai-friendly' ),
             intval( $diff['summary']['added_lines'] ?? 0 ),
             intval( $diff['summary']['removed_lines'] ?? 0 ),
             ( ( $diff['summary']['token_delta'] ?? 0 ) >= 0 ? '+' : '' ),
             intval( $diff['summary']['token_delta'] ?? 0 )
         );
     } else {
-        $entry['note'] = 'Primo snapshot disponibile.';
+        $entry['note'] = __( 'Primo snapshot disponibile.', 'ai-friendly' );
     }
 
     array_unshift( $index, $entry );
@@ -236,7 +253,7 @@ function ai_fr_get_llms_snapshot_content( string $id ): ?string {
 function ai_fr_restore_llms_snapshot( string $id ): array {
     $content = ai_fr_get_llms_snapshot_content( $id );
     if ( $content === null ) {
-        return [ 'restored' => false, 'message' => 'Snapshot non trovato.' ];
+        return [ 'restored' => false, 'message' => __( 'Snapshot non trovato.', 'ai-friendly' ) ];
     }
 
     $options                 = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
@@ -287,7 +304,7 @@ function ai_fr_validate_llms_links( string $content ): array {
             $issues[] = [
                 'url'     => $url,
                 'severity'=> 'warning',
-                'message' => 'Link con formato non valido (atteso http/https o path relativo).',
+                'message' => __( 'Link con formato non valido (atteso http/https o percorso relativo).', 'ai-friendly' ),
             ];
             continue;
         }
@@ -298,7 +315,7 @@ function ai_fr_validate_llms_links( string $content ): array {
                 $issues[] = [
                     'url'      => $url,
                     'severity' => 'warning',
-                    'message'  => 'URL non parsabile.',
+                    'message'  => __( 'URL non interpretabile.', 'ai-friendly' ),
                 ];
                 continue;
             }
@@ -308,7 +325,7 @@ function ai_fr_validate_llms_links( string $content ): array {
             $issues[] = [
                 'url'      => $url,
                 'severity' => 'info',
-                'message'  => 'Link relativo senza estensione .md o llms.txt.',
+                'message'  => __( 'Link relativo senza estensione .md o llms.txt.', 'ai-friendly' ),
             ];
         }
     }
@@ -473,19 +490,19 @@ function ai_fr_run_ai_simulation( string $content ): array {
 
     $suggestions = [];
     if ( $duplicates > 0 ) {
-        $suggestions[] = 'Riduci frasi ripetute o simili per migliorare compattezza.';
+        $suggestions[] = __( 'Riduci frasi ripetute o simili per migliorare compattezza.', 'ai-friendly' );
     }
     if ( $tokens > 2500 ) {
-        $suggestions[] = 'Token elevati: valuta sintesi di sezioni secondarie.';
+        $suggestions[] = __( 'Token elevati: valuta sintesi di sezioni secondarie.', 'ai-friendly' );
     }
     if ( $headings < 2 ) {
-        $suggestions[] = 'Aggiungi heading per migliorare leggibilita strutturale.';
+        $suggestions[] = __( 'Aggiungi heading per migliorare leggibilità strutturale.', 'ai-friendly' );
     }
     if ( $links === 0 ) {
-        $suggestions[] = 'Valuta link diretti alle risorse principali.';
+        $suggestions[] = __( 'Valuta link diretti alle risorse principali.', 'ai-friendly' );
     }
     if ( empty( $suggestions ) ) {
-        $suggestions[] = 'Struttura buona: mantieni sezioni brevi e stabili.';
+        $suggestions[] = __( 'Struttura buona: mantieni sezioni brevi e stabili.', 'ai-friendly' );
     }
 
     return [

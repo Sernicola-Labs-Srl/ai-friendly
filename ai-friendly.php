@@ -3,13 +3,13 @@
  * Plugin Name:        AI Friendly
  * Description:        Espone contenuti WordPress per AI/LLM con llms.txt, Markdown e Semantic Schema JSON-LD.
  * Version:            2.0.0
- * Changelog:          CHANGELOG.md
  * Author:             Sernicola Labs
  * Author URI:         https://sernicola-labs.com
- * License:            GPL v2 or later
+ * License:            GPL v3 or later
+ * License URI:        https://www.gnu.org/licenses/gpl-3.0.html
  * Requires at least:  6.0
  * Requires PHP:       8.1
- * Update URI:         https://github.com/Sernicola-Labs-Srl/ai-friendly
+ * Text Domain:        ai-friendly
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( version_compare( PHP_VERSION, '8.1', '<' ) ) {
     add_action( 'admin_notices', function () {
         echo '<div class="notice notice-error"><p>'
-           . '<strong>AI Friendly</strong> richiede PHP >= 8.1 '
-           . '(versione attuale: ' . PHP_VERSION . ').</p></div>';
+           . esc_html__( 'AI Friendly requires PHP 8.1 or later.', 'ai-friendly' )
+           . ' (' . esc_html__( 'Current version:', 'ai-friendly' ) . ' ' . esc_html( PHP_VERSION ) . ')</p></div>';
     } );
     return;
 }

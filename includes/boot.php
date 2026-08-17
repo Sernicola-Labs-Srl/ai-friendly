@@ -12,7 +12,6 @@ if ( ! defined( 'AI_FR_PLUGIN_FILE' ) ) {
 
 require_once AI_FR_PLUGIN_DIR . '/includes/constants.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/options.php';
-require_once AI_FR_PLUGIN_DIR . '/includes/updater.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/activation.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/content-filter.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/versioning.php';
@@ -26,7 +25,7 @@ require_once AI_FR_PLUGIN_DIR . '/includes/intercept.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/head.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/schema.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/schema-faq.php';
-require_once AI_FR_PLUGIN_DIR . '/includes/admin-telemetry.php';
+require_once AI_FR_PLUGIN_DIR . '/includes/admin-activity-log.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/admin-diagnostics.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/admin-dashboard.php';
 require_once AI_FR_PLUGIN_DIR . '/includes/admin-content-table.php';

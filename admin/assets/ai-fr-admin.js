@@ -14,6 +14,10 @@
         return $('<div/>').text(text || '').html();
     }
 
+    function t(key) {
+        return (AiFrAdmin.i18n || {})[key] || key;
+    }
+
     function switchSection(section) {
         $('.ai-fr-nav-item').removeClass('is-active').attr('aria-selected', 'false');
         $('.ai-fr-nav-item[data-section="' + section + '"]').addClass('is-active').attr('aria-selected', 'true');
@@ -44,7 +48,7 @@
         toc.forEach(function (item) {
             html += '<li class="ai-fr-toc-level-' + item.level + '">' + esc(item.title) + '</li>';
         });
-        $('#ai-fr-toc').html(html || '<li>Nessun heading trovato.</li>');
+        $('#ai-fr-toc').html(html || '<li>' + esc(t('noHeadings')) + '</li>');
     }
 
     var previewTimer = null;
@@ -56,7 +60,8 @@
             $('#ai-fr-preview-pane').html(res.data.html || '');
             $('#ai-fr-token-count').text(res.data.tokens || 0);
             var validation = (res.data || {}).validation || { count: 0 };
-            $('#ai-fr-link-validation').text((validation.count || 0) + ' issue');
+            var issueCount = validation.count || 0;
+            $('#ai-fr-link-validation').text(issueCount + ' ' + (issueCount === 1 ? t('issuesSingular') : t('issuesPlural')));
         });
     }
 
@@ -66,7 +71,7 @@
         warnings.forEach(function (w) {
             html += '<li>' + esc(w.message) + '</li>';
         });
-        $('#ai-fr-overview-warnings').html(html || '<li>Nessun avviso.</li>');
+        $('#ai-fr-overview-warnings').html(html || '<li>' + esc(t('noWarnings')) + '</li>');
     }
 
     function refreshOverview() {
@@ -75,9 +80,9 @@
             var d = res.data || {};
             $('#ai-fr-llms-chars').text((d.llms || {}).chars || 0);
             $('#ai-fr-llms-lines').text((d.llms || {}).lines || 0);
-            $('#ai-fr-last-regen').text((d.llms || {}).last_regen_time || 'n/d');
+            $('#ai-fr-last-regen').text((d.llms || {}).last_regen_time || t('notAvailable'));
             var sr = (d.diagnostics || {}).sitemap_robots || {};
-            $('#ai-fr-sr-info').text('Sitemap: ' + (sr.sitemap_url || 'n/d') + ' | Robots: ' + (sr.robots_url || 'n/d'));
+            $('#ai-fr-sr-info').text(t('sitemap') + ': ' + (sr.sitemap_url || t('notAvailable')) + ' | ' + t('robots') + ': ' + (sr.robots_url || t('notAvailable')));
             renderWarnings(d);
         });
     }
@@ -86,13 +91,13 @@
         var html = '';
         (items || []).forEach(function (item) {
             var badge = item.included
-                ? '<span class="ai-fr-badge is-ok">Inclusa</span>'
-                : '<span class="ai-fr-badge">Esclusa</span>';
-            var actionLabel = item.excluded ? 'Includi' : 'Escludi';
+                ? '<span class="ai-fr-badge is-ok">' + esc(t('included')) + '</span>'
+                : '<span class="ai-fr-badge">' + esc(t('excluded')) + '</span>';
+            var actionLabel = item.excluded ? t('include') : t('excludeContent');
             var next = item.excluded ? 0 : 1;
             html += '<tr>';
             html += '<td>' + badge + '</td>';
-            html += '<td><a href="' + esc(item.edit_url) + '">' + esc(item.title || '(Senza titolo)') + '</a></td>';
+            html += '<td><a href="' + esc(item.edit_url) + '">' + esc(item.title || t('untitled')) + '</a></td>';
             html += '<td>' + esc(item.post_type) + '</td>';
             html += '<td>' + esc(item.language) + '</td>';
             html += '<td>' + esc(item.status) + '</td>';
@@ -100,7 +105,7 @@
             html += '<td><button type="button" class="button ai-fr-toggle-exclusion" data-post-id="' + item.id + '" data-exclude="' + next + '">' + actionLabel + '</button></td>';
             html += '</tr>';
         });
-        $('#ai-fr-content-tbody').html(html || '<tr><td colspan="7">Nessun contenuto.</td></tr>');
+        $('#ai-fr-content-tbody').html(html || '<tr><td colspan="7">' + esc(t('noContent')) + '</td></tr>');
     }
 
     function loadContentItems() {
@@ -116,7 +121,7 @@
             contentState.total = data.total || 0;
             renderContentRows(data.items || []);
             var totalPages = Math.max(1, Math.ceil(contentState.total / contentState.perPage));
-            $('#ai-fr-page-info').text('Pagina ' + contentState.page + ' / ' + totalPages);
+            $('#ai-fr-page-info').text(t('page') + ' ' + contentState.page + ' / ' + totalPages);
             $('#ai-fr-prev-page').prop('disabled', contentState.page <= 1);
             $('#ai-fr-next-page').prop('disabled', contentState.page >= totalPages);
         });
@@ -129,7 +134,7 @@
             ((res.data || {}).items || []).forEach(function (it) {
                 html += '<li><strong>' + esc(it.time || '') + '</strong> - ' + esc(it.type || '') + '</li>';
             });
-            $('#ai-fr-timeline-list').html(html || '<li>Nessun evento.</li>');
+            $('#ai-fr-timeline-list').html(html || '<li>' + esc(t('noEvents')) + '</li>');
         });
     }
 
@@ -141,11 +146,11 @@
                 html += '<li>' +
                     '<label><input type="checkbox" class="ai-fr-snapshot-select" value="' + esc(item.id || '') + '"> </label>' +
                     '<strong>' + esc(item.created_at || '') + '</strong> - ' + esc(item.reason || '') +
-                    ' (' + esc(String(item.tokens || 0)) + ' token) ' +
+                    ' (' + esc(String(item.tokens || 0)) + ' ' + esc(t('token')) + ') ' +
                     (item.note ? '<em>' + esc(item.note) + '</em> ' : '') +
-                    '<button type="button" class="button-link ai-fr-restore-snapshot" data-id="' + esc(item.id || '') + '">Ripristina</button></li>';
+                    '<button type="button" class="button-link ai-fr-restore-snapshot" data-id="' + esc(item.id || '') + '">' + esc(t('restore')) + '</button></li>';
             });
-            $('#ai-fr-snapshot-list').html(html || '<li>Nessuno snapshot.</li>');
+            $('#ai-fr-snapshot-list').html(html || '<li>' + esc(t('noSnapshots')) + '</li>');
         });
     }
 
@@ -154,7 +159,7 @@
             return $(this).val();
         }).get();
         if (selected.length !== 2) {
-            $('#ai-fr-diff-summary').text('Seleziona esattamente 2 snapshot.');
+            $('#ai-fr-diff-summary').text(t('selectTwoSnapshots'));
             return;
         }
 
@@ -166,8 +171,8 @@
             var d = res.data || {};
             var s = d.summary || {};
             $('#ai-fr-diff-summary').text(
-                'Linee +' + (s.added_lines || 0) + ' / -' + (s.removed_lines || 0) +
-                ' | Delta token: ' + ((s.token_delta > 0 ? '+' : '') + (s.token_delta || 0))
+                t('lines') + ' +' + (s.added_lines || 0) + ' / -' + (s.removed_lines || 0) +
+                ' | ' + t('tokenDelta') + ': ' + ((s.token_delta > 0 ? '+' : '') + (s.token_delta || 0))
             );
             var rowsHtml = '';
             (d.rows || []).forEach(function (row) {
@@ -176,7 +181,7 @@
                 var right = (row.right_num ? row.right_num + ': ' : '') + (row.right || '');
                 rowsHtml += '<tr class="' + cls + '"><td><code>' + esc(left) + '</code></td><td><code>' + esc(right) + '</code></td></tr>';
             });
-            $('#ai-fr-diff-rows').html(rowsHtml || '<tr><td colspan="2">Nessuna differenza.</td></tr>');
+            $('#ai-fr-diff-rows').html(rowsHtml || '<tr><td colspan="2">' + esc(t('noDifferences')) + '</td></tr>');
         });
     }
 
@@ -186,7 +191,7 @@
         }).done(function (res) {
             if (!res || !res.success) return;
             var d = res.data || {};
-            var msg = 'Score: ' + (d.score || 0) + ' | Token: ' + (d.tokens || 0) + ' | Duplicati: ' + (d.duplicates || 0);
+            var msg = t('score') + ': ' + (d.score || 0) + ' | ' + t('token') + ': ' + (d.tokens || 0) + ' | ' + t('duplicates') + ': ' + (d.duplicates || 0);
             var sug = (d.suggestions || []).join(' ');
             $('#ai-fr-simulation-result').text(msg + '. ' + sug);
         });
@@ -206,20 +211,20 @@
     function renderServiceRow() {
         return '<div class="ai-fr-schema-service">' +
             '<div class="ai-fr-schema-service-head">' +
-            '<strong>Servizio</strong>' +
-            '<button type="button" class="button button-link-delete ai-fr-schema-service-remove">Rimuovi</button>' +
+            '<strong>' + esc(t('service')) + '</strong>' +
+            '<button type="button" class="button button-link-delete ai-fr-schema-service-remove">' + esc(t('remove')) + '</button>' +
             '</div>' +
             '<div class="ai-fr-schema-service-grid">' +
-            serviceField('name', 'Nome', 'text', 'UX e Graphic Design') +
-            serviceField('url', 'URL pagina', 'url', 'https://example.com/servizio/') +
-            serviceField('serviceType', 'Tipo servizio', 'text', 'Web design, UX/UI design') +
-            serviceField('areaServed', 'Area servita', 'text', 'Italia') +
+            serviceField('name', t('name'), 'text', 'UX e Graphic Design') +
+            serviceField('url', t('pageUrl'), 'url', 'https://example.com/servizio/') +
+            serviceField('serviceType', t('serviceType'), 'text', 'Web design, UX/UI design') +
+            serviceField('areaServed', t('areaServed'), 'text', 'Italia') +
             '<label class="ai-fr-field ai-fr-schema-service-description">' +
-            '<span>Descrizione</span>' +
-            '<textarea rows="3" data-service-field="description" placeholder="Descrizione breve del servizio."></textarea>' +
+            '<span>' + esc(t('description')) + '</span>' +
+            '<textarea rows="3" data-service-field="description" placeholder="' + esc(t('serviceDescription')) + '"></textarea>' +
             '</label>' +
-            serviceField('price', 'Prezzo', 'text', '0') +
-            serviceField('priceCurrency', 'Valuta', 'text', 'EUR') +
+            serviceField('price', t('price'), 'text', '0') +
+            serviceField('priceCurrency', t('currency'), 'text', 'EUR') +
             '</div>' +
             '</div>';
     }
@@ -228,46 +233,46 @@
         $('#ai-fr-schema-services .ai-fr-empty-state').remove();
         $('#ai-fr-schema-services .ai-fr-schema-service').each(function (index) {
             $(this).attr('data-service-index', index);
-            $(this).find('.ai-fr-schema-service-head strong').text('Servizio ' + (index + 1));
+            $(this).find('.ai-fr-schema-service-head strong').text(t('service') + ' ' + (index + 1));
             $(this).find('.ai-fr-schema-service-remove')
                 .removeClass('button-link-delete')
                 .addClass('button ai-fr-button-danger')
-                .html('<span class="dashicons dashicons-trash" aria-hidden="true"></span><span>Rimuovi</span>');
+                .html('<span class="dashicons dashicons-trash" aria-hidden="true"></span><span>' + esc(t('remove')) + '</span>');
             $(this).find('[data-service-field]').each(function () {
                 var field = $(this).data('service-field');
                 $(this).attr('name', 'schema_services[' + index + '][' + field + ']');
             });
         });
         if (!$('#ai-fr-schema-services .ai-fr-schema-service').length) {
-            $('#ai-fr-schema-services').append('<div class="ai-fr-empty-state">Nessun servizio manuale configurato.</div>');
+            $('#ai-fr-schema-services').append('<div class="ai-fr-empty-state">' + esc(t('noManualServices')) + '</div>');
         }
     }
 
     var schemaRepeaterTemplates = {
-        types: '<input data-field="value" placeholder="EducationalOrganization"><button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>',
-        contacts: '<input data-field="contactType" placeholder="segreteria corsi"><input data-field="telephone" placeholder="+39 02 ..."><input type="email" data-field="email" placeholder="email@example.com"><input data-field="availableLanguage" placeholder="it, en"><input data-field="hoursAvailable" placeholder="Mo-Fr 09:00-18:00"><button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>',
-        hours: '<input data-field="dayOfWeek" placeholder="Monday, Tuesday"><input type="time" data-field="opens"><input type="time" data-field="closes"><input type="date" data-field="validFrom"><input type="date" data-field="validThrough"><button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>',
-        certifications: '<input data-field="name" placeholder="ISO 9001"><input data-field="identifier" placeholder="Certificato n."><input data-field="issuedBy" placeholder="Ente certificatore"><input type="url" data-field="url" placeholder="https://..."><button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>',
-        identifiers: '<input data-field="propertyID" placeholder="RUNTS"><input data-field="value" placeholder="Numero identificativo"><button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>',
-        offerSources: '<input data-field="value" placeholder="ID termine, taxonomy:slug o permalink WordPress"><button type="button" class="button-link-delete ai-fr-repeater-remove">Rimuovi</button>'
+        types: '<input data-field="value" placeholder="EducationalOrganization"><button type="button" class="button-link-delete ai-fr-repeater-remove">' + esc(t('remove')) + '</button>',
+        contacts: '<input data-field="contactType" placeholder="' + esc(t('department')) + '"><input data-field="telephone" placeholder="+39 02 ..."><input type="email" data-field="email" placeholder="email@example.com"><input data-field="availableLanguage" placeholder="it, en"><input data-field="hoursAvailable" placeholder="Mo-Fr 09:00-18:00"><button type="button" class="button-link-delete ai-fr-repeater-remove">' + esc(t('remove')) + '</button>',
+        hours: '<input data-field="dayOfWeek" placeholder="Monday, Tuesday"><input type="time" data-field="opens"><input type="time" data-field="closes"><input type="date" data-field="validFrom"><input type="date" data-field="validThrough"><button type="button" class="button-link-delete ai-fr-repeater-remove">' + esc(t('remove')) + '</button>',
+        certifications: '<input data-field="name" placeholder="ISO 9001"><input data-field="identifier" placeholder="' + esc(t('certificateNumber')) + '"><input data-field="issuedBy" placeholder="' + esc(t('certificationIssuer')) + '"><input type="url" data-field="url" placeholder="https://..."><button type="button" class="button-link-delete ai-fr-repeater-remove">' + esc(t('remove')) + '</button>',
+        identifiers: '<input data-field="propertyID" placeholder="RUNTS"><input data-field="value" placeholder="' + esc(t('identifierNumber')) + '"><button type="button" class="button-link-delete ai-fr-repeater-remove">' + esc(t('remove')) + '</button>',
+        offerSources: '<input data-field="value" placeholder="' + esc(t('sourceReference')) + '"><button type="button" class="button-link-delete ai-fr-repeater-remove">' + esc(t('remove')) + '</button>'
     };
 
     var schemaRepeaterLabels = {
-        types: { title: 'Tipo aggiuntivo', fields: { value: 'Tipo Schema.org' } },
-        contacts: { title: 'Contatto', fields: { contactType: 'Reparto / funzione', telephone: 'Telefono', email: 'Email', availableLanguage: 'Lingue', hoursAvailable: 'Disponibilità' } },
-        hours: { title: 'Fascia oraria', fields: { dayOfWeek: 'Giorni', opens: 'Apertura', closes: 'Chiusura', validFrom: 'Valida dal', validThrough: 'Valida fino al' } },
-        certifications: { title: 'Certificazione', fields: { name: 'Nome', identifier: 'Identificativo', issuedBy: 'Ente certificatore', url: 'URL di verifica' } },
-        identifiers: { title: 'Identificatore', fields: { propertyID: 'Registro / codice', value: 'Valore' } },
-        offerSources: { title: 'Sorgente WordPress', fields: { value: 'ID, riferimento o permalink' } }
+        types: { title: t('additionalType'), fields: { value: t('schemaType') } },
+        contacts: { title: t('contact'), fields: { contactType: t('department'), telephone: t('phone'), email: 'Email', availableLanguage: t('languages'), hoursAvailable: t('availability') } },
+        hours: { title: t('timeSlot'), fields: { dayOfWeek: t('days'), opens: t('opens'), closes: t('closes'), validFrom: t('validFrom'), validThrough: t('validThrough') } },
+        certifications: { title: t('certification'), fields: { name: t('name'), identifier: t('identifier'), issuedBy: t('certificationIssuer'), url: 'URL' } },
+        identifiers: { title: t('identifier'), fields: { propertyID: t('identifier'), value: t('value') } },
+        offerSources: { title: t('source'), fields: { value: 'ID / URL' } }
     };
 
     var schemaRepeaterEmptyLabels = {
-        types: 'Nessun tipo aggiuntivo configurato.',
-        contacts: 'Nessun contatto configurato.',
-        hours: 'Nessuna fascia oraria configurata.',
-        certifications: 'Nessuna certificazione configurata.',
-        identifiers: 'Nessun identificatore aggiuntivo configurato.',
-        offerSources: 'Nessuna sorgente WordPress configurata.'
+        types: t('noAdditionalTypes'),
+        contacts: t('noContacts'),
+        hours: t('noTimeSlots'),
+        certifications: t('noCertifications'),
+        identifiers: t('noIdentifiers'),
+        offerSources: t('noOfferSources')
     };
 
     function decorateSchemaRepeater($repeater) {
@@ -285,7 +290,7 @@
             $row.find('.ai-fr-repeater-remove')
                 .removeClass('button-link-delete')
                 .addClass('button ai-fr-button-danger')
-                .html('<span class="dashicons dashicons-trash" aria-hidden="true"></span><span>Rimuovi</span>');
+                .html('<span class="dashicons dashicons-trash" aria-hidden="true"></span><span>' + esc(t('remove')) + '</span>');
             $row.children('[data-field]').each(function () {
                 var $input = $(this);
                 var field = $input.data('field');
@@ -312,7 +317,7 @@
             $(this).find('.ai-fr-schema-repeater-head strong').text(schemaRepeaterLabels[type].title + ' ' + (index + 1));
         });
         if (!$repeater.find('.ai-fr-schema-repeater-row').length) {
-            $repeater.append('<div class="ai-fr-empty-state">' + esc(schemaRepeaterEmptyLabels[type] || 'Nessun elemento configurato.') + '</div>');
+            $repeater.append('<div class="ai-fr-empty-state">' + esc(schemaRepeaterEmptyLabels[type] || t('noConfiguredItem')) + '</div>');
         }
     }
 
@@ -381,18 +386,20 @@
         var selected = $('[data-wizard-field="content_types"]:checked').map(function () {
             return $(this).closest('.ai-fr-choice').find('strong').text();
         }).get();
-        var output = Number(data.static_md_files) ? 'File Markdown statici' : 'Output dinamico';
+        var output = Number(data.static_md_files) ? t('staticOutput') : t('dynamicOutput');
         var automation = Number(data.auto_regenerate)
-            ? 'Ogni ' + data.regenerate_interval + ' ore, batch da ' + data.regenerate_batch_size
-            : 'Rigenerazione pianificata disattivata';
+            ? t('every') + ' ' + data.regenerate_interval + ' ' + t('hoursBatch') + ' ' + data.regenerate_batch_size
+            : t('scheduledDisabled');
         var schema = Number(data.schema_enabled)
-            ? data.schema_entity_type + ': ' + (data.schema_name || 'nome non indicato')
-            : 'Disattivato';
+            ? data.schema_entity_type + ': ' + (data.schema_name || t('nameNotProvided'))
+            : t('disabled');
+        var acf = Number(data.include_acf_fields) ? t('enabled') : t('disabled');
         $('#ai-fr-wizard-summary').html(
-            '<div><small>Contenuti inclusi</small><strong>' + esc(selected.join(', ') || 'Nessuno') + '</strong></div>' +
-            '<div><small>Output</small><strong>' + esc(output) + '</strong></div>' +
-            '<div><small>Automazione</small><strong>' + esc(automation) + '</strong></div>' +
-            '<div><small>Semantic Schema</small><strong>' + esc(schema) + '</strong></div>'
+            '<div><small>' + esc(t('includedContent')) + '</small><strong>' + esc(selected.join(', ') || t('none')) + '</strong></div>' +
+            '<div><small>' + esc(t('acfFields')) + '</small><strong>' + esc(acf) + '</strong></div>' +
+            '<div><small>' + esc(t('output')) + '</small><strong>' + esc(output) + '</strong></div>' +
+            '<div><small>' + esc(t('automation')) + '</small><strong>' + esc(automation) + '</strong></div>' +
+            '<div><small>' + esc(t('semanticSchema')) + '</small><strong>' + esc(schema) + '</strong></div>'
         );
     }
 
@@ -432,23 +439,23 @@
     function completeWizard() {
         var $button = $('#ai-fr-wizard-complete');
         var data = collectWizardData();
-        $button.prop('disabled', true).text('Salvataggio in corso…');
-        $('#ai-fr-wizard-result').removeClass('is-error is-success').text('Salvataggio delle impostazioni e verifica dell’output in corso.');
+        $button.prop('disabled', true).text(t('saving'));
+        $('#ai-fr-wizard-result').removeClass('is-error is-success').text(t('savingAndVerifying'));
         ajax('ai_fr_complete_setup', data).done(function (res) {
             if (res && res.success) {
-                $('#ai-fr-wizard-result').addClass('is-success').text('Configurazione completata. L’output è stato verificato.');
+                $('#ai-fr-wizard-result').addClass('is-success').text(t('setupComplete'));
                 try { window.sessionStorage.removeItem(wizardStorageKey); } catch (e) {}
                 window.setTimeout(function () { window.location.reload(); }, 700);
                 return;
             }
             var payload = (res || {}).data || {};
-            $('#ai-fr-wizard-result').addClass('is-error').text(payload.message || 'Generazione non riuscita. Le impostazioni salvate restano attive.');
+            $('#ai-fr-wizard-result').addClass('is-error').text(payload.message || t('generationFailed'));
             $('#ai-fr-wizard-retry').prop('hidden', false);
         }).fail(function () {
-            $('#ai-fr-wizard-result').addClass('is-error').text('Impossibile completare la richiesta. Riprova senza perdere le scelte effettuate.');
+            $('#ai-fr-wizard-result').addClass('is-error').text(t('requestFailed'));
             $('#ai-fr-wizard-retry').prop('hidden', false);
         }).always(function () {
-            $button.prop('disabled', false).text('Salva e genera');
+            $button.prop('disabled', false).text(t('saveAndGenerate'));
         });
     }
 
@@ -501,7 +508,7 @@
                 var processed = d.processed || 0;
                 var regenerated = d.regenerated || 0;
                 $('#ai-fr-action-status').text(
-                    'Batch completato. Processati: ' + processed + ', rigenerati: ' + regenerated + '.'
+                    t('batchComplete') + ' ' + t('processed') + ': ' + processed + ', ' + t('regenerated') + ': ' + regenerated + '.'
                 );
                 refreshOverview();
                 refreshTimeline();
@@ -511,7 +518,7 @@
         $('#ai-fr-regenerate').on('click', function () {
             ajax('ai_fr_regenerate_all', { force: 0, mode: 'full' }).done(function (res) {
                 if (!res || !res.success) return;
-                $('#ai-fr-action-status').text('Rigenerazione completata.');
+                $('#ai-fr-action-status').text(t('regenerationComplete'));
                 refreshOverview();
                 refreshTimeline();
             });
@@ -519,17 +526,17 @@
 
         $('#ai-fr-regenerate-force').on('click', function () {
             ajax('ai_fr_regenerate_all', { force: 1, mode: 'full' }).done(function () {
-                $('#ai-fr-action-status').text('Rigenerazione forzata completata.');
+                $('#ai-fr-action-status').text(t('forcedComplete'));
                 refreshOverview();
                 refreshTimeline();
             });
         });
 
         $('#ai-fr-clear-versions').on('click', function () {
-            if (!window.confirm('Eliminare tutti i file MD salvati?')) return;
+            if (!window.confirm(t('confirmDeleteFiles'))) return;
             ajax('ai_fr_clear_versions', {}).done(function (res) {
                 if (!res || !res.success) return;
-                $('#ai-fr-action-status').text('Eliminati file: ' + ((res.data || {}).deleted || 0));
+                $('#ai-fr-action-status').text(t('deletedFiles') + ': ' + ((res.data || {}).deleted || 0));
                 refreshOverview();
                 refreshTimeline();
             });
@@ -602,8 +609,8 @@
         $('#ai-fr-schema-image-select').on('click', function () {
             if (!window.wp || !wp.media) return;
             var frame = wp.media({
-                title: 'Seleziona immagine identitaria',
-                button: { text: 'Usa questa immagine' },
+                title: t('selectIdentityImage'),
+                button: { text: t('useImage') },
                 multiple: false
             });
             frame.on('select', function () {
@@ -618,13 +625,13 @@
 
         $('#ai-fr-schema-image-clear').on('click', function () {
             $('#ai-fr-schema-image-id').val('0').trigger('change');
-            $('#ai-fr-schema-entity-image-preview').html('<span>Nessuna immagine</span>');
+            $('#ai-fr-schema-entity-image-preview').html('<span>' + esc(t('noImage')) + '</span>');
             syncSchemaMediaControls();
         });
 
         $('#ai-fr-schema-logo-select').on('click', function () {
             if (!window.wp || !wp.media) return;
-            var frame = wp.media({ title: 'Seleziona logo aziendale', button: { text: 'Usa questo logo' }, multiple: false });
+            var frame = wp.media({ title: t('selectLogo'), button: { text: t('useLogo') }, multiple: false });
             frame.on('select', function () {
                 var attachment = frame.state().get('selection').first().toJSON();
                 var url = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
@@ -637,7 +644,7 @@
 
         $('#ai-fr-schema-logo-clear').on('click', function () {
             $('#ai-fr-schema-logo-id').val('0').trigger('change');
-            $('#ai-fr-schema-logo-preview').html('<span>Nessun logo</span>');
+            $('#ai-fr-schema-logo-preview').html('<span>' + esc(t('noLogo')) + '</span>');
             syncSchemaMediaControls();
         });
 
@@ -717,7 +724,7 @@
         var initialFormState = $('#ai-fr-main-form').serialize();
         function updateDirtyState() {
             var dirty = $('#ai-fr-main-form').serialize() !== initialFormState;
-            $('#ai-fr-dirty-state').text(dirty ? 'Modifiche non salvate' : 'Tutte le modifiche sono salvate').toggleClass('is-dirty', dirty);
+            $('#ai-fr-dirty-state').text(dirty ? t('unsavedChanges') : t('allChangesSaved')).toggleClass('is-dirty', dirty);
         }
         $('#ai-fr-main-form').on('input change', ':input', updateDirtyState);
         $('#ai-fr-main-form').on('click', '.ai-fr-repeater-add, .ai-fr-repeater-remove, #ai-fr-schema-service-add, .ai-fr-schema-service-remove, #ai-fr-schema-image-clear, #ai-fr-schema-logo-clear', function () {

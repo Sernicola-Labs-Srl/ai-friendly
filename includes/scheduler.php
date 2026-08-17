@@ -43,7 +43,11 @@ add_filter( 'cron_schedules', function( $schedules ) {
     
     $schedules['ai_fr_interval'] = [
         'interval' => $interval_hours * HOUR_IN_SECONDS,
-        'display'  => sprintf( 'AI Friendly: ogni %d ore', $interval_hours ),
+        'display'  => sprintf(
+            /* translators: %d: regeneration interval in hours. */
+            __( 'AI Friendly: ogni %d ore', 'ai-friendly' ),
+            $interval_hours
+        ),
     ];
     
     return $schedules;

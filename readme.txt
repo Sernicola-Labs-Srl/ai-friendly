@@ -1,12 +1,12 @@
-﻿=== AI Friendly ===
-Contributors: sernicolalabs
+=== AI Friendly ===
+Contributors: slabsit
 Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.1
 Stable tag: 2.0.0
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Expose WordPress content for AI systems through llms.txt and Markdown endpoints, with rules, automation, and versioning tools.
 
@@ -20,7 +20,14 @@ AI Friendly provides:
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
 * Admin tools for preview, snapshots, diagnostics, and bulk operations.
 * Optional Semantic Schema JSON-LD layer with multi-type organizations, repeatable contacts, Place/Geo, opening hours, certifications, generic identifiers, automatic Breakdance FAQPage, WordPress-powered OfferCatalog sources, and Yoast/Rank Math graph extension.
-* Native WordPress updates from public GitHub Releases.
+
+= Privacy =
+
+AI Friendly does not contact external services and does not transmit analytics or usage data. Its activity log is stored only in the local WordPress database, contains technical events without user identifiers, and retains at most 200 entries. Optional regeneration emails are sent through the site's configured WordPress mail system only when enabled by an administrator.
+
+ACF field extraction is disabled by default. Enable it only when the text values of all ACF fields attached to included content are intended for public `.md` output.
+
+When the plugin is deleted from WordPress, its settings, activity log, generated files, snapshots, scheduled events, and plugin-specific post metadata are removed.
 
 == Installation ==
 
@@ -38,13 +45,28 @@ Yes. Use per-content exclusion in the metabox or global exclusion rules in setti
 
 Yes. Fill the editor and disable automatic content listing.
 
+= Are ACF fields included automatically? =
+
+No. ACF field extraction is disabled by default because fields may contain information that is not displayed publicly. Administrators can explicitly enable it under the content protection settings after verifying that those values are safe for public output.
+
 = Does it replace Yoast or Rank Math schema? =
 
 No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON-LD graph and merges nodes with the same @id to avoid duplicate Person or Organization entities.
 
+= Where can I get support or review the source? =
+
+Use the WordPress.org support forum for support. The maintained development source is available at https://github.com/Sernicola-Labs-Srl/ai-friendly.
+
 == Changelog ==
 
 = 2.0.0 =
+* Added a discreet Sernicola Labs development credit to the plugin administration page.
+* Standardized Content Hub card heights per row and aligned primary card actions.
+* Made ACF extraction explicitly opt-in to prevent accidental exposure of non-public custom fields.
+* Replaced telemetry naming with a local activity log, removed stored user identifiers, documented privacy behavior, and added complete uninstall cleanup.
+* Aligned the declared GPLv3-or-later license with the bundled license text and added WordPress translation metadata.
+* Removed the GitHub updater and Update URI header for wordpress.org directory compatibility.
+* Addressed Plugin Check security and compatibility findings and excluded development files from the distribution package.
 * Fixed a critical error on singular pages when automatic Breakdance FAQ detection was enabled.
 * Refined the admin UI with WordPress-color-scheme-independent buttons, neutral cards, balanced Schema modules, compact media controls, contextual Person/Organization fields, and explicit empty states for repeaters.
 * Unified the full AI Content Hub admin interface with shared cards, forms, repeaters, responsive behavior, accessible focus states, and an unsaved-changes bar.

@@ -518,7 +518,11 @@ function ai_fr_schema_get_offer_catalog_node( array $options ): array {
 
     $catalog_name = ! empty( $catalog_source['name'] )
         ? sanitize_text_field( (string) $catalog_source['name'] )
-        : sprintf( 'Servizi %s', get_bloginfo( 'name' ) );
+        : sprintf(
+            /* translators: %s: site name. */
+            __( 'Servizi %s', 'ai-friendly' ),
+            get_bloginfo( 'name' )
+        );
 
     return [
         '@type'           => 'OfferCatalog',
@@ -677,6 +681,13 @@ function ai_fr_schema_dedupe_service_inputs( array $services ): array {
     return $unique;
 }
 
+/**
+ * Local equivalent of array_is_list() for WordPress compatibility checks.
+ */
+function ai_fr_schema_is_list( array $value ): bool {
+    return [] === $value || array_keys( $value ) === range( 0, count( $value ) - 1 );
+}
+
 function ai_fr_schema_parse_legacy_offer_catalog( string $raw ): array {
     $raw = trim( $raw );
     if ( $raw === '' ) {
@@ -690,7 +701,7 @@ function ai_fr_schema_parse_legacy_offer_catalog( string $raw ): array {
 
     $catalog_name = '';
     $services     = $decoded;
-    if ( ! array_is_list( $decoded ) ) {
+    if ( ! ai_fr_schema_is_list( $decoded ) ) {
         $catalog_name = sanitize_text_field( (string) ( $decoded['name'] ?? '' ) );
         $services     = isset( $decoded['itemListElement'] ) && is_array( $decoded['itemListElement'] ) ? $decoded['itemListElement'] : [];
     }
@@ -1062,7 +1073,7 @@ function ai_fr_schema_merge_node( array $base, array $addition ): array {
 }
 
 function ai_fr_schema_merge_value( array $base, array $addition ): array {
-    if ( array_is_list( $base ) || array_is_list( $addition ) ) {
+    if ( ai_fr_schema_is_list( $base ) || ai_fr_schema_is_list( $addition ) ) {
         return ai_fr_schema_merge_list_values( $base, $addition );
     }
 

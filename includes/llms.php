@@ -19,9 +19,11 @@ function ai_fr_serve_llms_txt(): void {
     header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
     header( 'Pragma: no-cache' );
     header( 'Expires: 0' );
+    header( 'X-Content-Type-Options: nosniff' );
     header( 'X-AI-Friendly-Version: ' . AI_FR_VERSION );
     header( 'X-AI-Friendly-LLMS-Length: ' . strlen( $body ) );
     header( 'Content-Length: ' . strlen( $body ) );
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Markdown is served as text/plain and must remain unescaped.
     echo $body;
     exit;
 }
@@ -53,7 +55,7 @@ function ai_fr_build_llms_txt(): string {
         
         // Pagine
         if ( ! empty( $options['include_pages'] ) ) {
-            $out .= ai_fr_section( 'Pagine', [
+            $out .= ai_fr_section( __( 'Pagine', 'ai-friendly' ), [
                 'post_type'      => 'page',
                 'post_status'    => 'publish',
                 'posts_per_page' => AI_FR_PAGES_LIMIT,
@@ -64,7 +66,7 @@ function ai_fr_build_llms_txt(): string {
 
         // Post
         if ( ! empty( $options['include_posts'] ) ) {
-            $out .= ai_fr_section( 'Post', [
+            $out .= ai_fr_section( __( 'Post', 'ai-friendly' ), [
                 'post_type'      => 'post',
                 'post_status'    => 'publish',
                 'posts_per_page' => AI_FR_POSTS_LIMIT,
@@ -75,7 +77,7 @@ function ai_fr_build_llms_txt(): string {
 
         // Prodotti WooCommerce
         if ( ! empty( $options['include_products'] ) && class_exists( 'WooCommerce' ) ) {
-            $out .= ai_fr_section( 'Prodotti', [
+            $out .= ai_fr_section( __( 'Prodotti', 'ai-friendly' ), [
                 'post_type'      => 'product',
                 'post_status'    => 'publish',
                 'posts_per_page' => 20,

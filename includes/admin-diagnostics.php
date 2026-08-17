@@ -17,7 +17,7 @@ function ai_fr_run_diagnostics(): array {
     if ( empty( $enabled_types ) ) {
         $warnings[] = [
             'code'    => 'no_post_types_enabled',
-            'message' => 'Nessun tipo di contenuto abilitato.',
+            'message' => __( 'Nessun tipo di contenuto abilitato.', 'ai-friendly' ),
         ];
     }
 
@@ -44,7 +44,7 @@ function ai_fr_run_diagnostics(): array {
     if ( $included_count === 0 ) {
         $warnings[] = [
             'code'    => 'empty_scope',
-            'message' => 'Zero contenuti inclusi con le regole correnti.',
+            'message' => __( 'Zero contenuti inclusi con le regole correnti.', 'ai-friendly' ),
         ];
     }
 
@@ -52,14 +52,18 @@ function ai_fr_run_diagnostics(): array {
     if ( ! empty( $last_regen['stats']['errors'] ) ) {
         $warnings[] = [
             'code'    => 'last_regen_errors',
-            'message' => 'Ultima rigenerazione con errori: ' . intval( $last_regen['stats']['errors'] ),
+            'message' => sprintf(
+                /* translators: %d: regeneration error count. */
+                __( 'Ultima rigenerazione con errori: %d', 'ai-friendly' ),
+                intval( $last_regen['stats']['errors'] )
+            ),
         ];
     }
 
     if ( empty( $options['auto_regenerate'] ) || empty( $options['static_md_files'] ) ) {
         $warnings[] = [
             'code'    => 'cron_disabled',
-            'message' => 'Rigenerazione automatica non attiva (cron o file statici disabilitati).',
+            'message' => __( 'Rigenerazione automatica non attiva (cron o file statici disabilitati).', 'ai-friendly' ),
         ];
     }
 
@@ -70,21 +74,21 @@ function ai_fr_run_diagnostics(): array {
         if ( empty( trim( (string) ( $options['schema_name'] ?? '' ) ) ) ) {
             $warnings[] = [
                 'code'    => 'schema_missing_name',
-                'message' => 'Semantic Schema attivo: nome entita non impostato, verra usato il nome del sito.',
+                'message' => __( 'Semantic Schema attivo: nome entità non impostato, verrà usato il nome del sito.', 'ai-friendly' ),
             ];
         }
 
         if ( empty( trim( (string) ( $options['schema_same_as'] ?? '' ) ) ) ) {
             $warnings[] = [
                 'code'    => 'schema_missing_same_as',
-                'message' => 'Semantic Schema attivo: aggiungi profili sameAs per migliorare la disambiguazione.',
+                'message' => __( 'Semantic Schema attivo: aggiungi profili sameAs per migliorare la disambiguazione.', 'ai-friendly' ),
             ];
         }
 
         if ( ( $options['schema_mode'] ?? 'auto' ) !== 'auto' && $schema_mode === 'standalone' && $schema_provider !== 'none' ) {
             $warnings[] = [
                 'code'    => 'schema_mode_fallback',
-                'message' => 'Semantic Schema usa standalone perche la modalita scelta non corrisponde al provider SEO rilevato.',
+                'message' => __( 'Semantic Schema usa standalone perché la modalità scelta non corrisponde al provider SEO rilevato.', 'ai-friendly' ),
             ];
         }
 
@@ -93,7 +97,7 @@ function ai_fr_run_diagnostics(): array {
         if ( empty( $schema_services ) && $offer_catalog !== '' && ! is_array( json_decode( $offer_catalog, true ) ) ) {
             $warnings[] = [
                 'code'    => 'schema_offer_catalog_invalid',
-                'message' => 'Semantic Schema: il catalogo servizi legacy non contiene JSON valido e non verra aggiunto al grafo.',
+                'message' => __( 'Semantic Schema: il catalogo servizi legacy non contiene JSON valido e non verrà aggiunto al grafo.', 'ai-friendly' ),
             ];
         }
 
@@ -107,22 +111,11 @@ function ai_fr_run_diagnostics(): array {
         if ( ! empty( $unresolved_sources ) ) {
             $warnings[] = [
                 'code'    => 'schema_offer_sources_unresolved',
-                'message' => 'Semantic Schema: sorgenti OfferCatalog non risolte: ' . implode( ', ', array_slice( $unresolved_sources, 0, 3 ) ),
-            ];
-        }
-    }
-
-    if ( function_exists( 'ai_fr_updater_get_latest_release' ) ) {
-        $release = ai_fr_updater_get_latest_release();
-        if ( empty( $release ) ) {
-            $warnings[] = [
-                'code'    => 'updater_release_unavailable',
-                'message' => 'Updater: impossibile leggere la release GitHub più recente.',
-            ];
-        } elseif ( empty( $release['package'] ) ) {
-            $warnings[] = [
-                'code'    => 'updater_package_missing',
-                'message' => 'Updater: la release GitHub non contiene un asset ZIP installabile.',
+                'message' => sprintf(
+                    /* translators: %s: comma-separated unresolved sources. */
+                    __( 'Semantic Schema: sorgenti OfferCatalog non risolte: %s', 'ai-friendly' ),
+                    implode( ', ', array_slice( $unresolved_sources, 0, 3 ) )
+                ),
             ];
         }
     }
@@ -132,7 +125,7 @@ function ai_fr_run_diagnostics(): array {
     if ( count( $patterns ) !== count( array_unique( $patterns ) ) ) {
         $warnings[] = [
             'code'    => 'duplicate_patterns',
-            'message' => 'Sono presenti pattern URL duplicati nelle esclusioni.',
+            'message' => __( 'Sono presenti pattern URL duplicati nelle esclusioni.', 'ai-friendly' ),
         ];
     }
 
@@ -142,7 +135,7 @@ function ai_fr_run_diagnostics(): array {
     if ( $blog_public !== '1' ) {
         $warnings[] = [
             'code'    => 'discourage_search',
-            'message' => 'Il sito scoraggia l\'indicizzazione (Impostazioni > Lettura).',
+            'message' => __( 'Il sito scoraggia l\'indicizzazione (Impostazioni > Lettura).', 'ai-friendly' ),
         ];
     }
 
@@ -150,7 +143,7 @@ function ai_fr_run_diagnostics(): array {
     if ( stripos( $robots_txt, 'Disallow: /' ) !== false ) {
         $warnings[] = [
             'code'    => 'robots_disallow_all',
-            'message' => 'robots.txt sembra bloccare tutto il sito (Disallow: /).',
+            'message' => __( 'robots.txt sembra bloccare tutto il sito (Disallow: /).', 'ai-friendly' ),
         ];
     }
 

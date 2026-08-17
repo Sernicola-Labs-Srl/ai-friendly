@@ -145,8 +145,8 @@ function ai_fr_serve_markdown( string $rel_path ): void {
         status_header( 500 );
         header( 'Content-Type: text/plain; charset=UTF-8' );
         echo $debug_mode
-            ? "Errore: " . esc_html( $e->getMessage() )
-            : "Errore nella generazione del contenuto Markdown.";
+            ? esc_html__( 'Errore:', 'ai-friendly' ) . ' ' . esc_html( $e->getMessage() )
+            : esc_html__( 'Errore nella generazione del contenuto Markdown.', 'ai-friendly' );
         exit;
     }
 }
@@ -299,9 +299,12 @@ function ai_fr_try_page_builders( int $post_id, string $content, bool $debug = f
         }
     }
 
-    $acf_text = ai_fr_extract_acf_text( $post_id );
-    if ( $acf_text !== '' ) {
-        return wpautop( $acf_text );
+    $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
+    if ( ! empty( $options['include_acf_fields'] ) ) {
+        $acf_text = ai_fr_extract_acf_text( $post_id );
+        if ( $acf_text !== '' ) {
+            return wpautop( $acf_text );
+        }
     }
 
     return '';
@@ -994,7 +997,7 @@ function ai_fr_reset_output_buffers(): void {
 function ai_fr_404(): never {
     status_header( 404 );
     header( 'Content-Type: text/plain; charset=UTF-8' );
-    echo "Contenuto non trovato.";
+    echo esc_html__( 'Contenuto non trovato.', 'ai-friendly' );
     exit;
 }
 
