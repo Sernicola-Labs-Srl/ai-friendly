@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -59,7 +59,7 @@ Use the WordPress.org support forum for support. The maintained development sour
 
 == Changelog ==
 
-= 2.0.0 =
+= 2.0.1 =
 * Added a discreet Sernicola Labs development credit to the plugin administration page.
 * Standardized Content Hub card heights per row and aligned primary card actions.
 * Made ACF extraction explicitly opt-in to prevent accidental exposure of non-public custom fields.
@@ -67,6 +67,8 @@ Use the WordPress.org support forum for support. The maintained development sour
 * Aligned the declared GPLv3-or-later license with the bundled license text and added WordPress translation metadata.
 * Removed the GitHub updater and Update URI header for wordpress.org directory compatibility.
 * Addressed Plugin Check security and compatibility findings and excluded development files from the distribution package.
+
+= 2.0.0 =
 * Fixed a critical error on singular pages when automatic Breakdance FAQ detection was enabled.
 * Refined the admin UI with WordPress-color-scheme-independent buttons, neutral cards, balanced Schema modules, compact media controls, contextual Person/Organization fields, and explicit empty states for repeaters.
 * Unified the full AI Content Hub admin interface with shared cards, forms, repeaters, responsive behavior, accessible focus states, and an unsaved-changes bar.

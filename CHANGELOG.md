@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0
+## 2.0.1
 
 - Aggiunto nel footer della pagina amministrativa il credito di sviluppo a Sernicola Labs.
 - Uniformate per riga le altezze delle card della Content Hub e allineate le azioni principali al bordo inferiore.
@@ -9,6 +9,9 @@
 - Allineata la dichiarazione GPLv3-or-later al file di licenza incluso e aggiunti i metadati per le traduzioni WordPress.
 - Rimossi l'updater GitHub e l'header `Update URI` per la compatibilità con la directory ufficiale wordpress.org.
 - Corrette le verifiche di sicurezza e compatibilità segnalate da Plugin Check e ripulito il pacchetto di distribuzione dai file di sviluppo.
+
+## 2.0.0
+
 - Corretto un errore critico nelle pagine singole quando il rilevamento automatico delle FAQ Breakdance era attivo: il guard di compatibilità non interrompe più l'inizializzazione di `AI_FR_FAQ_VERSION`.
 - Rifinita l'intera UI admin con pulsanti indipendenti dallo schema colore WordPress, card neutre, moduli Schema bilanciati, media compatti e repeater responsive con stati vuoti espliciti
 - Aggiunta la visibilita contestuale dei campi `Person` e `Organization`, preservando i valori non pertinenti senza alterarli
