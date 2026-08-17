@@ -1,6 +1,6 @@
 # AI Friendly
 
-**Version:** 2.0.0
+**Version:** 2.0.1
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v3 or later
@@ -363,7 +363,7 @@ Usa questa checklist ad ogni nuova release.
 - Aggiorna `Version:` in `ai-friendly.php`
 - Aggiorna `AI_FR_VERSION` in `ai-friendly.php`
 - Aggiorna `CHANGELOG.md`
-- Usa tag coerenti con la versione del plugin, nel formato `v2.0.0`
+- Usa tag coerenti con la versione del plugin, nel formato `v2.0.1`
 
 2. **Documentazione**
 - Verifica coerenza `README.md` con feature reali
