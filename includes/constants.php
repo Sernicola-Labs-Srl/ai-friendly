@@ -7,17 +7,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  COSTANTI
 // ═══════════════════════════════════════════════════════════════════════════════
 
-if ( ! defined( 'AI_FR_PAGES_LIMIT' ) )         define( 'AI_FR_PAGES_LIMIT', 50 );
-if ( ! defined( 'AI_FR_POSTS_LIMIT' ) )         define( 'AI_FR_POSTS_LIMIT', 30 );
-if ( ! defined( 'AI_FR_EXCERPT_LEN' ) )         define( 'AI_FR_EXCERPT_LEN', 160 );
-if ( ! defined( 'AI_FR_INCLUDE_METADATA' ) )    define( 'AI_FR_INCLUDE_METADATA', true );
-if ( ! defined( 'AI_FR_NORMALIZE_HEADINGS' ) )  define( 'AI_FR_NORMALIZE_HEADINGS', true );
+if ( ! defined( 'SAIFR_PAGES_LIMIT' ) )         define( 'SAIFR_PAGES_LIMIT', 50 );
+if ( ! defined( 'SAIFR_POSTS_LIMIT' ) )         define( 'SAIFR_POSTS_LIMIT', 30 );
+if ( ! defined( 'SAIFR_EXCERPT_LEN' ) )         define( 'SAIFR_EXCERPT_LEN', 160 );
+if ( ! defined( 'SAIFR_INCLUDE_METADATA' ) )    define( 'SAIFR_INCLUDE_METADATA', true );
+if ( ! defined( 'SAIFR_NORMALIZE_HEADINGS' ) )  define( 'SAIFR_NORMALIZE_HEADINGS', true );
 
-// Directory per versioni MD statiche
-define( 'AI_FR_VERSIONS_DIR', WP_CONTENT_DIR . '/uploads/ai-friendly/versions' );
-define( 'AI_FR_VERSIONS_URL', WP_CONTENT_URL . '/uploads/ai-friendly/versions' );
+/**
+ * Restituisce la directory upload riservata al plugin per il sito corrente.
+ */
+function saifr_storage_root(): string {
+    $uploads = wp_upload_dir();
+    return trailingslashit( (string) $uploads['basedir'] ) . 'sernicola-labs-ai-friendly';
+}
 
-// Directory per snapshot llms.txt (R2)
-define( 'AI_FR_LLMS_HISTORY_DIR', WP_CONTENT_DIR . '/uploads/ai-friendly/llms-history' );
-define( 'AI_FR_LLMS_HISTORY_URL', WP_CONTENT_URL . '/uploads/ai-friendly/llms-history' );
-
+function saifr_versions_dir(): string {
+    return trailingslashit( saifr_storage_root() ) . 'versions';
+}

@@ -7,9 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  6 — Utility
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function ai_fr_permalink_to_md( string $permalink ): string {
-    $home_path = ai_fr_normalize_url_path( home_url( '/' ) );
-    $path      = ai_fr_normalize_url_path( $permalink );
+function saifr_permalink_to_md( string $permalink ): string {
+    $home_path = saifr_normalize_url_path( home_url( '/' ) );
+    $path      = saifr_normalize_url_path( $permalink );
 
     if ( $path === $home_path ) {
         return trailingslashit( home_url() ) . 'index.html.md';
@@ -18,7 +18,7 @@ function ai_fr_permalink_to_md( string $permalink ): string {
     return rtrim( $permalink, '/' ) . '.md';
 }
 
-function ai_fr_normalize_url_path( string $url ): string {
+function saifr_normalize_url_path( string $url ): string {
     $path = wp_parse_url( $url, PHP_URL_PATH );
     if ( ! is_string( $path ) || $path === '' ) {
         return '/';
@@ -28,10 +28,10 @@ function ai_fr_normalize_url_path( string $url ): string {
     return $path === '/' ? '/' : rtrim( $path, '/' );
 }
 
-function ai_fr_excerpt( WP_Post $post ): string {
+function saifr_excerpt( WP_Post $post ): string {
     $raw = $post->post_excerpt !== '' ? $post->post_excerpt : $post->post_content;
     $raw = preg_replace( '/\[[^\]]+\]/', '', $raw ) ?? $raw;
     $text = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $raw ) ) ?? '' );
 
-    return wp_html_excerpt( $text, AI_FR_EXCERPT_LEN, '…' );
+    return wp_html_excerpt( $text, SAIFR_EXCERPT_LEN, '…' );
 }

@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registra una notice admin temporanea.
  */
-function ai_fr_push_admin_notice( string $message, string $type = 'warning' ): void {
+function saifr_push_admin_notice( string $message, string $type = 'warning' ): void {
     set_transient(
-        'ai_fr_admin_notice',
+        'saifr_admin_notice',
         [
             'message' => sanitize_text_field( $message ),
             'type'    => sanitize_key( $type ),
@@ -21,8 +21,8 @@ function ai_fr_push_admin_notice( string $message, string $type = 'warning' ): v
 /**
  * Notifica errori rigenerazione via notice e/o email.
  */
-function ai_fr_maybe_notify_regeneration_errors( array $stats, string $trigger ): void {
-    $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
+function saifr_maybe_notify_regeneration_errors( array $stats, string $trigger ): void {
+    $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
     $errors  = intval( $stats['errors'] ?? 0 );
     if ( $errors <= 0 ) {
         return;
@@ -30,7 +30,7 @@ function ai_fr_maybe_notify_regeneration_errors( array $stats, string $trigger )
 
     $message = sprintf(
         /* translators: 1: error count, 2: trigger, 3: processed items, 4: regenerated items, 5: skipped items. */
-        __( 'AI Friendly: rigenerazione con %1$d errori (%2$s). Processati %3$d, rigenerati %4$d, saltati %5$d.', 'ai-friendly' ),
+        __( 'AI Friendly: rigenerazione con %1$d errori (%2$s). Processati %3$d, rigenerati %4$d, saltati %5$d.', 'sernicola-labs-ai-friendly' ),
         $errors,
         $trigger,
         intval( $stats['processed'] ?? 0 ),
@@ -39,7 +39,7 @@ function ai_fr_maybe_notify_regeneration_errors( array $stats, string $trigger )
     );
 
     if ( ! empty( $options['notify_admin_notice'] ) ) {
-        ai_fr_push_admin_notice( $message, 'warning' );
+        saifr_push_admin_notice( $message, 'warning' );
     }
 
     if ( ! empty( $options['notify_email'] ) ) {
@@ -48,7 +48,7 @@ function ai_fr_maybe_notify_regeneration_errors( array $stats, string $trigger )
             $to = (string) get_option( 'admin_email', '' );
         }
         if ( is_email( $to ) ) {
-            wp_mail( $to, __( 'AI Friendly - Rigenerazione con errori', 'ai-friendly' ), $message );
+            wp_mail( $to, __( 'AI Friendly - Rigenerazione con errori', 'sernicola-labs-ai-friendly' ), $message );
         }
     }
 }
@@ -59,11 +59,11 @@ add_action(
         if ( ! current_user_can( 'manage_options' ) ) {
             return;
         }
-        $notice = get_transient( 'ai_fr_admin_notice' );
+        $notice = get_transient( 'saifr_admin_notice' );
         if ( ! is_array( $notice ) || empty( $notice['message'] ) ) {
             return;
         }
-        delete_transient( 'ai_fr_admin_notice' );
+        delete_transient( 'saifr_admin_notice' );
 
         $type = in_array( $notice['type'] ?? 'warning', [ 'warning', 'error', 'success', 'info' ], true )
             ? $notice['type']

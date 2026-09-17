@@ -7,11 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  METADATA EXTRACTOR
 // ═══════════════════════════════════════════════════════════════════════════════
 
-class AiFrMetadata {
+class SaifrMetadata {
 
     public static function frontmatter( WP_Post $post ): string {
 
-        if ( ! AI_FR_INCLUDE_METADATA ) {
+        if ( ! SAIFR_INCLUDE_METADATA ) {
             return '';
         }
 

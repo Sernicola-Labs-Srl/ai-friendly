@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-function ai_fr_get_default_options(): array {
+function saifr_get_default_options(): array {
     return [
         // Contenuto llms.txt
         'llms_content'      => '',
@@ -97,7 +97,7 @@ function ai_fr_get_default_options(): array {
     ];
 }
 
-function ai_fr_is_breakdance_active(): bool {
+function saifr_is_breakdance_active(): bool {
     if ( defined( 'BREAKDANCE_VERSION' ) || defined( '__BREAKDANCE_VERSION' ) ) {
         return true;
     }
@@ -116,5 +116,5 @@ function ai_fr_is_breakdance_active(): bool {
         }
     }
 
-    return (bool) apply_filters( 'ai_fr_breakdance_active', $active, $active_plugins );
+    return (bool) apply_filters( 'saifr_breakdance_active', $active, $active_plugins );
 }

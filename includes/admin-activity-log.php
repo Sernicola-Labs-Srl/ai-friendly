@@ -6,8 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Restituisce gli eventi registrati (piu' recenti per primi).
  */
-function ai_fr_get_event_log(): array {
-    $log = get_option( 'ai_fr_event_log', [] );
+function saifr_get_event_log(): array {
+    $log = get_option( 'saifr_event_log', [] );
     if ( ! is_array( $log ) ) {
         return [];
     }
@@ -22,7 +22,7 @@ function ai_fr_get_event_log(): array {
     }
     unset( $entry );
     if ( $changed ) {
-        update_option( 'ai_fr_event_log', $log, false );
+        update_option( 'saifr_event_log', $log, false );
     }
 
     return $log;
@@ -31,8 +31,8 @@ function ai_fr_get_event_log(): array {
 /**
  * Aggiunge un evento al log ring-buffer (max 200).
  */
-function ai_fr_add_event( string $type, array $payload = [], string $level = 'info' ): void {
-    $log = ai_fr_get_event_log();
+function saifr_add_event( string $type, array $payload = [], string $level = 'info' ): void {
+    $log = saifr_get_event_log();
 
     array_unshift(
         $log,
@@ -49,5 +49,5 @@ function ai_fr_add_event( string $type, array $payload = [], string $level = 'in
         $log = array_slice( $log, 0, 200 );
     }
 
-    update_option( 'ai_fr_event_log', $log, false );
+    update_option( 'saifr_event_log', $log, false );
 }

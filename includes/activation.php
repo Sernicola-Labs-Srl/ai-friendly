@@ -7,33 +7,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  ATTIVAZIONE / DISATTIVAZIONE
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-register_activation_hook( AI_FR_PLUGIN_FILE, 'ai_fr_activate' );
-register_deactivation_hook( AI_FR_PLUGIN_FILE, 'ai_fr_deactivate' );
+register_activation_hook( SAIFR_PLUGIN_FILE, 'saifr_activate' );
+register_deactivation_hook( SAIFR_PLUGIN_FILE, 'saifr_deactivate' );
 
-function ai_fr_activate(): void {
+function saifr_activate( bool $network_wide = false ): void {
+    // Importa i dati legacy e disattiva in sicurezza la precedente identità.
+    saifr_run_legacy_upgrade( $network_wide );
+
     // Crea directory per versioni MD
-    if ( ! file_exists( AI_FR_VERSIONS_DIR ) ) {
-        wp_mkdir_p( AI_FR_VERSIONS_DIR );
+    if ( ! file_exists( saifr_versions_dir() ) ) {
+        wp_mkdir_p( saifr_versions_dir() );
     }
     
     // Crea .htaccess per protezione (opzionale, i file sono pubblici ma evitiamo listing)
-    $htaccess = AI_FR_VERSIONS_DIR . '/.htaccess';
+    $htaccess = saifr_versions_dir() . '/.htaccess';
     if ( ! file_exists( $htaccess ) ) {
         file_put_contents( $htaccess, "Options -Indexes\n" );
     }
     
     // Imposta opzioni di default
-    $defaults = ai_fr_get_default_options();
-    if ( ! get_option( 'ai_fr_options' ) ) {
-        update_option( 'ai_fr_options', $defaults );
+    $defaults = saifr_get_default_options();
+    if ( ! get_option( 'saifr_options' ) ) {
+        update_option( 'saifr_options', $defaults );
     }
     
     // Schedula cron se necessario
-    ai_fr_schedule_cron();
+    saifr_schedule_cron();
 }
 
-function ai_fr_deactivate(): void {
+function saifr_deactivate(): void {
     // Rimuovi cron
-    wp_clear_scheduled_hook( 'ai_fr_cron_regenerate' );
+    wp_clear_scheduled_hook( 'saifr_cron_regenerate' );
 }
-

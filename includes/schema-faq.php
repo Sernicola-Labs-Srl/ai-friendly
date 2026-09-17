@@ -3,24 +3,24 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( ! defined( 'AI_FR_FAQ_VERSION' ) ) {
-    define( 'AI_FR_FAQ_VERSION', '2.0.0' );
+if ( ! defined( 'SAIFR_FAQ_VERSION' ) ) {
+    define( 'SAIFR_FAQ_VERSION', '2.0.0' );
 }
 
 // Evita redeclaration se il precedente snippet autonomo e ancora attivo.
 // Non controllare una funzione dichiarata anche in questo file: PHP registra
 // le funzioni top-level prima di eseguire il file e il guard scatterebbe sempre.
-if ( function_exists( 'ai_fr_faq_extend_graph' ) ) {
+if ( function_exists( 'saifr_faq_extend_graph' ) ) {
     return;
 }
 
-function ai_fr_faq_is_enabled( ?WP_Post $post = null ): bool {
-    $options = ai_fr_schema_get_options();
-    $enabled = ai_fr_is_breakdance_active() && ! empty( $options['schema_breakdance_faq_enabled'] );
-    return (bool) apply_filters( 'ai_fr_faq_enabled', $enabled, $post );
+function saifr_faq_is_enabled( ?WP_Post $post = null ): bool {
+    $options = saifr_schema_get_options();
+    $enabled = saifr_is_breakdance_active() && ! empty( $options['schema_breakdance_faq_enabled'] );
+    return (bool) apply_filters( 'saifr_faq_enabled', $enabled, $post );
 }
 
-function ai_fr_faq_source_post(): ?WP_Post {
+function saifr_faq_source_post(): ?WP_Post {
     if ( is_admin() || is_feed() || wp_doing_ajax() || ! is_singular() ) {
         return null;
     }
@@ -28,7 +28,7 @@ function ai_fr_faq_source_post(): ?WP_Post {
     return $post instanceof WP_Post ? $post : null;
 }
 
-function ai_fr_faq_get_tree( int $post_id ): array {
+function saifr_faq_get_tree( int $post_id ): array {
     $raw = get_post_meta( $post_id, '_breakdance_data', true );
     if ( is_string( $raw ) ) {
         $raw = json_decode( $raw, true );
@@ -47,7 +47,7 @@ function ai_fr_faq_get_tree( int $post_id ): array {
     return $tree['root'];
 }
 
-function ai_fr_faq_collect( array $node, array &$items, array &$seen_blocks ): void {
+function saifr_faq_collect( array $node, array &$items, array &$seen_blocks ): void {
     $type = (string) ( $node['data']['type'] ?? '' );
     $properties = isset( $node['data']['properties'] ) && is_array( $node['data']['properties'] )
         ? $node['data']['properties']
@@ -69,21 +69,21 @@ function ai_fr_faq_collect( array $node, array &$items, array &$seen_blocks ): v
         $block_id = intval( $properties['content']['content']['block'] ?? 0 );
         if ( $block_id > 0 && empty( $seen_blocks[ $block_id ] ) ) {
             $seen_blocks[ $block_id ] = true;
-            $block_root = ai_fr_faq_get_tree( $block_id );
+            $block_root = saifr_faq_get_tree( $block_id );
             if ( ! empty( $block_root ) ) {
-                ai_fr_faq_collect( $block_root, $items, $seen_blocks );
+                saifr_faq_collect( $block_root, $items, $seen_blocks );
             }
         }
     }
 
     foreach ( (array) ( $node['children'] ?? [] ) as $child ) {
         if ( is_array( $child ) ) {
-            ai_fr_faq_collect( $child, $items, $seen_blocks );
+            saifr_faq_collect( $child, $items, $seen_blocks );
         }
     }
 }
 
-function ai_fr_faq_clean_question( $value ): string {
+function saifr_faq_clean_question( $value ): string {
     $value = (string) $value;
     if ( str_contains( $value, '[' ) ) {
         $value = strip_shortcodes( $value );
@@ -92,13 +92,13 @@ function ai_fr_faq_clean_question( $value ): string {
     return trim( (string) preg_replace( '/\s+/u', ' ', $value ) );
 }
 
-function ai_fr_faq_clean_answer( $value ): string {
+function saifr_faq_clean_answer( $value ): string {
     $value = (string) $value;
     if ( str_contains( $value, '[' ) ) {
         $value = strip_shortcodes( $value );
     }
     $allowed = apply_filters(
-        'ai_fr_faq_answer_html',
+        'saifr_faq_answer_html',
         [
             'p' => [], 'br' => [], 'strong' => [], 'b' => [], 'em' => [], 'i' => [],
             'ul' => [], 'ol' => [], 'li' => [],
@@ -109,27 +109,27 @@ function ai_fr_faq_clean_answer( $value ): string {
     return trim( (string) preg_replace( '/\s+/u', ' ', $value ) );
 }
 
-function ai_fr_faq_get_items( WP_Post $post ): array {
-    if ( ! ai_fr_faq_is_enabled( $post ) ) {
+function saifr_faq_get_items( WP_Post $post ): array {
+    if ( ! saifr_faq_is_enabled( $post ) ) {
         return [];
     }
-    $cache_version = (string) get_option( 'ai_fr_faq_cache_version', '' );
-    $cache_key = 'ai_fr_faq_' . $post->ID . '_' . md5( $post->post_modified_gmt . '|' . $cache_version . '|' . AI_FR_FAQ_VERSION );
+    $cache_version = (string) get_option( 'saifr_faq_cache_version', '' );
+    $cache_key = 'saifr_faq_' . $post->ID . '_' . md5( $post->post_modified_gmt . '|' . $cache_version . '|' . SAIFR_FAQ_VERSION );
     $items = get_transient( $cache_key );
 
     if ( ! is_array( $items ) ) {
         $raw_items = [];
         $seen_blocks = [];
-        $root = ai_fr_faq_get_tree( $post->ID );
+        $root = saifr_faq_get_tree( $post->ID );
         if ( ! empty( $root ) ) {
-            ai_fr_faq_collect( $root, $raw_items, $seen_blocks );
+            saifr_faq_collect( $root, $raw_items, $seen_blocks );
         }
 
         $items = [];
         $seen_questions = [];
         foreach ( $raw_items as $row ) {
-            $question = ai_fr_faq_clean_question( $row['question'] ?? '' );
-            $answer = ai_fr_faq_clean_answer( $row['answer'] ?? '' );
+            $question = saifr_faq_clean_question( $row['question'] ?? '' );
+            $answer = saifr_faq_clean_answer( $row['answer'] ?? '' );
             $fingerprint = strtolower( $question );
             if ( $question === '' || $answer === '' || isset( $seen_questions[ $fingerprint ] ) ) {
                 continue;
@@ -140,11 +140,11 @@ function ai_fr_faq_get_items( WP_Post $post ): array {
         set_transient( $cache_key, $items, DAY_IN_SECONDS );
     }
 
-    return (array) apply_filters( 'ai_fr_faq_items', $items, $post );
+    return (array) apply_filters( 'saifr_faq_items', $items, $post );
 }
 
-function ai_fr_faq_get_node_for_post( WP_Post $post ): array {
-    $items = ai_fr_faq_get_items( $post );
+function saifr_faq_get_node_for_post( WP_Post $post ): array {
+    $items = saifr_faq_get_items( $post );
     $url = get_permalink( $post );
     if ( empty( $items ) || ! is_string( $url ) || $url === '' ) {
         return [];
@@ -167,19 +167,19 @@ function ai_fr_faq_get_node_for_post( WP_Post $post ): array {
         'mainEntityOfPage' => [ '@id' => $base . '#webpage' ],
         'mainEntity' => $entities,
     ];
-    return (array) apply_filters( 'ai_fr_faq_node', $node, $post );
+    return (array) apply_filters( 'saifr_faq_node', $node, $post );
 }
 
-function ai_fr_faq_get_node( ?WP_Post $post = null ): array {
-    $post ??= ai_fr_faq_source_post();
-    return $post instanceof WP_Post ? ai_fr_faq_get_node_for_post( $post ) : [];
+function saifr_faq_get_node( ?WP_Post $post = null ): array {
+    $post ??= saifr_faq_source_post();
+    return $post instanceof WP_Post ? saifr_faq_get_node_for_post( $post ) : [];
 }
 
-function ai_fr_faq_bump_cache_version( $meta_id, $post_id, $meta_key ): void {
+function saifr_faq_bump_cache_version( $meta_id, $post_id, $meta_key ): void {
     if ( $meta_key === '_breakdance_data' ) {
-        update_option( 'ai_fr_faq_cache_version', (string) microtime( true ), false );
+        update_option( 'saifr_faq_cache_version', (string) microtime( true ), false );
     }
 }
-add_action( 'added_post_meta', 'ai_fr_faq_bump_cache_version', 10, 3 );
-add_action( 'updated_post_meta', 'ai_fr_faq_bump_cache_version', 10, 3 );
-add_action( 'deleted_post_meta', 'ai_fr_faq_bump_cache_version', 10, 3 );
+add_action( 'added_post_meta', 'saifr_faq_bump_cache_version', 10, 3 );
+add_action( 'updated_post_meta', 'saifr_faq_bump_cache_version', 10, 3 );
+add_action( 'deleted_post_meta', 'saifr_faq_bump_cache_version', 10, 3 );

@@ -21,25 +21,25 @@ jobs:
           set -euo pipefail
           tag_version="${GITHUB_REF_NAME#v}"
           tag_version="${tag_version#.}"
-          plugin_version="$(sed -nE "s/^[[:space:]]*\*[[:space:]]Version:[[:space:]]+([^[:space:]]+).*/\1/p" ai-friendly.php | head -n1)"
+          plugin_version="$(sed -nE "s/^[[:space:]]*\*[[:space:]]Version:[[:space:]]+([^[:space:]]+).*/\1/p" sernicola-labs-ai-friendly.php | head -n1)"
           if [[ -z "$plugin_version" || "$plugin_version" != "$tag_version" ]]; then
             echo "Tag version ($tag_version) does not match plugin version ($plugin_version)." >&2
             exit 1
           fi
 
-      - name: Build ai-friendly.zip
+      - name: Build sernicola-labs-ai-friendly.zip
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p build/ai-friendly
-          cp ai-friendly.php uninstall.php README.md readme.txt CHANGELOG.md LICENSE build/ai-friendly/
-          cp -R admin includes build/ai-friendly/
+          mkdir -p build/sernicola-labs-ai-friendly
+          cp sernicola-labs-ai-friendly.php uninstall.php README.md readme.txt CHANGELOG.md LICENSE build/sernicola-labs-ai-friendly/
+          cp -R admin includes build/sernicola-labs-ai-friendly/
           cd build
-          zip -r ../ai-friendly.zip ai-friendly
+          zip -r ../sernicola-labs-ai-friendly.zip sernicola-labs-ai-friendly
 
       - name: Create release and upload WordPress package
         uses: softprops/action-gh-release@v2
         with:
-          files: ai-friendly.zip
+          files: sernicola-labs-ai-friendly.zip
           generate_release_notes: true
           fail_on_unmatched_files: true

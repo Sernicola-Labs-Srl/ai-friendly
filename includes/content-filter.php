@@ -7,14 +7,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  FILTRO CONTENUTI - Classe per gestire inclusioni/esclusioni
 // ═══════════════════════════════════════════════════════════════════════════════
 
-class AiFrContentFilter {
+class SaifrContentFilter {
     
     private array $options;
     
     public function __construct() {
         $this->options = wp_parse_args( 
-            get_option( 'ai_fr_options', [] ), 
-            ai_fr_get_default_options() 
+            get_option( 'saifr_options', [] ),
+            saifr_get_default_options()
         );
     }
     
@@ -24,7 +24,7 @@ class AiFrContentFilter {
     public function shouldInclude( WP_Post $post ): bool {
         
         // 1. Escluso manualmente via metabox
-        if ( get_post_meta( $post->ID, '_ai_fr_exclude', true ) ) {
+        if ( get_post_meta( $post->ID, '_saifr_exclude', true ) ) {
             return false;
         }
         
@@ -208,4 +208,3 @@ class AiFrContentFilter {
         return $this->options;
     }
 }
-

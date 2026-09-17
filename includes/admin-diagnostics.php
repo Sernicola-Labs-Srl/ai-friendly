@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Esegue controlli rapidi per la dashboard.
  */
-function ai_fr_run_diagnostics(): array {
-    $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
-    $filter  = new AiFrContentFilter();
+function saifr_run_diagnostics(): array {
+    $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
+    $filter  = new SaifrContentFilter();
 
     $warnings = [];
     $errors   = [];
@@ -17,7 +17,7 @@ function ai_fr_run_diagnostics(): array {
     if ( empty( $enabled_types ) ) {
         $warnings[] = [
             'code'    => 'no_post_types_enabled',
-            'message' => __( 'Nessun tipo di contenuto abilitato.', 'ai-friendly' ),
+            'message' => __( 'Nessun tipo di contenuto abilitato.', 'sernicola-labs-ai-friendly' ),
         ];
     }
 
@@ -44,17 +44,17 @@ function ai_fr_run_diagnostics(): array {
     if ( $included_count === 0 ) {
         $warnings[] = [
             'code'    => 'empty_scope',
-            'message' => __( 'Zero contenuti inclusi con le regole correnti.', 'ai-friendly' ),
+            'message' => __( 'Zero contenuti inclusi con le regole correnti.', 'sernicola-labs-ai-friendly' ),
         ];
     }
 
-    $last_regen = get_option( 'ai_fr_last_regeneration', [] );
+    $last_regen = get_option( 'saifr_last_regeneration', [] );
     if ( ! empty( $last_regen['stats']['errors'] ) ) {
         $warnings[] = [
             'code'    => 'last_regen_errors',
             'message' => sprintf(
                 /* translators: %d: regeneration error count. */
-                __( 'Ultima rigenerazione con errori: %d', 'ai-friendly' ),
+                __( 'Ultima rigenerazione con errori: %d', 'sernicola-labs-ai-friendly' ),
                 intval( $last_regen['stats']['errors'] )
             ),
         ];
@@ -63,32 +63,32 @@ function ai_fr_run_diagnostics(): array {
     if ( empty( $options['auto_regenerate'] ) || empty( $options['static_md_files'] ) ) {
         $warnings[] = [
             'code'    => 'cron_disabled',
-            'message' => __( 'Rigenerazione automatica non attiva (cron o file statici disabilitati).', 'ai-friendly' ),
+            'message' => __( 'Rigenerazione automatica non attiva (cron o file statici disabilitati).', 'sernicola-labs-ai-friendly' ),
         ];
     }
 
-    if ( ! empty( $options['schema_enabled'] ) && function_exists( 'ai_fr_schema_detect_provider' ) ) {
-        $schema_provider = ai_fr_schema_detect_provider();
-        $schema_mode     = function_exists( 'ai_fr_schema_output_mode' ) ? ai_fr_schema_output_mode() : 'standalone';
+    if ( ! empty( $options['schema_enabled'] ) && function_exists( 'saifr_schema_detect_provider' ) ) {
+        $schema_provider = saifr_schema_detect_provider();
+        $schema_mode     = function_exists( 'saifr_schema_output_mode' ) ? saifr_schema_output_mode() : 'standalone';
 
         if ( empty( trim( (string) ( $options['schema_name'] ?? '' ) ) ) ) {
             $warnings[] = [
                 'code'    => 'schema_missing_name',
-                'message' => __( 'Semantic Schema attivo: nome entità non impostato, verrà usato il nome del sito.', 'ai-friendly' ),
+                'message' => __( 'Semantic Schema attivo: nome entità non impostato, verrà usato il nome del sito.', 'sernicola-labs-ai-friendly' ),
             ];
         }
 
         if ( empty( trim( (string) ( $options['schema_same_as'] ?? '' ) ) ) ) {
             $warnings[] = [
                 'code'    => 'schema_missing_same_as',
-                'message' => __( 'Semantic Schema attivo: aggiungi profili sameAs per migliorare la disambiguazione.', 'ai-friendly' ),
+                'message' => __( 'Semantic Schema attivo: aggiungi profili sameAs per migliorare la disambiguazione.', 'sernicola-labs-ai-friendly' ),
             ];
         }
 
         if ( ( $options['schema_mode'] ?? 'auto' ) !== 'auto' && $schema_mode === 'standalone' && $schema_provider !== 'none' ) {
             $warnings[] = [
                 'code'    => 'schema_mode_fallback',
-                'message' => __( 'Semantic Schema usa standalone perché la modalità scelta non corrisponde al provider SEO rilevato.', 'ai-friendly' ),
+                'message' => __( 'Semantic Schema usa standalone perché la modalità scelta non corrisponde al provider SEO rilevato.', 'sernicola-labs-ai-friendly' ),
             ];
         }
 
@@ -97,14 +97,14 @@ function ai_fr_run_diagnostics(): array {
         if ( empty( $schema_services ) && $offer_catalog !== '' && ! is_array( json_decode( $offer_catalog, true ) ) ) {
             $warnings[] = [
                 'code'    => 'schema_offer_catalog_invalid',
-                'message' => __( 'Semantic Schema: il catalogo servizi legacy non contiene JSON valido e non verrà aggiunto al grafo.', 'ai-friendly' ),
+                'message' => __( 'Semantic Schema: il catalogo servizi legacy non contiene JSON valido e non verrà aggiunto al grafo.', 'sernicola-labs-ai-friendly' ),
             ];
         }
 
         $offer_sources = isset( $options['schema_offer_sources'] ) && is_array( $options['schema_offer_sources'] ) ? $options['schema_offer_sources'] : [];
         $unresolved_sources = [];
         foreach ( $offer_sources as $source ) {
-            if ( function_exists( 'ai_fr_schema_resolve_offer_source' ) && empty( ai_fr_schema_resolve_offer_source( (string) $source ) ) ) {
+            if ( function_exists( 'saifr_schema_resolve_offer_source' ) && empty( saifr_schema_resolve_offer_source( (string) $source ) ) ) {
                 $unresolved_sources[] = (string) $source;
             }
         }
@@ -113,7 +113,7 @@ function ai_fr_run_diagnostics(): array {
                 'code'    => 'schema_offer_sources_unresolved',
                 'message' => sprintf(
                     /* translators: %s: comma-separated unresolved sources. */
-                    __( 'Semantic Schema: sorgenti OfferCatalog non risolte: %s', 'ai-friendly' ),
+                    __( 'Semantic Schema: sorgenti OfferCatalog non risolte: %s', 'sernicola-labs-ai-friendly' ),
                     implode( ', ', array_slice( $unresolved_sources, 0, 3 ) )
                 ),
             ];
@@ -125,7 +125,7 @@ function ai_fr_run_diagnostics(): array {
     if ( count( $patterns ) !== count( array_unique( $patterns ) ) ) {
         $warnings[] = [
             'code'    => 'duplicate_patterns',
-            'message' => __( 'Sono presenti pattern URL duplicati nelle esclusioni.', 'ai-friendly' ),
+            'message' => __( 'Sono presenti pattern URL duplicati nelle esclusioni.', 'sernicola-labs-ai-friendly' ),
         ];
     }
 
@@ -135,15 +135,16 @@ function ai_fr_run_diagnostics(): array {
     if ( $blog_public !== '1' ) {
         $warnings[] = [
             'code'    => 'discourage_search',
-            'message' => __( 'Il sito scoraggia l\'indicizzazione (Impostazioni > Lettura).', 'ai-friendly' ),
+            'message' => __( 'Il sito scoraggia l\'indicizzazione (Impostazioni > Lettura).', 'sernicola-labs-ai-friendly' ),
         ];
     }
 
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress core robots.txt filter.
     $robots_txt = (string) apply_filters( 'robots_txt', '', ( $blog_public === '1' ) );
     if ( stripos( $robots_txt, 'Disallow: /' ) !== false ) {
         $warnings[] = [
             'code'    => 'robots_disallow_all',
-            'message' => __( 'robots.txt sembra bloccare tutto il sito (Disallow: /).', 'ai-friendly' ),
+            'message' => __( 'robots.txt sembra bloccare tutto il sito (Disallow: /).', 'sernicola-labs-ai-friendly' ),
         ];
     }
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.1.1
+
+- Sanificati immediatamente tutti i valori inviati dalle pagine admin e dalle azioni AJAX in base al tipo atteso, prima della validazione o del salvataggio.
+- Aggiunta una sanificazione difensiva durante creazione, lettura, ripristino e migrazione degli snapshot `llms.txt`.
+
+## 2.1.0
+
+- Adottato il nome distintivo Sernicola Labs AI Friendly e il nuovo slug `sernicola-labs-ai-friendly`.
+- Sostituiti dichiarazioni globali, opzioni, metadati, hook, azioni AJAX e asset con il prefisso univoco `saifr`.
+- Risolti i percorsi dei file generati tramite `wp_upload_dir()` per supportare upload personalizzati e multisite.
+- Aggiunta la migrazione automatica e non distruttiva di impostazioni, metadati personalizzati e snapshot dalle versioni con prefisso `ai_fr`, con disattivazione sicura del vecchio plugin e riepilogo temporaneo nella Content Hub fino a rigenerazione e rimozione completate.
+- Allineati disinstallazione, documentazione e pacchetto di release alla nuova identità del plugin.
+
 ## 2.0.1
 
 - Aggiunto nel footer della pagina amministrativa il credito di sviluppo a Sernicola Labs.
@@ -12,7 +25,7 @@
 
 ## 2.0.0
 
-- Corretto un errore critico nelle pagine singole quando il rilevamento automatico delle FAQ Breakdance era attivo: il guard di compatibilità non interrompe più l'inizializzazione di `AI_FR_FAQ_VERSION`.
+- Corretto un errore critico nelle pagine singole quando il rilevamento automatico delle FAQ Breakdance era attivo: il guard di compatibilità non interrompe più l'inizializzazione di `SAIFR_FAQ_VERSION`.
 - Rifinita l'intera UI admin con pulsanti indipendenti dallo schema colore WordPress, card neutre, moduli Schema bilanciati, media compatti e repeater responsive con stati vuoti espliciti
 - Aggiunta la visibilita contestuale dei campi `Person` e `Organization`, preservando i valori non pertinenti senza alterarli
 - Uniformata l'intera interfaccia AI Content Hub con un design system admin condiviso, card coerenti, focus accessibili, layout responsive e barra di salvataggio con stato delle modifiche
@@ -47,7 +60,7 @@
 - Aggiunti fondatori configurabili con ruolo opzionale, per evitare incarichi non verificati o non aggiornati
 - Corretto il riconoscimento delle versioni GitHub per tag con prefissi come `v1.9.0` e `v.1.9.0`
 - Aggiunte diagnostiche per release GitHub non raggiungibile o priva dello ZIP installabile
-- Aggiunta GitHub Action di release per allegare sempre `ai-friendly.zip` con cartella radice interna `ai-friendly/`
+- Aggiunta GitHub Action di release per allegare sempre `sernicola-labs-ai-friendly.zip` con cartella radice interna `sernicola-labs-ai-friendly/`
 
 ## 1.8.3
 - Fix pulsante "Aggiungi servizio" nel repeater del catalogo servizi Schema
@@ -133,20 +146,20 @@
 - Diff snapshot llms a due colonne con confronto di 2 snapshot selezionati
 - Validazione link markdown in preview live
 - Note automatiche snapshot con delta linee/token rispetto allo snapshot precedente
-- Nuovo endpoint AJAX: `ai_fr_compare_llms_snapshots`
+- Nuovo endpoint AJAX: `saifr_compare_llms_snapshots`
 
 ## 1.6.0
 - Nuova UI admin "AI Content Hub" con macro-sezioni: Overview, Content, Rules, Automation
 - Dashboard overview con stato llms.txt, stato Markdown Pack e warning diagnostici
 - Nuovi endpoint AJAX: overview stats, content items, toggle exclusion, timeline, diagnostics, preview, snapshot, restore, simulation
-- Telemetry eventi su option `ai_fr_event_log` (ring buffer max 200)
-- Snapshot llms in `wp-content/uploads/ai-friendly/llms-history/`
+- Telemetry eventi su option `saifr_event_log` (ring buffer max 200)
+- Snapshot llms memorizzati nella directory upload del sito
 - Refactor `admin/settings-page.php` con asset separati CSS/JS
 
 ## 1.5.2
 - Header HTTP `Link` canonical per le versioni .md (non sovrascrive altri Link header)
 - `X-Robots-Tag` aggiornato a `noindex, follow`
-- Nuovo filtro `ai_fr_md_canonical_url` per override del canonical
+- Nuovo filtro `saifr_md_canonical_url` per override del canonical
 
 ## 1.5.1
 - Fix TypeError in meta cache invalidation (deleted_post_meta array)

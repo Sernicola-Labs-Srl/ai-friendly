@@ -1,6 +1,6 @@
-# AI Friendly
+# Sernicola Labs AI Friendly
 
-**Version:** 2.0.1
+**Version:** 2.1.1
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v3 or later
@@ -27,7 +27,7 @@
 
 ## Introduzione
 
-AI Friendly espone contenuti WordPress in un formato più leggibile per sistemi AI/LLM:
+Sernicola Labs AI Friendly espone contenuti WordPress in un formato più leggibile per sistemi AI/LLM:
 
 - `/llms.txt` con indice dei contenuti
 - endpoint `.md` per singoli contenuti pubblici
@@ -71,8 +71,19 @@ La sezione Schema mostra soltanto i moduli pertinenti al tipo di entità selezio
 2. Verifica in admin la versione mostrata in alto (deve combaciare con il package)
 3. Se usi file statici `.md`, esegui `Forza rigenerazione`
 
+Per il passaggio dalla versione con slug `ai-friendly` al nuovo pacchetto `sernicola-labs-ai-friendly`:
+
+1. Lascia installato il vecchio plugin e installa il nuovo pacchetto
+2. Attiva `Sernicola Labs AI Friendly`
+3. Il nuovo plugin importa i dati e disattiva automaticamente la precedente versione
+4. Verifica il riepilogo della migrazione e le impostazioni nella Content Hub
+5. Esegui `Forza rigenerazione` se usi file statici `.md`
+6. Elimina il vecchio plugin soltanto dopo la verifica
+
+La migrazione copia impostazioni, esclusioni dei contenuti, Schema personalizzati e snapshot. La Content Hub mostra un riepilogo temporaneo con lo stato della rigenerazione e del vecchio plugin; il riepilogo scompare automaticamente dopo una rigenerazione conclusa senza errori e la rimozione del precedente plugin. Le vecchie chiavi restano disponibili fino a quel momento. In multisite, una versione attiva a livello rete viene disattivata automaticamente solo durante l'attivazione a livello rete del nuovo plugin.
+
 Note:
-- Le opzioni restano nel database (`ai_fr_options`)
+- Le opzioni restano nel database (`saifr_options`)
 - In hosting con OPcache/FPM può servire un reload del pool PHP dopo update manuali
 - Dopo la pubblicazione nella directory ufficiale, gli aggiornamenti automatici sono gestiti da wordpress.org
 
@@ -102,7 +113,7 @@ Per CPT con archive pubblico (`has_archive`), se abilitati:
 
 Se attivi "File MD statici":
 
-- il plugin salva versioni `.md` in `wp-content/uploads/ai-friendly/versions/`
+- il plugin salva versioni `.md` nella directory upload del sito, sotto `sernicola-labs-ai-friendly/versions/`
 - le richieste possono essere servite dal file salvato
 - file vuoti/non validi non vengono considerati validi in serving
 
@@ -143,7 +154,7 @@ Il pannello è diviso in 5 sezioni:
 
 La pipeline controlla:
 
-1. esclusione manuale (`_ai_fr_exclude`)
+1. esclusione manuale (`_saifr_exclude`)
 2. contenuto protetto da password
 3. tipo contenuto abilitato
 4. esclusioni tassonomiche/template/pattern URL
@@ -285,43 +296,43 @@ Con `?debug=1`:
 
 ## Hook e filtri
 
-### `ai_fr_llms_txt_content`
+### `saifr_llms_txt_content`
 
 Permette di modificare il contenuto finale di `llms.txt`.
 
-### `ai_fr_md_cache_ttl`
+### `saifr_md_cache_ttl`
 
 Permette di modificare TTL cache markdown dinamica.
 
-### `ai_fr_md_canonical_url`
+### `saifr_md_canonical_url`
 
 Override del canonical header per endpoint `.md`.
 
-### `ai_fr_md_cache_meta_keys`
+### `saifr_md_cache_meta_keys`
 
 Aggiunge chiavi meta che invalidano la cache markdown.
 
-### `ai_fr_can_serve_post`
+### `saifr_can_serve_post`
 
 Controllo finale sulla possibilità di esporre un contenuto via `.md` / `llms.txt`.
 
-### `ai_fr_schema_enabled`
+### `saifr_schema_enabled`
 
 Permette di abilitare/disabilitare programmaticamente il modulo Semantic Schema.
 
-### `ai_fr_schema_identity`
+### `saifr_schema_identity`
 
 Permette di modificare il nodo `Person` / `Organization` prima dell'output.
 
-### `ai_fr_schema_graph`
+### `saifr_schema_graph`
 
 Permette di modificare il grafo AI Friendly prima della stampa standalone o della fusione con Yoast/Rank Math.
 
-### `ai_fr_faq_enabled`, `ai_fr_faq_items`, `ai_fr_faq_answer_html`, `ai_fr_faq_node`
+### `saifr_faq_enabled`, `saifr_faq_items`, `saifr_faq_answer_html`, `saifr_faq_node`
 
 Controllano rispettivamente l'attivazione della lettura FAQ Breakdance, le coppie estratte, il markup HTML ammesso nelle risposte e il nodo `FAQPage` finale.
 
-### `ai_fr_breakdance_active`
+### `saifr_breakdance_active`
 
 Permette di personalizzare il rilevamento del plugin Breakdance attivo in installazioni con directory o bootstrap non standard.
 
@@ -360,18 +371,18 @@ Sì. Sia in risoluzione URL `.md` sia in estrazione contenuto testuale.
 Usa questa checklist ad ogni nuova release.
 
 1. **Versioning**
-- Aggiorna `Version:` in `ai-friendly.php`
-- Aggiorna `AI_FR_VERSION` in `ai-friendly.php`
+- Aggiorna `Version:` in `sernicola-labs-ai-friendly.php`
+- Aggiorna `SAIFR_VERSION` in `sernicola-labs-ai-friendly.php`
 - Aggiorna `CHANGELOG.md`
-- Usa tag coerenti con la versione del plugin, nel formato `v2.0.1`
+- Usa tag coerenti con la versione del plugin, nel formato `v2.1.0`
 
 2. **Documentazione**
 - Verifica coerenza `README.md` con feature reali
 - Aggiorna eventuali note su header/debug/compatibilità
 
 3. **Packaging**
-- Il push di un tag `v*` avvia la GitHub Action che crea e allega `ai-friendly.zip` alla release
-- Verifica che lo ZIP abbia come cartella radice `ai-friendly/` e contenga `ai-friendly.php`, `uninstall.php`, `includes/`, `admin/`, `README.md`, `readme.txt`, `CHANGELOG.md`
+- Il push di un tag `v*` avvia la GitHub Action che crea e allega `sernicola-labs-ai-friendly.zip` alla release
+- Verifica che lo ZIP abbia come cartella radice `sernicola-labs-ai-friendly/` e contenga `sernicola-labs-ai-friendly.php`, `uninstall.php`, `includes/`, `admin/`, `README.md`, `readme.txt`, `CHANGELOG.md`
 - Escludi file non necessari al runtime (es. `.git`, `.github`, `.agents`, `.gitignore` e file locali IDE)
 
 4. **Deploy**

@@ -1,18 +1,20 @@
-=== AI Friendly ===
+=== Sernicola Labs AI Friendly – llms.txt, Markdown & Schema ===
 Contributors: slabsit
 Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.0.1
+Stable tag: 2.1.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Expose WordPress content for AI systems through llms.txt and Markdown endpoints, with rules, automation, and versioning tools.
+Publish WordPress content for AI systems through llms.txt, Markdown endpoints, semantic schema, rules, and automation.
 
 == Description ==
 
-AI Friendly provides:
+Sernicola Labs AI Friendly is a GEO/AEO content publishing toolkit, not only an llms.txt generator. It combines machine-readable content, selective publishing controls, versioned output, and semantic identity in one local WordPress workflow.
+
+The plugin provides:
 
 * Dynamic `/llms.txt` generation.
 * Public `.md` endpoints for published content.
@@ -20,6 +22,8 @@ AI Friendly provides:
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
 * Admin tools for preview, snapshots, diagnostics, and bulk operations.
 * Optional Semantic Schema JSON-LD layer with multi-type organizations, repeatable contacts, Place/Geo, opening hours, certifications, generic identifiers, automatic Breakdance FAQPage, WordPress-powered OfferCatalog sources, and Yoast/Rank Math graph extension.
+* Local-first operation without external API calls, subscriptions, analytics, or transmitted usage data.
+* Automatic migration of settings, content exclusions, custom schema, and snapshots from AI Friendly versions prior to 2.1.
 
 = Privacy =
 
@@ -34,6 +38,8 @@ When the plugin is deleted from WordPress, its settings, activity log, generated
 1. Upload the plugin zip from `Plugins > Add New > Upload Plugin`.
 2. Activate the plugin.
 3. Open `Settings > AI Friendly`.
+
+When moving from the old `ai-friendly` package, leave it installed and activate `sernicola-labs-ai-friendly`. The new plugin imports the available data and safely deactivates the old version. The temporary Content Hub summary disappears automatically after an error-free regeneration and removal of the old plugin. A network-active legacy copy is deactivated automatically only when the new plugin is network-activated too.
 
 == Frequently Asked Questions ==
 
@@ -58,6 +64,17 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 Use the WordPress.org support forum for support. The maintained development source is available at https://github.com/Sernicola-Labs-Srl/ai-friendly.
 
 == Changelog ==
+
+= 2.1.1 =
+* Sanitized all submitted admin and AJAX values immediately according to their expected type before validation or storage.
+* Added defense-in-depth sanitization when creating, reading, restoring, and migrating llms.txt snapshots.
+
+= 2.1.0 =
+* Renamed the directory identity to Sernicola Labs AI Friendly with the new `sernicola-labs-ai-friendly` slug and text domain.
+* Replaced global declarations, stored data, hooks, AJAX actions, and asset handles with the distinctive `saifr` prefix.
+* Resolved generated-file locations dynamically with `wp_upload_dir()` for custom upload paths and multisite.
+* Added a non-destructive migration for settings, custom post metadata, and snapshots stored by pre-2.1 releases, including safe legacy-plugin deactivation and a clear Content Hub summary.
+* Updated uninstall cleanup and release packaging for the new plugin identity.
 
 = 2.0.1 =
 * Added a discreet Sernicola Labs development credit to the plugin administration page.

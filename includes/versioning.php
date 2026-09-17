@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  VERSIONING MD - Salvataggio e gestione file statici
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-class AiFrVersioning {
+class SaifrVersioning {
     
     /**
      * Salva la versione MD di un post.
@@ -22,20 +22,20 @@ class AiFrVersioning {
         }
         
         // Crea directory se non esiste
-        if ( ! file_exists( AI_FR_VERSIONS_DIR ) ) {
-            wp_mkdir_p( AI_FR_VERSIONS_DIR );
+        if ( ! file_exists( saifr_versions_dir() ) ) {
+            wp_mkdir_p( saifr_versions_dir() );
         }
         
         // Genera nome file basato su slug
         $filename = self::getFilename( $post );
-        $filepath = AI_FR_VERSIONS_DIR . '/' . $filename;
-        $previous_filename = (string) get_post_meta( $post_id, '_ai_fr_md_filename', true );
+        $filepath = saifr_versions_dir() . '/' . $filename;
+        $previous_filename = (string) get_post_meta( $post_id, '_saifr_md_filename', true );
         
         // Calcola checksum nuovo contenuto
         $new_checksum = md5( $md_content );
         
         // Verifica se il contenuto Ã¨ cambiato
-        $old_checksum = get_post_meta( $post_id, '_ai_fr_md_checksum', true );
+        $old_checksum = get_post_meta( $post_id, '_saifr_md_checksum', true );
         $changed = ( $old_checksum !== $new_checksum );
         
         // Salva solo se cambiato (o se non esiste)
@@ -44,9 +44,9 @@ class AiFrVersioning {
             
             if ( $saved ) {
                 // Aggiorna meta con checksum e timestamp
-                update_post_meta( $post_id, '_ai_fr_md_checksum', $new_checksum );
-                update_post_meta( $post_id, '_ai_fr_md_generated', current_time( 'mysql' ) );
-                update_post_meta( $post_id, '_ai_fr_md_filename', $filename );
+                update_post_meta( $post_id, '_saifr_md_checksum', $new_checksum );
+                update_post_meta( $post_id, '_saifr_md_generated', current_time( 'mysql' ) );
+                update_post_meta( $post_id, '_saifr_md_filename', $filename );
 
                 if ( $previous_filename !== '' && $previous_filename !== $filename ) {
                     self::deleteFileByFilename( $previous_filename );
@@ -78,7 +78,7 @@ class AiFrVersioning {
             return null;
         }
 
-        $filename = get_post_meta( $post_id, '_ai_fr_md_filename', true );
+        $filename = get_post_meta( $post_id, '_saifr_md_filename', true );
         if ( empty( $filename ) || ! hash_equals( self::getFilename( $post ), (string) $filename ) ) {
             return null;
         }
@@ -105,7 +105,7 @@ class AiFrVersioning {
             return false;
         }
 
-        $filename = get_post_meta( $post_id, '_ai_fr_md_filename', true );
+        $filename = get_post_meta( $post_id, '_saifr_md_filename', true );
         if ( empty( $filename ) || ! hash_equals( self::getFilename( $post ), (string) $filename ) ) {
             return false;
         }
@@ -122,7 +122,7 @@ class AiFrVersioning {
      * Elimina la versione MD di un post.
      */
     public static function deleteVersion( int $post_id ): bool {
-        $filename = get_post_meta( $post_id, '_ai_fr_md_filename', true );
+        $filename = get_post_meta( $post_id, '_saifr_md_filename', true );
         if ( empty( $filename ) ) {
             return true;
         }
@@ -131,9 +131,9 @@ class AiFrVersioning {
             wp_delete_file( $filepath );
         }
         
-        delete_post_meta( $post_id, '_ai_fr_md_checksum' );
-        delete_post_meta( $post_id, '_ai_fr_md_generated' );
-        delete_post_meta( $post_id, '_ai_fr_md_filename' );
+        delete_post_meta( $post_id, '_saifr_md_checksum' );
+        delete_post_meta( $post_id, '_saifr_md_generated' );
+        delete_post_meta( $post_id, '_saifr_md_filename' );
         
         return true;
     }
@@ -162,12 +162,12 @@ class AiFrVersioning {
             return null;
         }
         
-        $filepath = AI_FR_VERSIONS_DIR . '/' . $safe;
+        $filepath = saifr_versions_dir() . '/' . $safe;
         if ( ! file_exists( $filepath ) ) {
             return $filepath;
         }
         
-        $base = realpath( AI_FR_VERSIONS_DIR );
+        $base = realpath( saifr_versions_dir() );
         $real = realpath( $filepath );
         if ( ! $base || ! $real ) {
             return null;
@@ -198,11 +198,11 @@ class AiFrVersioning {
      * Ottiene statistiche sulle versioni salvate.
      */
     public static function getStats(): array {
-        if ( ! file_exists( AI_FR_VERSIONS_DIR ) ) {
+        if ( ! file_exists( saifr_versions_dir() ) ) {
             return [ 'count' => 0, 'size' => 0, 'files' => [] ];
         }
         
-        $files = glob( AI_FR_VERSIONS_DIR . '/*.md' );
+        $files = glob( saifr_versions_dir() . '/*.md' );
         $files = is_array( $files ) ? $files : [];
         $total_size = 0;
         
@@ -221,11 +221,11 @@ class AiFrVersioning {
      * Pulisce tutte le versioni salvate.
      */
     public static function clearAll(): int {
-        if ( ! file_exists( AI_FR_VERSIONS_DIR ) ) {
+        if ( ! file_exists( saifr_versions_dir() ) ) {
             return 0;
         }
         
-        $files = glob( AI_FR_VERSIONS_DIR . '/*.md' );
+        $files = glob( saifr_versions_dir() . '/*.md' );
         $files = is_array( $files ) ? $files : [];
         $count = 0;
         
@@ -237,9 +237,9 @@ class AiFrVersioning {
         }
         
         // Pulisci anche i meta
-        delete_metadata( 'post', 0, '_ai_fr_md_checksum', '', true );
-        delete_metadata( 'post', 0, '_ai_fr_md_generated', '', true );
-        delete_metadata( 'post', 0, '_ai_fr_md_filename', '', true );
+        delete_metadata( 'post', 0, '_saifr_md_checksum', '', true );
+        delete_metadata( 'post', 0, '_saifr_md_generated', '', true );
+        delete_metadata( 'post', 0, '_saifr_md_filename', '', true );
         
         return $count;
     }
@@ -248,12 +248,12 @@ class AiFrVersioning {
      * Rimuove versioni non piu' servibili e file orfani rimasti sul disco.
      */
     public static function pruneObsoleteVersions(): int {
-        $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
+        $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
         if ( empty( $options['static_md_files'] ) ) {
             return self::clearAll();
         }
 
-        $filter = new AiFrContentFilter();
+        $filter = new SaifrContentFilter();
         $deleted = 0;
         $post_types = array_values( get_post_types( [], 'names' ) );
         usort(
@@ -261,7 +261,7 @@ class AiFrVersioning {
             static fn( string $left, string $right ): int => strlen( $right ) <=> strlen( $left )
         );
 
-        $version_files = glob( AI_FR_VERSIONS_DIR . '/*.md' );
+        $version_files = glob( saifr_versions_dir() . '/*.md' );
         $version_files = is_array( $version_files ) ? $version_files : [];
         foreach ( $version_files as $file ) {
             $filename = basename( $file );
@@ -278,7 +278,7 @@ class AiFrVersioning {
             }
 
             $post = $post_id > 0 ? get_post( $post_id ) : null;
-            $stored_filename = $post_id > 0 ? (string) get_post_meta( $post_id, '_ai_fr_md_filename', true ) : '';
+            $stored_filename = $post_id > 0 ? (string) get_post_meta( $post_id, '_saifr_md_filename', true ) : '';
             $is_current = $post instanceof WP_Post
                 && $post->post_status === 'publish'
                 && $filter->shouldInclude( $post )
@@ -294,9 +294,9 @@ class AiFrVersioning {
             }
 
             if ( $post_id > 0 && hash_equals( $stored_filename, $filename ) ) {
-                delete_post_meta( $post_id, '_ai_fr_md_checksum' );
-                delete_post_meta( $post_id, '_ai_fr_md_generated' );
-                delete_post_meta( $post_id, '_ai_fr_md_filename' );
+                delete_post_meta( $post_id, '_saifr_md_checksum' );
+                delete_post_meta( $post_id, '_saifr_md_generated' );
+                delete_post_meta( $post_id, '_saifr_md_filename' );
             }
         }
 

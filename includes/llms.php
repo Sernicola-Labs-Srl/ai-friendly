@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  2 â€” llms.txt
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-function ai_fr_serve_llms_txt(): void {
+function saifr_serve_llms_txt(): void {
 
-    $body = ai_fr_build_llms_txt();
-    $body = (string) apply_filters( 'ai_fr_llms_txt_response_body', $body );
+    $body = saifr_build_llms_txt();
+    $body = (string) apply_filters( 'saifr_llms_txt_response_body', $body );
 
-    ai_fr_reset_output_buffers();
+    saifr_reset_output_buffers();
 
     status_header( 200 );
     header( 'Content-Type: text/plain; charset=UTF-8' );
@@ -20,7 +20,7 @@ function ai_fr_serve_llms_txt(): void {
     header( 'Pragma: no-cache' );
     header( 'Expires: 0' );
     header( 'X-Content-Type-Options: nosniff' );
-    header( 'X-AI-Friendly-Version: ' . AI_FR_VERSION );
+    header( 'X-AI-Friendly-Version: ' . SAIFR_VERSION );
     header( 'X-AI-Friendly-LLMS-Length: ' . strlen( $body ) );
     header( 'Content-Length: ' . strlen( $body ) );
     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Markdown is served as text/plain and must remain unescaped.
@@ -28,16 +28,16 @@ function ai_fr_serve_llms_txt(): void {
     exit;
 }
 
-function ai_fr_build_llms_txt(): string {
+function saifr_build_llms_txt(): string {
 
-    $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
-    $filter = new AiFrContentFilter();
+    $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
+    $filter = new SaifrContentFilter();
 
     $custom_content = trim( $options['llms_content'] ?? '' );
     $include_auto   = ! empty( $options['llms_include_auto'] );
 
     if ( $custom_content !== '' && ! $include_auto ) {
-        return apply_filters( 'ai_fr_llms_txt_content', $custom_content );
+        return apply_filters( 'saifr_llms_txt_content', $custom_content );
     }
 
     $out = '';
@@ -55,10 +55,10 @@ function ai_fr_build_llms_txt(): string {
         
         // Pagine
         if ( ! empty( $options['include_pages'] ) ) {
-            $out .= ai_fr_section( __( 'Pagine', 'ai-friendly' ), [
+            $out .= saifr_section( __( 'Pagine', 'sernicola-labs-ai-friendly' ), [
                 'post_type'      => 'page',
                 'post_status'    => 'publish',
-                'posts_per_page' => AI_FR_PAGES_LIMIT,
+                'posts_per_page' => SAIFR_PAGES_LIMIT,
                 'orderby'        => 'menu_order date',
                 'order'          => 'ASC',
             ], $filter );
@@ -66,10 +66,10 @@ function ai_fr_build_llms_txt(): string {
 
         // Post
         if ( ! empty( $options['include_posts'] ) ) {
-            $out .= ai_fr_section( __( 'Post', 'ai-friendly' ), [
+            $out .= saifr_section( __( 'Post', 'sernicola-labs-ai-friendly' ), [
                 'post_type'      => 'post',
                 'post_status'    => 'publish',
-                'posts_per_page' => AI_FR_POSTS_LIMIT,
+                'posts_per_page' => SAIFR_POSTS_LIMIT,
                 'orderby'        => 'date',
                 'order'          => 'DESC',
             ], $filter );
@@ -77,7 +77,7 @@ function ai_fr_build_llms_txt(): string {
 
         // Prodotti WooCommerce
         if ( ! empty( $options['include_products'] ) && class_exists( 'WooCommerce' ) ) {
-            $out .= ai_fr_section( __( 'Prodotti', 'ai-friendly' ), [
+            $out .= saifr_section( __( 'Prodotti', 'sernicola-labs-ai-friendly' ), [
                 'post_type'      => 'product',
                 'post_status'    => 'publish',
                 'posts_per_page' => 20,
@@ -92,7 +92,7 @@ function ai_fr_build_llms_txt(): string {
             $cpt_obj = get_post_type_object( $cpt );
             $label = $cpt_obj ? $cpt_obj->labels->name : ucfirst( $cpt );
             
-            $out .= ai_fr_section( $label, [
+            $out .= saifr_section( $label, [
                 'post_type'      => $cpt,
                 'post_status'    => 'publish',
                 'posts_per_page' => 20,
@@ -102,10 +102,10 @@ function ai_fr_build_llms_txt(): string {
         }
     }
 
-    return apply_filters( 'ai_fr_llms_txt_content', $out );
+    return apply_filters( 'saifr_llms_txt_content', $out );
 }
 
-function ai_fr_section( string $heading, array $query_args, AiFrContentFilter $filter ): string {
+function saifr_section( string $heading, array $query_args, SaifrContentFilter $filter ): string {
 
     $posts = get_posts( $query_args );
     
@@ -119,12 +119,12 @@ function ai_fr_section( string $heading, array $query_args, AiFrContentFilter $f
     $lines = "## {$heading}\n";
 
     foreach ( $items as $item ) {
-        if ( ! ai_fr_can_serve_post( $item, 'llms' ) ) {
+        if ( ! saifr_can_serve_post( $item, 'llms' ) ) {
             continue;
         }
         $title   = get_the_title( $item->ID );
-        $md_url  = ai_fr_permalink_to_md( get_permalink( $item->ID ) );
-        $excerpt = ai_fr_excerpt( $item );
+        $md_url  = saifr_permalink_to_md( get_permalink( $item->ID ) );
+        $excerpt = saifr_excerpt( $item );
 
         $lines .= "- [{$title}]({$md_url})";
         $lines .= $excerpt !== '' ? ": {$excerpt}" : '';

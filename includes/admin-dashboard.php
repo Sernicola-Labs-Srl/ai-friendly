@@ -6,13 +6,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Statistiche aggregate per overview dashboard.
  */
-function ai_fr_get_overview_stats(): array {
-    $options      = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
-    $llms_content = ai_fr_build_llms_txt();
-    $versioning   = AiFrVersioning::getStats();
-    $last_regen   = get_option( 'ai_fr_last_regeneration', [] );
-    $next_cron    = wp_next_scheduled( 'ai_fr_cron_regenerate' );
-    $diagnostics  = ai_fr_run_diagnostics();
+function saifr_get_overview_stats(): array {
+    $options      = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
+    $llms_content = saifr_build_llms_txt();
+    $versioning   = SaifrVersioning::getStats();
+    $last_regen   = get_option( 'saifr_last_regeneration', [] );
+    $next_cron    = wp_next_scheduled( 'saifr_cron_regenerate' );
+    $diagnostics  = saifr_run_diagnostics();
 
     return [
         'llms'       => [

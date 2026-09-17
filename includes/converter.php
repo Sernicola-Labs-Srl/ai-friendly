@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  CONVERTER v2  |  HTML â†’ Markdown
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-class AiFrConverter {
+class SaifrConverter {
 
     private const NOISE_PATTERNS = [
         'previous step', 'next step', 'avanti', 'indietro',

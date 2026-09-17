@@ -6,141 +6,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Restituisce il nome dell'opzione non autoloadata che contiene uno snapshot.
  */
-function ai_fr_llms_snapshot_option_name( string $id ): string {
-    return 'ai_fr_llms_snapshot_' . md5( $id );
+function saifr_llms_snapshot_option_name( string $id ): string {
+    return 'saifr_llms_snapshot_' . md5( $id );
 }
 
 /**
- * Blocca l'accesso web alla directory legacy durante la migrazione.
+ * Elimina dal database il contenuto di uno snapshot.
  */
-function ai_fr_protect_llms_history_directory(): void {
-    if ( ! is_dir( AI_FR_LLMS_HISTORY_DIR ) || ! wp_is_writable( AI_FR_LLMS_HISTORY_DIR ) ) {
-        return;
-    }
-
-    $protection_files = [
-        '.htaccess' => "Options -Indexes\n<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n",
-        'web.config' => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<configuration><system.webServer><authorization><deny users=\"*\" /></authorization></system.webServer></configuration>\n",
-        'index.php'  => "<?php\nexit;\n",
-    ];
-
-    foreach ( $protection_files as $filename => $content ) {
-        $path = trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename;
-        if ( ! file_exists( $path ) ) {
-            file_put_contents( $path, $content );
-        }
-    }
-}
-
-/**
- * Elimina lo storage database e l'eventuale file legacy di uno snapshot.
- */
-function ai_fr_delete_llms_snapshot_storage( array $entry ): void {
+function saifr_delete_llms_snapshot_storage( array $entry ): void {
     $id = (string) ( $entry['id'] ?? '' );
     if ( $id !== '' ) {
-        delete_option( ai_fr_llms_snapshot_option_name( $id ) );
-    }
-
-    $filename = basename( (string) ( $entry['filename'] ?? '' ) );
-    if ( $filename === '' || ! preg_match( '/\A[a-z0-9._-]+\.txt\z/i', $filename ) ) {
-        return;
-    }
-
-    $file = trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename;
-    if ( file_exists( $file ) ) {
-        wp_delete_file( $file );
-        if ( file_exists( $file ) ) {
-            delete_option( 'ai_fr_llms_storage_version' );
-        }
+        delete_option( saifr_llms_snapshot_option_name( $id ) );
     }
 }
-
-/**
- * Migra gli snapshot legacy da uploads a opzioni non autoloadate.
- */
-function ai_fr_migrate_llms_history_storage(): void {
-    ai_fr_protect_llms_history_directory();
-
-    if ( get_option( 'ai_fr_llms_storage_version' ) === '2' ) {
-        return;
-    }
-
-    $index = get_option( 'ai_fr_llms_history_index', [] );
-    $index = is_array( $index ) ? $index : [];
-    $migration_complete = true;
-    $index_changed = false;
-    $legacy_files = [];
-
-    foreach ( $index as &$entry ) {
-        if ( ! is_array( $entry ) || empty( $entry['id'] ) ) {
-            continue;
-        }
-
-        $id = (string) $entry['id'];
-        $option_name = ai_fr_llms_snapshot_option_name( $id );
-        $stored = get_option( $option_name, null );
-        $filename = basename( (string) ( $entry['filename'] ?? '' ) );
-        $file = $filename !== '' ? trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename : '';
-
-        if ( $file !== '' ) {
-            $legacy_files[ $filename ] = true;
-        }
-
-        if ( ! is_string( $stored ) && $file !== '' && is_readable( $file ) ) {
-            $content = file_get_contents( $file );
-            if ( is_string( $content ) && add_option( $option_name, $content, '', false ) ) {
-                $stored = $content;
-            }
-        }
-
-        if ( ! is_string( $stored ) ) {
-            $migration_complete = false;
-            continue;
-        }
-
-        if ( $file !== '' && file_exists( $file ) ) {
-            wp_delete_file( $file );
-            if ( file_exists( $file ) ) {
-                $migration_complete = false;
-                continue;
-            }
-        }
-        unset( $entry['filename'] );
-        $entry['storage'] = 'option';
-        $index_changed = true;
-    }
-    unset( $entry );
-
-    if ( $index_changed ) {
-        update_option( 'ai_fr_llms_history_index', $index, false );
-    }
-
-    // I file non presenti nell'indice sono snapshot oltre la retention legacy.
-    $orphan_files = glob( AI_FR_LLMS_HISTORY_DIR . '/*.txt' );
-    if ( is_array( $orphan_files ) ) {
-        foreach ( $orphan_files as $file ) {
-            if ( isset( $legacy_files[ basename( $file ) ] ) ) {
-                continue;
-            }
-            wp_delete_file( $file );
-            if ( file_exists( $file ) ) {
-                $migration_complete = false;
-            }
-        }
-    }
-
-    if ( $migration_complete ) {
-        update_option( 'ai_fr_llms_storage_version', '2', false );
-    }
-}
-
-add_action( 'init', 'ai_fr_migrate_llms_history_storage', 1 );
 
 /**
  * Restituisce indice snapshot.
  */
-function ai_fr_get_llms_history_index(): array {
-    $index = get_option( 'ai_fr_llms_history_index', [] );
+function saifr_get_llms_history_index(): array {
+    $index = get_option( 'saifr_llms_history_index', [] );
     if ( ! is_array( $index ) ) {
         return [];
     }
@@ -155,7 +39,7 @@ function ai_fr_get_llms_history_index(): array {
     }
     unset( $entry );
     if ( $changed ) {
-        update_option( 'ai_fr_llms_history_index', $index, false );
+        update_option( 'saifr_llms_history_index', $index, false );
     }
 
     return $index;
@@ -164,45 +48,45 @@ function ai_fr_get_llms_history_index(): array {
 /**
  * Crea snapshot llms.txt.
  */
-function ai_fr_create_llms_snapshot( string $content, string $reason = 'manual' ): array {
-    ai_fr_migrate_llms_history_storage();
-
+function saifr_create_llms_snapshot( string $content, string $reason = 'manual' ): array {
+    $content = sanitize_textarea_field( $content );
+    $reason  = sanitize_text_field( $reason );
     $id = 'llms-' . gmdate( 'Ymd-His' ) . '-' . wp_generate_password( 6, false, false );
-    $option_name = ai_fr_llms_snapshot_option_name( $id );
+    $option_name = saifr_llms_snapshot_option_name( $id );
 
     $saved = add_option( $option_name, $content, '', false );
     if ( ! $saved ) {
         return [ 'saved' => false ];
     }
 
-    $index      = ai_fr_get_llms_history_index();
+    $index      = saifr_get_llms_history_index();
     $prev_entry = $index[0] ?? null;
     $prev_text  = null;
     if ( is_array( $prev_entry ) && ! empty( $prev_entry['id'] ) ) {
-        $prev_text = ai_fr_get_llms_snapshot_content( (string) $prev_entry['id'] );
+        $prev_text = saifr_get_llms_snapshot_content( (string) $prev_entry['id'] );
     }
 
     $entry = [
         'id'         => $id,
         'storage'    => 'option',
         'created_at' => current_time( 'mysql' ),
-        'reason'     => sanitize_text_field( $reason ),
+        'reason'     => $reason,
         'chars'      => strlen( $content ),
-        'tokens'     => ai_fr_estimate_tokens( $content ),
+        'tokens'     => saifr_estimate_tokens( $content ),
         'checksum'   => md5( $content ),
     ];
     if ( is_string( $prev_text ) ) {
-        $diff = ai_fr_diff_llms_content( $prev_text, $content );
+        $diff = saifr_diff_llms_content( $prev_text, $content );
         $entry['note'] = sprintf(
             /* translators: 1: added lines, 2: removed lines, 3: token delta sign, 4: token delta. */
-            __( 'Linee +%1$d / -%2$d, token %3$s%4$d', 'ai-friendly' ),
+            __( 'Linee +%1$d / -%2$d, token %3$s%4$d', 'sernicola-labs-ai-friendly' ),
             intval( $diff['summary']['added_lines'] ?? 0 ),
             intval( $diff['summary']['removed_lines'] ?? 0 ),
             ( ( $diff['summary']['token_delta'] ?? 0 ) >= 0 ? '+' : '' ),
             intval( $diff['summary']['token_delta'] ?? 0 )
         );
     } else {
-        $entry['note'] = __( 'Primo snapshot disponibile.', 'ai-friendly' );
+        $entry['note'] = __( 'Primo snapshot disponibile.', 'sernicola-labs-ai-friendly' );
     }
 
     array_unshift( $index, $entry );
@@ -211,11 +95,11 @@ function ai_fr_create_llms_snapshot( string $content, string $reason = 'manual' 
         $index = array_slice( $index, 0, 100 );
         foreach ( $removed as $removed_entry ) {
             if ( is_array( $removed_entry ) ) {
-                ai_fr_delete_llms_snapshot_storage( $removed_entry );
+                saifr_delete_llms_snapshot_storage( $removed_entry );
             }
         }
     }
-    update_option( 'ai_fr_llms_history_index', $index, false );
+    update_option( 'saifr_llms_history_index', $index, false );
 
     return [ 'saved' => true, 'entry' => $entry ];
 }
@@ -223,25 +107,15 @@ function ai_fr_create_llms_snapshot( string $content, string $reason = 'manual' 
 /**
  * Legge il contenuto snapshot.
  */
-function ai_fr_get_llms_snapshot_content( string $id ): ?string {
-    $index = ai_fr_get_llms_history_index();
+function saifr_get_llms_snapshot_content( string $id ): ?string {
+    $index = saifr_get_llms_history_index();
     foreach ( $index as $entry ) {
         if ( ( $entry['id'] ?? '' ) === $id ) {
-            $content = get_option( ai_fr_llms_snapshot_option_name( $id ), null );
+            $content = get_option( saifr_llms_snapshot_option_name( $id ), null );
             if ( is_string( $content ) ) {
-                return $content;
+                return sanitize_textarea_field( $content );
             }
-
-            // Compatibilita temporanea se un file legacy non e stato migrato.
-            $filename = basename( (string) ( $entry['filename'] ?? '' ) );
-            if ( $filename === '' || ! preg_match( '/\A[a-z0-9._-]+\.txt\z/i', $filename ) ) {
-                return null;
-            }
-            $file = trailingslashit( AI_FR_LLMS_HISTORY_DIR ) . $filename;
-            if ( file_exists( $file ) ) {
-                $legacy_content = file_get_contents( $file );
-                return is_string( $legacy_content ) ? $legacy_content : null;
-            }
+            return null;
         }
     }
     return null;
@@ -250,15 +124,15 @@ function ai_fr_get_llms_snapshot_content( string $id ): ?string {
 /**
  * Ripristina snapshot nel campo llms_content.
  */
-function ai_fr_restore_llms_snapshot( string $id ): array {
-    $content = ai_fr_get_llms_snapshot_content( $id );
+function saifr_restore_llms_snapshot( string $id ): array {
+    $content = saifr_get_llms_snapshot_content( $id );
     if ( $content === null ) {
-        return [ 'restored' => false, 'message' => __( 'Snapshot non trovato.', 'ai-friendly' ) ];
+        return [ 'restored' => false, 'message' => __( 'Snapshot non trovato.', 'sernicola-labs-ai-friendly' ) ];
     }
 
-    $options                 = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
-    $options['llms_content'] = $content;
-    update_option( 'ai_fr_options', $options );
+    $options                 = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
+    $options['llms_content'] = sanitize_textarea_field( $content );
+    update_option( 'saifr_options', $options );
 
     return [ 'restored' => true, 'content' => $content ];
 }
@@ -266,7 +140,7 @@ function ai_fr_restore_llms_snapshot( string $id ): array {
 /**
  * Rende markdown in HTML essenziale per preview admin.
  */
-function ai_fr_render_markdown_preview_html( string $content ): string {
+function saifr_render_markdown_preview_html( string $content ): string {
     $safe = esc_html( $content );
     $safe = preg_replace( '/^######\s(.+)$/m', '<h6>$1</h6>', $safe );
     $safe = preg_replace( '/^#####\s(.+)$/m', '<h5>$1</h5>', $safe );
@@ -287,7 +161,7 @@ function ai_fr_render_markdown_preview_html( string $content ): string {
 /**
  * Valida i link markdown nel contenuto llms.
  */
-function ai_fr_validate_llms_links( string $content ): array {
+function saifr_validate_llms_links( string $content ): array {
     preg_match_all( '/\[[^\]]+\]\(([^)]+)\)/', $content, $matches );
     $links = array_unique( $matches[1] ?? [] );
     $issues = [];
@@ -304,7 +178,7 @@ function ai_fr_validate_llms_links( string $content ): array {
             $issues[] = [
                 'url'     => $url,
                 'severity'=> 'warning',
-                'message' => __( 'Link con formato non valido (atteso http/https o percorso relativo).', 'ai-friendly' ),
+                'message' => __( 'Link con formato non valido (atteso http/https o percorso relativo).', 'sernicola-labs-ai-friendly' ),
             ];
             continue;
         }
@@ -315,7 +189,7 @@ function ai_fr_validate_llms_links( string $content ): array {
                 $issues[] = [
                     'url'      => $url,
                     'severity' => 'warning',
-                    'message'  => __( 'URL non interpretabile.', 'ai-friendly' ),
+                    'message'  => __( 'URL non interpretabile.', 'sernicola-labs-ai-friendly' ),
                 ];
                 continue;
             }
@@ -325,7 +199,7 @@ function ai_fr_validate_llms_links( string $content ): array {
             $issues[] = [
                 'url'      => $url,
                 'severity' => 'info',
-                'message'  => __( 'Link relativo senza estensione .md o llms.txt.', 'ai-friendly' ),
+                'message'  => __( 'Link relativo senza estensione .md o llms.txt.', 'sernicola-labs-ai-friendly' ),
             ];
         }
     }
@@ -339,13 +213,13 @@ function ai_fr_validate_llms_links( string $content ): array {
 /**
  * Diff line-by-line semplificato tra due contenuti llms.
  */
-function ai_fr_diff_llms_content( string $left, string $right ): array {
+function saifr_diff_llms_content( string $left, string $right ): array {
     $left_lines  = array_map( 'trim', explode( "\n", $left ) );
     $right_lines = array_map( 'trim', explode( "\n", $right ) );
     $left_lines  = array_values( array_filter( $left_lines, static fn( $x ) => $x !== '' ) );
     $right_lines = array_values( array_filter( $right_lines, static fn( $x ) => $x !== '' ) );
 
-    $ops = ai_fr_build_diff_ops( $left_lines, $right_lines );
+    $ops = saifr_build_diff_ops( $left_lines, $right_lines );
 
     $added_lines   = [];
     $removed_lines = [];
@@ -390,18 +264,18 @@ function ai_fr_diff_llms_content( string $left, string $right ): array {
     return [
         'left' => [
             'content' => $left,
-            'tokens'  => ai_fr_estimate_tokens( $left ),
+            'tokens'  => saifr_estimate_tokens( $left ),
             'lines'   => count( $left_lines ),
         ],
         'right' => [
             'content' => $right,
-            'tokens'  => ai_fr_estimate_tokens( $right ),
+            'tokens'  => saifr_estimate_tokens( $right ),
             'lines'   => count( $right_lines ),
         ],
         'summary' => [
             'added_lines'   => count( $added_lines ),
             'removed_lines' => count( $removed_lines ),
-            'token_delta'   => ai_fr_estimate_tokens( $right ) - ai_fr_estimate_tokens( $left ),
+            'token_delta'   => saifr_estimate_tokens( $right ) - saifr_estimate_tokens( $left ),
         ],
         'rows'            => $rows,
         'added_preview'   => array_slice( $added_lines, 0, 30 ),
@@ -414,7 +288,7 @@ function ai_fr_diff_llms_content( string $left, string $right ): array {
  *
  * @return array<int, array{op:string, line:string}>
  */
-function ai_fr_build_diff_ops( array $left_lines, array $right_lines ): array {
+function saifr_build_diff_ops( array $left_lines, array $right_lines ): array {
     $n = count( $left_lines );
     $m = count( $right_lines );
     $dp = array_fill( 0, $n + 1, array_fill( 0, $m + 1, 0 ) );
@@ -460,11 +334,11 @@ function ai_fr_build_diff_ops( array $left_lines, array $right_lines ): array {
 /**
  * Simulazione AI locale (heuristics) su contenuto llms.
  */
-function ai_fr_run_ai_simulation( string $content ): array {
+function saifr_run_ai_simulation( string $content ): array {
     $text       = trim( wp_strip_all_tags( $content ) );
     $lines      = array_values( array_filter( array_map( 'trim', explode( "\n", $text ) ) ) );
     $line_count = count( $lines );
-    $tokens     = ai_fr_estimate_tokens( $text );
+    $tokens     = saifr_estimate_tokens( $text );
 
     $normalized = array_map(
         static function ( string $line ): string {
@@ -490,19 +364,19 @@ function ai_fr_run_ai_simulation( string $content ): array {
 
     $suggestions = [];
     if ( $duplicates > 0 ) {
-        $suggestions[] = __( 'Riduci frasi ripetute o simili per migliorare compattezza.', 'ai-friendly' );
+        $suggestions[] = __( 'Riduci frasi ripetute o simili per migliorare compattezza.', 'sernicola-labs-ai-friendly' );
     }
     if ( $tokens > 2500 ) {
-        $suggestions[] = __( 'Token elevati: valuta sintesi di sezioni secondarie.', 'ai-friendly' );
+        $suggestions[] = __( 'Token elevati: valuta sintesi di sezioni secondarie.', 'sernicola-labs-ai-friendly' );
     }
     if ( $headings < 2 ) {
-        $suggestions[] = __( 'Aggiungi heading per migliorare leggibilità strutturale.', 'ai-friendly' );
+        $suggestions[] = __( 'Aggiungi heading per migliorare leggibilità strutturale.', 'sernicola-labs-ai-friendly' );
     }
     if ( $links === 0 ) {
-        $suggestions[] = __( 'Valuta link diretti alle risorse principali.', 'ai-friendly' );
+        $suggestions[] = __( 'Valuta link diretti alle risorse principali.', 'sernicola-labs-ai-friendly' );
     }
     if ( empty( $suggestions ) ) {
-        $suggestions[] = __( 'Struttura buona: mantieni sezioni brevi e stabili.', 'ai-friendly' );
+        $suggestions[] = __( 'Struttura buona: mantieni sezioni brevi e stabili.', 'sernicola-labs-ai-friendly' );
     }
 
     return [

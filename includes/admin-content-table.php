@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Stima semplice token da testo.
  */
-function ai_fr_estimate_tokens( string $text ): int {
+function saifr_estimate_tokens( string $text ): int {
     $words = str_word_count( wp_strip_all_tags( $text ) );
     return (int) ceil( $words * 1.33 );
 }
@@ -14,7 +14,7 @@ function ai_fr_estimate_tokens( string $text ): int {
 /**
  * Lingua best-effort: usa locale WP.
  */
-function ai_fr_get_post_language( WP_Post $post ): string {
+function saifr_get_post_language( WP_Post $post ): string {
     $locale = get_locale();
     if ( is_string( $locale ) && $locale !== '' ) {
         return $locale;
@@ -27,9 +27,9 @@ function ai_fr_get_post_language( WP_Post $post ): string {
  *
  * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int}
  */
-function ai_fr_list_content_items( array $args = [] ): array {
-    $filter  = new AiFrContentFilter();
-    $options = wp_parse_args( get_option( 'ai_fr_options', [] ), ai_fr_get_default_options() );
+function saifr_list_content_items( array $args = [] ): array {
+    $filter  = new SaifrContentFilter();
+    $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
 
     $page     = max( 1, intval( $args['page'] ?? 1 ) );
     $per_page = min( 50, max( 5, intval( $args['per_page'] ?? 10 ) ) );
@@ -62,12 +62,12 @@ function ai_fr_list_content_items( array $args = [] ): array {
             continue;
         }
 
-        $is_excluded  = (bool) get_post_meta( $post->ID, '_ai_fr_exclude', true );
+        $is_excluded  = (bool) get_post_meta( $post->ID, '_saifr_exclude', true );
         $included     = ! $is_excluded && $filter->shouldInclude( $post );
         $token_source = $post->post_excerpt !== '' ? $post->post_excerpt : $post->post_content;
 
         $permalink = get_permalink( $post->ID );
-        $md_url    = is_string( $permalink ) ? ai_fr_permalink_to_md( $permalink ) : '';
+        $md_url    = is_string( $permalink ) ? saifr_permalink_to_md( $permalink ) : '';
 
         $items[] = [
             'id'          => $post->ID,
@@ -77,8 +77,8 @@ function ai_fr_list_content_items( array $args = [] ): array {
             'excluded'    => $is_excluded,
             'post_type'   => $post->post_type,
             'status'      => $post->post_status,
-            'language'    => ai_fr_get_post_language( $post ),
-            'tokens'      => ai_fr_estimate_tokens( $token_source ),
+            'language'    => saifr_get_post_language( $post ),
+            'tokens'      => saifr_estimate_tokens( $token_source ),
             'md_url'      => $md_url,
             'auto_rules'  => [
                 'noindex_filter'      => ! empty( $options['exclude_noindex'] ),
