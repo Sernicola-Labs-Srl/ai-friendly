@@ -62,6 +62,7 @@ add_action(
             [
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'saifr_admin_nonce' ),
+                'relatedTypes' => array_keys( saifr_schema_related_entity_types() ),
                 'i18n'    => [
                     'loading'             => __( 'Caricamento...', 'sernicola-labs-ai-friendly' ),
                     'error'               => __( 'Si è verificato un errore.', 'sernicola-labs-ai-friendly' ),
@@ -151,6 +152,28 @@ add_action(
                     'noCertifications'      => __( 'Nessuna certificazione configurata.', 'sernicola-labs-ai-friendly' ),
                     'noIdentifiers'         => __( 'Nessun identificatore aggiuntivo configurato.', 'sernicola-labs-ai-friendly' ),
                     'noOfferSources'        => __( 'Nessuna sorgente WordPress configurata.', 'sernicola-labs-ai-friendly' ),
+                    'shippingRule'          => __( 'Regola di spedizione', 'sernicola-labs-ai-friendly' ),
+                    'noShippingRules'       => __( 'Nessuna regola di spedizione configurata.', 'sernicola-labs-ai-friendly' ),
+                    'countries'             => __( 'Paesi (codici ISO)', 'sernicola-labs-ai-friendly' ),
+                    'shippingRate'          => __( 'Costo spedizione', 'sernicola-labs-ai-friendly' ),
+                    'freeThreshold'         => __( 'Gratuita da (prezzo)', 'sernicola-labs-ai-friendly' ),
+                    'handlingMin'           => __( 'Preparazione min (giorni)', 'sernicola-labs-ai-friendly' ),
+                    'handlingMax'           => __( 'Preparazione max (giorni)', 'sernicola-labs-ai-friendly' ),
+                    'transitMin'            => __( 'Consegna min (giorni)', 'sernicola-labs-ai-friendly' ),
+                    'transitMax'            => __( 'Consegna max (giorni)', 'sernicola-labs-ai-friendly' ),
+                    'relatedEntity'         => __( 'Entità collegata', 'sernicola-labs-ai-friendly' ),
+                    'noRelatedEntities'     => __( 'Nessuna entità collegata configurata.', 'sernicola-labs-ai-friendly' ),
+                    'entityType'            => __( 'Tipo', 'sernicola-labs-ai-friendly' ),
+                    'issnOrIdentifier'      => __( 'ISSN / ISBN / identificativo', 'sernicola-labs-ai-friendly' ),
+                    'sameAsProfiles'        => __( 'sameAs (uno per riga)', 'sernicola-labs-ai-friendly' ),
+                    'vatIncluded'           => __( 'IVA', 'sernicola-labs-ai-friendly' ),
+                    'vatUnspecified'        => __( 'Non indicata', 'sernicola-labs-ai-friendly' ),
+                    'vatYes'                => __( 'IVA inclusa', 'sernicola-labs-ai-friendly' ),
+                    'vatNo'                 => __( 'IVA esclusa', 'sernicola-labs-ai-friendly' ),
+                    'billingPeriod'         => __( 'Periodicità', 'sernicola-labs-ai-friendly' ),
+                    'billingOnce'           => __( 'Una tantum / non indicata', 'sernicola-labs-ai-friendly' ),
+                    'billingMonth'          => __( 'Mensile', 'sernicola-labs-ai-friendly' ),
+                    'billingYear'           => __( 'Annuale', 'sernicola-labs-ai-friendly' ),
                     'every'                 => __( 'Ogni', 'sernicola-labs-ai-friendly' ),
                     'hoursBatch'            => __( 'ore, batch da', 'sernicola-labs-ai-friendly' ),
                     'nameNotProvided'       => __( 'nome non indicato', 'sernicola-labs-ai-friendly' ),
@@ -233,6 +256,8 @@ function saifr_admin_sanitize_schema_services( array $rows ): array {
             'areaServed'    => sanitize_text_field( (string) ( $row['areaServed'] ?? '' ) ),
             'price'         => sanitize_text_field( (string) ( $row['price'] ?? '' ) ),
             'priceCurrency' => sanitize_text_field( (string) ( $row['priceCurrency'] ?? '' ) ),
+            'vatIncluded'   => in_array( $row['vatIncluded'] ?? '', [ 'yes', 'no' ], true ) ? (string) $row['vatIncluded'] : '',
+            'billingPeriod' => in_array( $row['billingPeriod'] ?? '', [ 'month', 'year' ], true ) ? (string) $row['billingPeriod'] : '',
         ];
 
         if ( $service['name'] === '' && $service['url'] === '' ) {
@@ -603,7 +628,9 @@ function saifr_render_options_page(): void {
     $options  = wp_parse_args( get_option( 'saifr_options', [] ), $defaults );
     $settings_saved = false;
 
-    if ( saifr_post_bool( 'saifr_save' ) && check_admin_referer( 'saifr_options_nonce' ) ) {
+    // Il pulsante invia la propria etichetta come valore: basta che il campo sia presente.
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce is validated by check_admin_referer() in the same condition.
+    if ( isset( $_POST['saifr_save'] ) && check_admin_referer( 'saifr_options_nonce' ) ) {
         $options['llms_content']         = saifr_post_textarea( 'llms_content', '' );
         $options['llms_include_auto']    = saifr_post_bool( 'llms_include_auto' ) ? '1' : '';
         $options['include_pages']        = saifr_post_bool( 'include_pages' ) ? '1' : '';
@@ -692,6 +719,36 @@ function saifr_render_options_page(): void {
         $options['schema_founders'] = saifr_post_textarea( 'schema_founders', '' );
         $options['schema_area_served'] = saifr_post_textarea( 'schema_area_served', '' );
         $options['schema_services'] = saifr_admin_sanitize_schema_services( saifr_post_array( 'schema_services' ) );
+        $options['schema_related_entities'] = array_values(
+            array_filter(
+                saifr_admin_sanitize_schema_rows(
+                    saifr_post_array( 'schema_related_entities' ),
+                    [ 'type' => 'text', 'name' => 'text', 'url' => 'url', 'description' => 'textarea', 'identifier' => 'text', 'sameAs' => 'textarea' ]
+                ),
+                static fn( array $row ): bool => isset( saifr_schema_related_entity_types()[ $row['type'] ] ) && $row['name'] !== ''
+            )
+        );
+        $options['schema_type_rules'] = saifr_schema_sanitize_type_rules( saifr_post_array( 'schema_type_rules' ) );
+        if ( class_exists( 'WooCommerce' ) ) {
+            $options['woo_schema_enabled'] = saifr_post_bool( 'woo_schema_enabled' ) ? '1' : '';
+            $options['woo_brand_name'] = saifr_post_text( 'woo_brand_name', '' );
+            $options['woo_brand_source'] = substr( saifr_post_text( 'woo_brand_source', '' ), 0, 191 );
+            $options['woo_shipping_rules'] = saifr_admin_sanitize_schema_rows(
+                saifr_post_array( 'woo_shipping_rules' ),
+                [ 'countries' => 'text', 'rate' => 'text', 'freeThreshold' => 'text', 'handlingMin' => 'text', 'handlingMax' => 'text', 'transitMin' => 'text', 'transitMax' => 'text' ]
+            );
+            $return_category = saifr_post_key( 'woo_return_category', '' );
+            $options['woo_return_category'] = isset( saifr_woo_return_categories()[ $return_category ] ) ? $return_category : '';
+            $options['woo_return_countries'] = saifr_post_text( 'woo_return_countries', '' );
+            $return_days = saifr_post_text( 'woo_return_days', '' );
+            $options['woo_return_days'] = ctype_digit( $return_days ) ? $return_days : '';
+            $return_method = saifr_post_key( 'woo_return_method', 'mail' );
+            $options['woo_return_method'] = isset( saifr_woo_return_methods()[ $return_method ] ) ? $return_method : 'mail';
+            $return_fees = saifr_post_key( 'woo_return_fees', 'customer' );
+            $options['woo_return_fees'] = isset( saifr_woo_return_fees()[ $return_fees ] ) ? $return_fees : 'customer';
+            $options['woo_return_fee_amount'] = saifr_post_text( 'woo_return_fee_amount', '' );
+            $options['woo_valid_from'] = saifr_post_bool( 'woo_valid_from' ) ? '1' : '';
+        }
         $options['schema_offer_sources'] = array_values( array_filter( array_map( 'sanitize_text_field', saifr_post_array( 'schema_offer_sources' ) ) ) );
         $options['schema_offer_catalog'] = '';
         $options['schema_image_id'] = max( 0, saifr_post_int( 'schema_image_id', 0 ) );
@@ -751,6 +808,11 @@ function saifr_render_options_page(): void {
     $schema_certifications = ! empty( $options['schema_certifications'] ) && is_array( $options['schema_certifications'] ) ? $options['schema_certifications'] : [];
     $schema_identifiers = ! empty( $options['schema_identifiers'] ) && is_array( $options['schema_identifiers'] ) ? $options['schema_identifiers'] : [];
     $schema_offer_sources = ! empty( $options['schema_offer_sources'] ) && is_array( $options['schema_offer_sources'] ) ? $options['schema_offer_sources'] : [];
+    $schema_related_entities = ! empty( $options['schema_related_entities'] ) && is_array( $options['schema_related_entities'] ) ? $options['schema_related_entities'] : [];
+    $schema_type_rules = ! empty( $options['schema_type_rules'] ) && is_array( $options['schema_type_rules'] ) ? $options['schema_type_rules'] : [];
+    $woo_shipping_rules = ! empty( $options['woo_shipping_rules'] ) && is_array( $options['woo_shipping_rules'] ) ? $options['woo_shipping_rules'] : [];
+    $schema_rule_post_types = get_post_types( [ 'public' => true ], 'objects' );
+    unset( $schema_rule_post_types['attachment'] );
     $wizard_post_types = get_post_types( [ 'public' => true ], 'objects' );
     unset( $wizard_post_types['attachment'] );
     $wizard_selected_types = array_values(
@@ -1443,6 +1505,28 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                     </article>
 
                     <article class="saifr-schema-card saifr-schema-card-wide" data-entity-scope="organization">
+                        <div class="saifr-schema-card-head"><h4><?php esc_html_e( 'Entità collegate', 'sernicola-labs-ai-friendly' ); ?></h4><p><?php esc_html_e( 'Testate, collane, podcast, cicli di eventi, brand e società del gruppo. Ogni voce diventa un nodo collegato all’organizzazione come', 'sernicola-labs-ai-friendly' ); ?> <code>publisher</code>, <code>organizer</code>, <code>brand</code> <?php esc_html_e( 'o', 'sernicola-labs-ai-friendly' ); ?> <code>subOrganization</code>.</p></div>
+                        <div class="saifr-schema-repeaters" data-repeater="related">
+                            <?php foreach ( $schema_related_entities as $index => $entity ) : ?>
+                                <div class="saifr-schema-repeater-row saifr-schema-repeater-grid">
+                                    <select data-field="type" name="schema_related_entities[<?php echo esc_attr( $index ); ?>][type]">
+                                        <?php foreach ( array_keys( saifr_schema_related_entity_types() ) as $related_type ) : ?>
+                                            <option value="<?php echo esc_attr( $related_type ); ?>" <?php selected( $entity['type'] ?? '', $related_type ); ?>><?php echo esc_html( $related_type ); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input data-field="name" name="schema_related_entities[<?php echo esc_attr( $index ); ?>][name]" value="<?php echo esc_attr( $entity['name'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Nome della testata o del brand', 'sernicola-labs-ai-friendly' ); ?>">
+                                    <input type="url" data-field="url" name="schema_related_entities[<?php echo esc_attr( $index ); ?>][url]" value="<?php echo esc_attr( $entity['url'] ?? '' ); ?>" placeholder="https://...">
+                                    <input data-field="identifier" name="schema_related_entities[<?php echo esc_attr( $index ); ?>][identifier]" value="<?php echo esc_attr( $entity['identifier'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'ISSN 1234-5678', 'sernicola-labs-ai-friendly' ); ?>">
+                                    <textarea data-field="description" rows="2" name="schema_related_entities[<?php echo esc_attr( $index ); ?>][description]" placeholder="<?php esc_attr_e( 'Descrizione breve', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $entity['description'] ?? '' ); ?></textarea>
+                                    <textarea data-field="sameAs" rows="2" name="schema_related_entities[<?php echo esc_attr( $index ); ?>][sameAs]" placeholder="https://www.linkedin.com/..."><?php echo esc_textarea( $entity['sameAs'] ?? '' ); ?></textarea>
+                                    <button type="button" class="button-link-delete saifr-repeater-remove"><?php esc_html_e( 'Rimuovi', 'sernicola-labs-ai-friendly' ); ?></button>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <button type="button" class="button button-secondary saifr-repeater-add" data-target="related"><?php esc_html_e( 'Aggiungi entità', 'sernicola-labs-ai-friendly' ); ?></button>
+                    </article>
+
+                    <article class="saifr-schema-card saifr-schema-card-wide" data-entity-scope="organization">
                         <div class="saifr-schema-card-head">
                             <h4><?php esc_html_e( 'Catalogo servizi', 'sernicola-labs-ai-friendly' ); ?></h4>
                             <p><?php esc_html_e( 'Aggiunge un', 'sernicola-labs-ai-friendly' ); ?> <code><?php esc_html_e( 'OfferCatalog', 'sernicola-labs-ai-friendly' ); ?></code><?php esc_html_e( '. Le sorgenti WordPress compilano automaticamente nome, URL e descrizione; le righe manuali restano disponibili per integrazioni.', 'sernicola-labs-ai-friendly' ); ?></p>
@@ -1500,12 +1584,189 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                                             <span><?php esc_html_e( 'Valuta', 'sernicola-labs-ai-friendly' ); ?></span>
                                             <input type="text" data-service-field="priceCurrency" name="schema_services[<?php echo esc_attr( $index ); ?>][priceCurrency]" value="<?php echo esc_attr( $service['priceCurrency'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'EUR', 'sernicola-labs-ai-friendly' ); ?>">
                                         </label>
+                                        <label class="saifr-field">
+                                            <span><?php esc_html_e( 'IVA', 'sernicola-labs-ai-friendly' ); ?></span>
+                                            <select data-service-field="vatIncluded" name="schema_services[<?php echo esc_attr( $index ); ?>][vatIncluded]">
+                                                <option value=""><?php esc_html_e( 'Non indicata', 'sernicola-labs-ai-friendly' ); ?></option>
+                                                <option value="yes" <?php selected( $service['vatIncluded'] ?? '', 'yes' ); ?>><?php esc_html_e( 'IVA inclusa', 'sernicola-labs-ai-friendly' ); ?></option>
+                                                <option value="no" <?php selected( $service['vatIncluded'] ?? '', 'no' ); ?>><?php esc_html_e( 'IVA esclusa', 'sernicola-labs-ai-friendly' ); ?></option>
+                                            </select>
+                                        </label>
+                                        <label class="saifr-field">
+                                            <span><?php esc_html_e( 'Periodicità', 'sernicola-labs-ai-friendly' ); ?></span>
+                                            <select data-service-field="billingPeriod" name="schema_services[<?php echo esc_attr( $index ); ?>][billingPeriod]">
+                                                <option value=""><?php esc_html_e( 'Una tantum / non indicata', 'sernicola-labs-ai-friendly' ); ?></option>
+                                                <option value="month" <?php selected( $service['billingPeriod'] ?? '', 'month' ); ?>><?php esc_html_e( 'Mensile', 'sernicola-labs-ai-friendly' ); ?></option>
+                                                <option value="year" <?php selected( $service['billingPeriod'] ?? '', 'year' ); ?>><?php esc_html_e( 'Annuale', 'sernicola-labs-ai-friendly' ); ?></option>
+                                            </select>
+                                        </label>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
                         </div>
                         <button type="button" class="button button-secondary" id="saifr-schema-service-add"><?php esc_html_e( 'Aggiungi servizio', 'sernicola-labs-ai-friendly' ); ?></button>
                     </article>
+
+                    <article class="saifr-schema-card saifr-schema-card-wide">
+                        <div class="saifr-schema-card-head">
+                            <h4><?php esc_html_e( 'Schema automatico per tipo di contenuto', 'sernicola-labs-ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Genera un nodo Event, Course o Service per ogni contenuto di un post type, leggendo date, luogo e prezzo dai suoi campi. Sorgenti accettate:', 'sernicola-labs-ai-friendly' ); ?> <code>meta:chiave</code>, <code>acf:campo</code>, <code>tax:tassonomia</code>, <code>text:valore fisso</code>. <?php esc_html_e( 'I valori inseriti nel metabox del singolo contenuto hanno la precedenza.', 'sernicola-labs-ai-friendly' ); ?></p>
+                        </div>
+                        <div class="saifr-type-rules">
+                            <?php foreach ( $schema_rule_post_types as $rule_post_type => $rule_post_type_object ) : ?>
+                                <?php
+                                $type_rule   = isset( $schema_type_rules[ $rule_post_type ] ) && is_array( $schema_type_rules[ $rule_post_type ] ) ? $schema_type_rules[ $rule_post_type ] : [];
+                                $rule_type   = (string) ( $type_rule['type'] ?? '' );
+                                $rule_name   = 'schema_type_rules[' . $rule_post_type . ']';
+                                $datalist_id = 'saifr-sources-' . $rule_post_type;
+                                $rule_fields = [
+                                    'startDate'        => [ __( 'Data inizio', 'sernicola-labs-ai-friendly' ), 'Event, Course', 'acf:data_inizio' ],
+                                    'endDate'          => [ __( 'Data fine', 'sernicola-labs-ai-friendly' ), 'Event, Course', 'acf:data_fine' ],
+                                    'locationName'     => [ __( 'Nome luogo', 'sernicola-labs-ai-friendly' ), 'Event, Course', 'meta:luogo' ],
+                                    'locationAddress'  => [ __( 'Indirizzo luogo', 'sernicola-labs-ai-friendly' ), 'Event, Course', 'meta:indirizzo' ],
+                                    'price'            => [ __( 'Prezzo', 'sernicola-labs-ai-friendly' ), 'Event, Course, Service', 'meta:prezzo' ],
+                                    'priceCurrency'    => [ __( 'Valuta', 'sernicola-labs-ai-friendly' ), 'Event, Course, Service', 'text:EUR' ],
+                                    'courseCode'       => [ __( 'Codice corso', 'sernicola-labs-ai-friendly' ), 'Course', 'meta:codice' ],
+                                    'educationalLevel' => [ __( 'Livello', 'sernicola-labs-ai-friendly' ), 'Course', 'tax:livello' ],
+                                    'serviceType'      => [ __( 'Tipo servizio', 'sernicola-labs-ai-friendly' ), 'Service', 'tax:category' ],
+                                    'areaServed'       => [ __( 'Area servita', 'sernicola-labs-ai-friendly' ), 'Service', 'text:Italia' ],
+                                ];
+                                ?>
+                                <details class="saifr-type-rule" <?php echo $rule_type !== '' ? 'open' : ''; ?>>
+                                    <summary>
+                                        <strong><?php echo esc_html( $rule_post_type_object->labels->name ); ?></strong>
+                                        <code><?php echo esc_html( $rule_post_type ); ?></code>
+                                        <span class="saifr-badge <?php echo $rule_type !== '' ? 'is-ok' : 'is-muted'; ?>"><?php echo $rule_type !== '' ? esc_html( $rule_type ) : esc_html__( 'Solo manuale', 'sernicola-labs-ai-friendly' ); ?></span>
+                                    </summary>
+                                    <div class="saifr-schema-fields">
+                                        <label class="saifr-field">
+                                            <span><?php esc_html_e( 'Tipo Schema', 'sernicola-labs-ai-friendly' ); ?></span>
+                                            <select name="<?php echo esc_attr( $rule_name . '[type]' ); ?>">
+                                                <option value=""><?php esc_html_e( 'Nessuno (solo metabox)', 'sernicola-labs-ai-friendly' ); ?></option>
+                                                <?php foreach ( saifr_schema_rule_types() as $allowed_rule_type ) : ?>
+                                                    <option value="<?php echo esc_attr( $allowed_rule_type ); ?>" <?php selected( $rule_type, $allowed_rule_type ); ?>><?php echo esc_html( $allowed_rule_type ); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </label>
+                                        <label class="saifr-field">
+                                            <span><?php esc_html_e( 'Modalità di partecipazione', 'sernicola-labs-ai-friendly' ); ?></span>
+                                            <select name="<?php echo esc_attr( $rule_name . '[attendanceMode]' ); ?>">
+                                                <option value="offline" <?php selected( $type_rule['attendanceMode'] ?? 'offline', 'offline' ); ?>><?php esc_html_e( 'In presenza', 'sernicola-labs-ai-friendly' ); ?></option>
+                                                <option value="online" <?php selected( $type_rule['attendanceMode'] ?? '', 'online' ); ?>><?php esc_html_e( 'Online', 'sernicola-labs-ai-friendly' ); ?></option>
+                                                <option value="mixed" <?php selected( $type_rule['attendanceMode'] ?? '', 'mixed' ); ?>><?php esc_html_e( 'Mista', 'sernicola-labs-ai-friendly' ); ?></option>
+                                            </select>
+                                        </label>
+                                        <?php foreach ( $rule_fields as $rule_field => $rule_field_meta ) : ?>
+                                            <label class="saifr-field">
+                                                <span><?php echo esc_html( $rule_field_meta[0] ); ?> <small>(<?php echo esc_html( $rule_field_meta[1] ); ?>)</small></span>
+                                                <input type="text" list="<?php echo esc_attr( $datalist_id ); ?>" name="<?php echo esc_attr( $rule_name . '[' . $rule_field . ']' ); ?>" value="<?php echo esc_attr( $type_rule[ $rule_field ] ?? '' ); ?>" placeholder="<?php echo esc_attr( $rule_field_meta[2] ); ?>">
+                                            </label>
+                                        <?php endforeach; ?>
+                                        <datalist id="<?php echo esc_attr( $datalist_id ); ?>">
+                                            <?php foreach ( saifr_schema_discover_sources( $rule_post_type ) as $suggested_source ) : ?>
+                                                <option value="<?php echo esc_attr( $suggested_source ); ?>"></option>
+                                            <?php endforeach; ?>
+                                        </datalist>
+                                    </div>
+                                </details>
+                            <?php endforeach; ?>
+                        </div>
+                        <small><?php esc_html_e( 'Le date vengono riconosciute nei formati ISO, Ymd (ACF), timestamp Unix e gg/mm/aaaa. Un Event senza data di inizio non viene pubblicato.', 'sernicola-labs-ai-friendly' ); ?></small>
+                    </article>
+
+                    <?php if ( class_exists( 'WooCommerce' ) ) : ?>
+                    <article class="saifr-schema-card saifr-schema-card-wide">
+                        <div class="saifr-schema-card-head">
+                            <h4><?php esc_html_e( 'Prodotti WooCommerce: schede commerciante', 'sernicola-labs-ai-friendly' ); ?></h4>
+                            <p><?php esc_html_e( 'Completa lo schema Product con brand, spedizioni, politica di reso e validFrom del prezzo, i campi segnalati da Search Console per le schede commerciante. Funziona con i dati strutturati di WooCommerce, Yoast WooCommerce SEO e Rank Math e non sovrascrive valori già presenti.', 'sernicola-labs-ai-friendly' ); ?></p>
+                        </div>
+                        <div class="saifr-schema-fields">
+                            <label class="saifr-field saifr-field-check">
+                                <input type="checkbox" name="woo_schema_enabled" value="1" <?php checked( $options['woo_schema_enabled'] ); ?>>
+                                <span><?php esc_html_e( 'Arricchisci lo schema dei prodotti', 'sernicola-labs-ai-friendly' ); ?></span>
+                            </label>
+                            <label class="saifr-field">
+                                <span><?php esc_html_e( 'Brand predefinito', 'sernicola-labs-ai-friendly' ); ?></span>
+                                <input type="text" name="woo_brand_name" value="<?php echo esc_attr( $options['woo_brand_name'] ); ?>" placeholder="<?php esc_attr_e( 'Nome del brand', 'sernicola-labs-ai-friendly' ); ?>">
+                            </label>
+                            <label class="saifr-field">
+                                <span><?php esc_html_e( 'Brand dal prodotto (sorgente)', 'sernicola-labs-ai-friendly' ); ?></span>
+                                <input type="text" name="woo_brand_source" list="saifr-sources-product" value="<?php echo esc_attr( $options['woo_brand_source'] ); ?>" placeholder="tax:product_brand">
+                            </label>
+                            <label class="saifr-field saifr-field-check">
+                                <input type="checkbox" name="woo_valid_from" value="1" <?php checked( $options['woo_valid_from'] ); ?>>
+                                <span><?php esc_html_e( 'Aggiungi validFrom al prezzo (inizio promozione o ultima modifica del prodotto)', 'sernicola-labs-ai-friendly' ); ?></span>
+                            </label>
+                        </div>
+
+                        <div class="saifr-schema-subsection-head">
+                            <strong><?php esc_html_e( 'Spedizioni', 'sernicola-labs-ai-friendly' ); ?></strong>
+                            <span><?php esc_html_e( 'Una regola per area. Costo e soglia di gratuità sono nella valuta del negozio; lascia vuota la soglia se la spedizione ha sempre lo stesso costo.', 'sernicola-labs-ai-friendly' ); ?></span>
+                        </div>
+                        <div class="saifr-schema-repeaters" data-repeater="shipping">
+                            <?php foreach ( $woo_shipping_rules as $index => $shipping_rule ) : ?>
+                                <div class="saifr-schema-repeater-row saifr-schema-repeater-grid">
+                                    <?php foreach ( [ 'countries' => 'IT', 'rate' => '5.90', 'freeThreshold' => '49', 'handlingMin' => '0', 'handlingMax' => '3', 'transitMin' => '1', 'transitMax' => '4' ] as $shipping_field => $shipping_placeholder ) : ?>
+                                        <input data-field="<?php echo esc_attr( $shipping_field ); ?>" name="woo_shipping_rules[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $shipping_field ); ?>]" value="<?php echo esc_attr( $shipping_rule[ $shipping_field ] ?? '' ); ?>" placeholder="<?php echo esc_attr( $shipping_placeholder ); ?>">
+                                    <?php endforeach; ?>
+                                    <button type="button" class="button-link-delete saifr-repeater-remove"><?php esc_html_e( 'Rimuovi', 'sernicola-labs-ai-friendly' ); ?></button>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <button type="button" class="button button-secondary saifr-repeater-add" data-target="shipping"><?php esc_html_e( 'Aggiungi regola di spedizione', 'sernicola-labs-ai-friendly' ); ?></button>
+
+                        <div class="saifr-schema-subsection-head">
+                            <strong><?php esc_html_e( 'Politica di reso', 'sernicola-labs-ai-friendly' ); ?></strong>
+                            <span><?php esc_html_e( 'Il paese a cui si restituisce la merce è quello del negozio impostato in WooCommerce.', 'sernicola-labs-ai-friendly' ); ?></span>
+                        </div>
+                        <div class="saifr-schema-fields">
+                            <label class="saifr-field">
+                                <span><?php esc_html_e( 'Resi', 'sernicola-labs-ai-friendly' ); ?></span>
+                                <select name="woo_return_category">
+                                    <option value=""><?php esc_html_e( 'Non indicare', 'sernicola-labs-ai-friendly' ); ?></option>
+                                    <option value="finite" <?php selected( $options['woo_return_category'], 'finite' ); ?>><?php esc_html_e( 'Entro un numero di giorni', 'sernicola-labs-ai-friendly' ); ?></option>
+                                    <option value="unlimited" <?php selected( $options['woo_return_category'], 'unlimited' ); ?>><?php esc_html_e( 'Senza limite di tempo', 'sernicola-labs-ai-friendly' ); ?></option>
+                                    <option value="not_permitted" <?php selected( $options['woo_return_category'], 'not_permitted' ); ?>><?php esc_html_e( 'Resi non accettati', 'sernicola-labs-ai-friendly' ); ?></option>
+                                </select>
+                            </label>
+                            <label class="saifr-field">
+                                <span><?php esc_html_e( 'Giorni per il reso', 'sernicola-labs-ai-friendly' ); ?></span>
+                                <input type="number" min="0" name="woo_return_days" value="<?php echo esc_attr( $options['woo_return_days'] ); ?>" placeholder="14">
+                            </label>
+                            <label class="saifr-field">
+                                <span><?php esc_html_e( 'Paesi in cui vale', 'sernicola-labs-ai-friendly' ); ?></span>
+                                <input type="text" name="woo_return_countries" value="<?php echo esc_attr( $options['woo_return_countries'] ); ?>" placeholder="<?php echo esc_attr( saifr_woo_store_country() ?: 'IT' ); ?>">
+                            </label>
+                            <label class="saifr-field">
+                                <span><?php esc_html_e( 'Modalità di reso', 'sernicola-labs-ai-friendly' ); ?></span>
+                                <select name="woo_return_method">
+                                    <option value="mail" <?php selected( $options['woo_return_method'], 'mail' ); ?>><?php esc_html_e( 'Spedizione', 'sernicola-labs-ai-friendly' ); ?></option>
+                                    <option value="store" <?php selected( $options['woo_return_method'], 'store' ); ?>><?php esc_html_e( 'In negozio', 'sernicola-labs-ai-friendly' ); ?></option>
+                                    <option value="kiosk" <?php selected( $options['woo_return_method'], 'kiosk' ); ?>><?php esc_html_e( 'Punto di ritiro', 'sernicola-labs-ai-friendly' ); ?></option>
+                                </select>
+                            </label>
+                            <label class="saifr-field">
+                                <span><?php esc_html_e( 'Costi del reso', 'sernicola-labs-ai-friendly' ); ?></span>
+                                <select name="woo_return_fees">
+                                    <option value="customer" <?php selected( $options['woo_return_fees'], 'customer' ); ?>><?php esc_html_e( 'A carico del cliente', 'sernicola-labs-ai-friendly' ); ?></option>
+                                    <option value="free" <?php selected( $options['woo_return_fees'], 'free' ); ?>><?php esc_html_e( 'Reso gratuito', 'sernicola-labs-ai-friendly' ); ?></option>
+                                    <option value="shipping" <?php selected( $options['woo_return_fees'], 'shipping' ); ?>><?php esc_html_e( 'Costo fisso di spedizione', 'sernicola-labs-ai-friendly' ); ?></option>
+                                </select>
+                            </label>
+                            <label class="saifr-field">
+                                <span><?php esc_html_e( 'Costo fisso del reso', 'sernicola-labs-ai-friendly' ); ?></span>
+                                <input type="text" name="woo_return_fee_amount" value="<?php echo esc_attr( $options['woo_return_fee_amount'] ); ?>" placeholder="5.90">
+                            </label>
+                        </div>
+                        <?php if ( ! isset( $schema_rule_post_types['product'] ) ) : ?>
+                            <datalist id="saifr-sources-product">
+                                <?php foreach ( saifr_schema_discover_sources( 'product' ) as $suggested_source ) : ?>
+                                    <option value="<?php echo esc_attr( $suggested_source ); ?>"></option>
+                                <?php endforeach; ?>
+                            </datalist>
+                        <?php endif; ?>
+                    </article>
+                    <?php endif; ?>
 
                     <article class="saifr-schema-card saifr-schema-card-seven">
                         <div class="saifr-schema-card-head">

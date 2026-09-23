@@ -40,6 +40,23 @@ class SaifrMetadata {
 
         $yaml .= "url: " . $meta['url'] . "\n";
 
+        $schema_data = function_exists( 'saifr_schema_get_content_schema_data' ) ? saifr_schema_get_content_schema_data( $post ) : [];
+        if ( in_array( $schema_data['type'] ?? '', [ 'Event', 'Course' ], true ) ) {
+            $schema_fields = [
+                'startDate'       => 'start_date',
+                'endDate'         => 'end_date',
+                'locationName'    => 'location',
+                'locationAddress' => 'address',
+                'price'           => 'price',
+                'priceCurrency'   => 'price_currency',
+            ];
+            foreach ( $schema_fields as $schema_key => $yaml_key ) {
+                if ( ! empty( $schema_data['values'][ $schema_key ] ) || ( $schema_data['values'][ $schema_key ] ?? '' ) === '0' ) {
+                    $yaml .= $yaml_key . ': ' . self::yamlEscape( (string) $schema_data['values'][ $schema_key ] ) . "\n";
+                }
+            }
+        }
+
         if ( ! empty( $meta['categories'] ) ) {
             $yaml .= "categories: [" . implode( ', ', array_map( [ self::class, 'yamlEscape' ], $meta['categories'] ) ) . "]\n";
         }

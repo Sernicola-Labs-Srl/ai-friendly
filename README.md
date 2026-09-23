@@ -224,11 +224,42 @@ Dalla sezione **Schema** dell'AI Content Hub puoi configurare:
 - pagina profilo `ProfilePage`
 - URL di licenza dei contenuti
 
+- entità collegate: testate (`Periodical`, `Newspaper`), collane (`BookSeries`, `CreativeWorkSeries`), podcast, siti, cicli di eventi (`EventSeries`), brand e società del gruppo
+- IVA inclusa/esclusa e periodicità (mensile/annuale) sulle voci del catalogo servizi
+
 Nel metabox del singolo post, pagina o CPT puoi inoltre attivare un nodo `Course`, `Event`, `Service` o `FAQPage`. Titolo, permalink, descrizione, immagine e date editoriali vengono riusati dal contenuto; il metabox richiede solo i campi specifici del tipo scelto.
+
+### Schema automatico per tipo di contenuto
+
+Quando un sito pubblica molti eventi, corsi o servizi come CPT, compilare il metabox di ogni contenuto non è sostenibile. Nella card **Schema automatico per tipo di contenuto** puoi assegnare a un post type il tipo `Event`, `Course` o `Service` e indicare da dove leggere ogni campo:
+
+| Sorgente | Esempio | Legge |
+|---|---|---|
+| `meta:chiave` (o solo `chiave`) | `meta:_event_start` | un campo personalizzato |
+| `acf:campo` | `acf:data_inizio` | un campo ACF (le date non formattate, il resto con il formato ACF) |
+| `tax:tassonomia` | `tax:citta` | i nomi dei termini assegnati |
+| `text:valore` | `text:EUR` | un valore fisso |
+
+L'interfaccia suggerisce le chiavi realmente usate dai contenuti pubblicati di ogni post type. I campi mappabili sono data di inizio e fine, nome e indirizzo del luogo, prezzo e valuta, codice e livello del corso, tipo di servizio e area servita; la modalità di partecipazione (in presenza, online, mista) si imposta per post type.
+
+Le date sono riconosciute nei formati ISO 8601, `Ymd` (ACF), `Y-m-d H:i:s`, timestamp Unix e `gg/mm/aaaa` con o senza orario; i prezzi accettano forme come `€ 1.200,50`, `600,00` o `Gratuito`. Un `Event` senza data di inizio non viene pubblicato.
+
+Nel metabox del singolo contenuto i valori ricavati automaticamente sono mostrati come riepilogo: i campi compilati a mano hanno la precedenza e l'opzione **Disattiva per questo contenuto** esclude la pagina. Data, luogo e prezzo compaiono anche nelle righe di `llms.txt` e nel frontmatter dei file `.md`.
 
 Quando il plugin Breakdance è installato e attivo, AI Friendly mostra l'opzione dedicata — attiva per impostazione predefinita — e legge automaticamente le coppie domanda/risposta dal tree del builder. Segue gli eventuali Global Block e genera `FAQPage` senza snippet. Se Breakdance non è attivo, l'opzione non viene mostrata e la lettura non viene eseguita. Le FAQ configurate nel metabox vengono fuse nello stesso nodo e hanno precedenza sulle domande duplicate.
 
 Le sorgenti WordPress dell'`OfferCatalog` accettano un ID termine, una forma esplicita `taxonomy:slug`, il permalink di una categoria/tassonomia oppure il permalink di una pagina o CPT. Nome, URL, descrizione e tipo vengono ricavati dai dati WordPress correnti; le righe manuali possono completare il catalogo e prevalgono sui duplicati con lo stesso URL.
+
+### Prodotti WooCommerce e schede commerciante
+
+Con WooCommerce attivo compare la card **Prodotti WooCommerce: schede commerciante**, pensata per i campi che Search Console segnala come mancanti nello schema `Product`:
+
+- **brand**: letto dal prodotto tramite una sorgente (`tax:product_brand`, `tax:pa_marca`, `meta:_brand`, `acf:brand`) oppure, in mancanza, dal brand predefinito
+- **spedizioni**: una regola per area con paesi ISO (`IT, SM`), costo, soglia di gratuità calcolata sul prezzo dell'offerta (o sul prezzo minimo dei prodotti variabili) e giorni di preparazione e consegna, emessi come `OfferShippingDetails`
+- **resi**: finestra in giorni, illimitata o resi non accettati, modalità (spedizione, negozio, punto di ritiro) e costi (gratuito, a carico del cliente, costo fisso), emessi come `MerchantReturnPolicy`; il paese di destinazione del reso è quello del negozio WooCommerce
+- **validFrom**: data di inizio della promozione in corso, altrimenti data di ultima modifica del prodotto, aggiunta all'offerta e alle `priceSpecification`
+
+L'arricchimento si applica ai dati strutturati di WooCommerce e ai nodi `Product` generati da Yoast WooCommerce SEO o Rank Math. I valori già presenti non vengono sovrascritti.
 
 ### Pulizia e compatibilità
 
@@ -327,6 +358,26 @@ Permette di modificare il nodo `Person` / `Organization` prima dell'output.
 ### `saifr_schema_graph`
 
 Permette di modificare il grafo AI Friendly prima della stampa standalone o della fusione con Yoast/Rank Math.
+
+### `saifr_schema_content_node`
+
+Modifica il nodo `Event`, `Course`, `Service` o `FAQPage` del singolo contenuto. Riceve il nodo, il post, i valori salvati nel metabox e i dati risolti (tipo, valori, provenienza manuale/automatica).
+
+### `saifr_schema_type_rule`, `saifr_schema_mapped_value`, `saifr_schema_parse_datetime`
+
+Permettono di definire da codice la mappatura di un post type, trasformare il valore letto da una sorgente e interpretare formati data non standard.
+
+### `saifr_schema_related_entity_types`, `saifr_schema_related_entity_node`
+
+Estendono i tipi di entità collegate (con la relazione verso l'organizzazione) e modificano il singolo nodo prima dell'output.
+
+### `saifr_woo_schema_enabled`, `saifr_woo_product_markup`
+
+Attivano o disattivano da codice l'arricchimento dei prodotti WooCommerce e permettono di modificare il nodo `Product` finale (per esempio per regole di spedizione per categoria).
+
+### `saifr_schema_llms_facts`
+
+Modifica il riepilogo di data e luogo aggiunto alle righe di `llms.txt`.
 
 ### `saifr_faq_enabled`, `saifr_faq_items`, `saifr_faq_answer_html`, `saifr_faq_node`
 

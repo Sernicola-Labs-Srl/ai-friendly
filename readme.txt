@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.1.1
+Stable tag: 2.2.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -21,7 +21,9 @@ The plugin provides:
 * Optional static Markdown files with regeneration workflows.
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
 * Admin tools for preview, snapshots, diagnostics, and bulk operations.
-* Optional Semantic Schema JSON-LD layer with multi-type organizations, repeatable contacts, Place/Geo, opening hours, certifications, generic identifiers, automatic Breakdance FAQPage, WordPress-powered OfferCatalog sources, and Yoast/Rank Math graph extension.
+* WooCommerce Product schema completion for Google merchant listings: brand, shipping details, return policy, and price validFrom.
+* Automatic Event, Course, and Service schema for any post type, mapped from custom fields, ACF, taxonomies, or fixed values, with per-post overrides.
+* Optional Semantic Schema JSON-LD layer with multi-type organizations, related publications, event series, brands and sub-organizations, repeatable contacts, Place/Geo, opening hours, certifications, generic identifiers, automatic Breakdance FAQPage, WordPress-powered OfferCatalog sources, and Yoast/Rank Math graph extension.
 * Local-first operation without external API calls, subscriptions, analytics, or transmitted usage data.
 * Automatic migration of settings, content exclusions, custom schema, and snapshots from AI Friendly versions prior to 2.1.
 
@@ -64,6 +66,19 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 Use the WordPress.org support forum for support. The maintained development source is available at https://github.com/Sernicola-Labs-Srl/ai-friendly.
 
 == Changelog ==
+
+= 2.2.0 =
+* Fixed the settings page Save button, which stopped saving changes in 2.1.1.
+* Added automatic Event, Course, and Service schema per post type, mapped from post meta, ACF fields, taxonomies, or fixed values, with suggested sources in the admin.
+* The per-post schema box now shows automatically resolved values, supports overrides, attendance mode and price, and can opt a single post out.
+* Events now include status, attendance mode, physical or virtual location, offers, and free-entry flags; events without a start date are no longer output. Courses with dates output course instances.
+* Recognized common date formats (ISO 8601, ACF Ymd, Unix timestamps, dd/mm/yyyy) and hand-written prices.
+* Added related entities: periodicals, newspapers, series, podcasts, websites, event series, brands, and sub-organizations linked to the main organization.
+* Added VAT included/excluded and monthly/yearly billing to the offer catalog as UnitPriceSpecification.
+* Contact hours such as "Mo-Fr 09:00-18:00" are converted to structured opening hours.
+* Content nodes now reference the Yoast WebPage node when extending Yoast.
+* Added WooCommerce merchant listing data to Product schema: brand (fixed or from a product field such as `product_brand`), per-country shipping rules with free-shipping threshold and delivery times, merchant return policy, and price validFrom. Works with WooCommerce, Yoast WooCommerce SEO, and Rank Math output without overwriting existing values.
+* llms.txt and Markdown frontmatter include event and course date, place, and price.
 
 = 2.1.1 =
 * Sanitized all submitted admin and AJAX values immediately according to their expected type before validation or storage.
