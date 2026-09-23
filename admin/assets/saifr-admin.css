@@ -414,6 +414,14 @@
 .saifr-schema-source-field { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--saifr-border-soft); }
 .saifr-schema-subsection-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
 .saifr-schema-subsection-head span { color: var(--saifr-muted); font-size: 12px; text-align: right; }
+.saifr-type-rules { display: grid; gap: 10px; margin-bottom: 12px; }
+.saifr-type-rule { border: 1px solid var(--saifr-border-soft); background: var(--saifr-surface); }
+.saifr-type-rule > summary { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; }
+.saifr-type-rule > summary code { color: var(--saifr-muted); }
+.saifr-type-rule > summary .saifr-badge { margin-left: auto; }
+.saifr-type-rule[open] > summary { border-bottom: 1px solid var(--saifr-border-soft); }
+.saifr-type-rule > .saifr-schema-fields { padding: 16px; }
+.saifr-type-rule .saifr-field small { color: var(--saifr-muted); font-weight: 400; }
 
 .saifr-onboarding { margin: 24px 0 0; border: 1px solid var(--saifr-border); background: #fff; }
 .saifr-wizard-topline { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 24px 28px; border-bottom: 1px solid var(--saifr-border); }

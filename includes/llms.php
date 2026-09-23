@@ -125,8 +125,10 @@ function saifr_section( string $heading, array $query_args, SaifrContentFilter $
         $title   = get_the_title( $item->ID );
         $md_url  = saifr_permalink_to_md( get_permalink( $item->ID ) );
         $excerpt = saifr_excerpt( $item );
+        $facts   = function_exists( 'saifr_schema_get_llms_facts' ) ? saifr_schema_get_llms_facts( $item ) : '';
 
         $lines .= "- [{$title}]({$md_url})";
+        $lines .= $facts !== '' ? " ({$facts})" : '';
         $lines .= $excerpt !== '' ? ": {$excerpt}" : '';
         $lines .= "\n";
     }

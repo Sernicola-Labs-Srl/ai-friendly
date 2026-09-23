@@ -232,6 +232,12 @@ function saifr_schema_get_identity_node(): array {
         if ( saifr_schema_has_offer_catalog( $options ) ) {
             $node['hasOfferCatalog'] = [ '@id' => saifr_schema_home_id( 'service-catalog' ) ];
         }
+
+        foreach ( saifr_schema_get_related_entities( $options ) as $entity ) {
+            if ( in_array( $entity['relation'], [ 'brand', 'subOrganization' ], true ) ) {
+                $node[ $entity['relation'] ][] = [ '@id' => $entity['node']['@id'] ];
+            }
+        }
     }
 
     $image_id = intval( $options['schema_image_id'] ?? 0 );
@@ -344,7 +350,10 @@ function saifr_schema_get_contact_points( array $options ): array {
         }
         $contact_hours = sanitize_text_field( (string) ( $row['hoursAvailable'] ?? '' ) );
         if ( $contact_hours !== '' ) {
-            $contact['hoursAvailable'] = [ '@type' => 'OpeningHoursSpecification', 'description' => $contact_hours ];
+            $parsed_hours = saifr_schema_parse_hours_text( $contact_hours );
+            $contact['hoursAvailable'] = ! empty( $parsed_hours )
+                ? $parsed_hours
+                : [ '@type' => 'OpeningHoursSpecification', 'description' => $contact_hours ];
         }
         $languages = saifr_schema_split_lines( (string) ( $row['availableLanguage'] ?? '' ) );
         if ( ! empty( $languages ) ) {
@@ -450,6 +459,98 @@ function saifr_schema_get_identifiers( array $options ): array {
         }
     }
     return $items;
+}
+
+/**
+ * Tipi di entità collegate gestibili da interfaccia e relazione con l'organizzazione principale.
+ */
+function saifr_schema_related_entity_types(): array {
+    return (array) apply_filters(
+        'saifr_schema_related_entity_types',
+        [
+            'Periodical'              => 'publisher',
+            'Newspaper'               => 'publisher',
+            'CreativeWorkSeries'      => 'publisher',
+            'BookSeries'              => 'publisher',
+            'PodcastSeries'           => 'publisher',
+            'Book'                    => 'publisher',
+            'WebSite'                 => 'publisher',
+            'EventSeries'             => 'organizer',
+            'Brand'                   => 'brand',
+            'Organization'            => 'subOrganization',
+            'NewsMediaOrganization'   => 'subOrganization',
+            'EducationalOrganization' => 'subOrganization',
+            'LocalBusiness'           => 'subOrganization',
+        ]
+    );
+}
+
+/**
+ * Nodi delle entità collegate (pubblicazioni, cicli di eventi, brand, società del gruppo).
+ *
+ * @return array<int, array{node: array, relation: string}>
+ */
+function saifr_schema_get_related_entities( array $options ): array {
+    if ( ( $options['schema_entity_type'] ?? '' ) !== 'Organization' ) {
+        return [];
+    }
+
+    $rows        = isset( $options['schema_related_entities'] ) && is_array( $options['schema_related_entities'] ) ? $options['schema_related_entities'] : [];
+    $types       = saifr_schema_related_entity_types();
+    $identity_id = saifr_schema_home_id( 'organization' );
+    $series      = [ 'Periodical', 'Newspaper', 'CreativeWorkSeries', 'BookSeries', 'PodcastSeries' ];
+    $entities    = [];
+
+    foreach ( $rows as $row ) {
+        if ( ! is_array( $row ) ) {
+            continue;
+        }
+        $type = saifr_schema_sanitize_schema_type( (string) ( $row['type'] ?? '' ) );
+        $name = sanitize_text_field( (string) ( $row['name'] ?? '' ) );
+        if ( $name === '' || ! isset( $types[ $type ] ) ) {
+            continue;
+        }
+
+        $url  = esc_url_raw( (string) ( $row['url'] ?? '' ) );
+        $node = [
+            '@type' => $type,
+            '@id'   => $url !== '' ? trailingslashit( $url ) . '#' . strtolower( $type ) : saifr_schema_home_id( 'related-' . $type . '-' . $name ),
+            'name'  => $name,
+        ];
+        if ( $url !== '' ) {
+            $node['url'] = $url;
+        }
+
+        $description = sanitize_textarea_field( (string) ( $row['description'] ?? '' ) );
+        if ( $description !== '' ) {
+            $node['description'] = $description;
+        }
+
+        $identifier = sanitize_text_field( (string) ( $row['identifier'] ?? '' ) );
+        if ( $identifier !== '' ) {
+            $identifier_key = in_array( $type, $series, true ) ? 'issn' : ( $type === 'Book' ? 'isbn' : 'identifier' );
+            $node[ $identifier_key ] = $identifier;
+        }
+
+        $same_as = saifr_schema_dedupe_urls( saifr_schema_split_lines( (string) ( $row['sameAs'] ?? '' ) ) );
+        if ( ! empty( $same_as ) ) {
+            $node['sameAs'] = $same_as;
+        }
+
+        $relation = (string) $types[ $type ];
+        if ( in_array( $relation, [ 'publisher', 'organizer' ], true ) ) {
+            $node[ $relation ] = [ '@id' => $identity_id ];
+        } elseif ( $relation === 'subOrganization' ) {
+            $node['parentOrganization'] = [ '@id' => $identity_id ];
+        }
+
+        $entities[] = [
+            'node'     => (array) apply_filters( 'saifr_schema_related_entity_node', $node, $row ),
+            'relation' => $relation,
+        ];
+    }
+
+    return $entities;
 }
 
 function saifr_schema_parse_founders( string $value ): array {
@@ -748,7 +849,21 @@ function saifr_schema_normalize_service_input( array $source ): array {
         'areaServed'    => sanitize_text_field( $area_served ),
         'price'         => sanitize_text_field( (string) ( $offer_source['price'] ?? '' ) ),
         'priceCurrency' => sanitize_text_field( (string) ( $offer_source['priceCurrency'] ?? '' ) ),
+        'vatIncluded'   => '',
+        'billingPeriod' => '',
     ];
+
+    $vat_included = $offer_source['vatIncluded'] ?? ( $offer_source['priceSpecification']['valueAddedTaxIncluded'] ?? '' );
+    if ( is_bool( $vat_included ) ) {
+        $vat_included = $vat_included ? 'yes' : 'no';
+    }
+    if ( in_array( $vat_included, [ 'yes', 'no' ], true ) ) {
+        $service['vatIncluded'] = $vat_included;
+    }
+    $billing_period = sanitize_key( (string) ( $offer_source['billingPeriod'] ?? '' ) );
+    if ( in_array( $billing_period, [ 'month', 'year' ], true ) ) {
+        $service['billingPeriod'] = $billing_period;
+    }
 
     return $service['name'] !== '' || $service['url'] !== '' ? $service : [];
 }
@@ -786,19 +901,22 @@ function saifr_schema_normalize_service_offer( array $source ): array {
         ];
     }
 
-    $offer = [
-        '@type'       => 'Offer',
-        'itemOffered' => $service,
-    ];
+    $priced = saifr_schema_build_offer(
+        (string) ( $service_source['price'] ?? '' ),
+        (string) ( $service_source['priceCurrency'] ?? '' ),
+        '',
+        (string) ( $service_source['vatIncluded'] ?? '' ),
+        (string) ( $service_source['billingPeriod'] ?? '' )
+    );
+    unset( $priced['@type'] );
 
-    foreach ( [ 'price', 'priceCurrency' ] as $key ) {
-        $value = (string) ( $service_source[ $key ] ?? '' );
-        if ( $value !== '' ) {
-            $offer[ $key ] = $value;
-        }
-    }
-
-    return $offer;
+    return array_merge(
+        [
+            '@type'       => 'Offer',
+            'itemOffered' => $service,
+        ],
+        $priced
+    );
 }
 
 function saifr_schema_get_profile_page_node(): array {
@@ -978,6 +1096,10 @@ function saifr_schema_get_graph(): array {
     $offer_catalog = saifr_schema_get_offer_catalog_node( $options );
     if ( ! empty( $offer_catalog ) ) {
         $graph[] = $offer_catalog;
+    }
+
+    foreach ( saifr_schema_get_related_entities( $options ) as $entity ) {
+        $graph[] = $entity['node'];
     }
 
     $place = saifr_schema_get_place_node( $options );
@@ -1186,35 +1308,37 @@ function saifr_schema_get_singular_extra_node( WP_Post $post, array $options ): 
         'name'     => get_the_title( $post ),
         'license'  => esc_url_raw( $license ),
         'author'   => [ '@id' => saifr_schema_get_identity_node()['@id'] ],
-        'isPartOf' => [ '@id' => trailingslashit( $url ) . '#webpage' ],
+        'isPartOf' => [ '@id' => saifr_schema_webpage_id( $url ) ],
     ];
 }
 
 function saifr_schema_get_content_node( WP_Post $post ): array {
-    $schema = get_post_meta( $post->ID, '_saifr_schema', true );
-    if ( ! is_array( $schema ) ) {
+    $data = saifr_schema_get_content_schema_data( $post );
+    if ( empty( $data ) ) {
         return [];
     }
-    $type = (string) ( $schema['type'] ?? '' );
-    if ( ! in_array( $type, [ 'Course', 'Event', 'Service', 'FAQPage' ], true ) ) {
-        return [];
-    }
+    $type = $data['type'];
+    $values = $data['values'];
     $url = get_permalink( $post );
     if ( ! is_string( $url ) || $url === '' ) {
         return [];
     }
+    // Un Event senza data di inizio non è valido per i motori di ricerca: meglio non emetterlo.
+    if ( $type === 'Event' && empty( $values['startDate'] ) ) {
+        return [];
+    }
     $metadata = class_exists( 'SaifrMetadata' ) ? SaifrMetadata::extract( $post ) : [];
-    $name = trim( (string) ( $schema['name'] ?? '' ) ) ?: (string) ( $metadata['title'] ?? get_the_title( $post ) );
-    $description = trim( (string) ( $schema['description'] ?? '' ) ) ?: (string) ( $metadata['description'] ?? '' );
+    $name = (string) ( $values['name'] ?? ( $metadata['title'] ?? get_the_title( $post ) ) );
+    $description = (string) ( $values['description'] ?? ( $metadata['description'] ?? '' ) );
     $fragments = [ 'Course' => 'course', 'Event' => 'event', 'Service' => 'service', 'FAQPage' => 'faq' ];
-    $fragment = $fragments[ $type ];
+    $identity_ref = [ '@id' => saifr_schema_get_identity_node()['@id'] ];
     $node = [
         '@type' => $type,
-        '@id' => trailingslashit( $url ) . '#' . $fragment,
+        '@id' => trailingslashit( $url ) . '#' . $fragments[ $type ],
         'url' => $url,
         'name' => $name,
         'inLanguage' => get_locale(),
-        'mainEntityOfPage' => [ '@id' => trailingslashit( $url ) . '#webpage' ],
+        'mainEntityOfPage' => [ '@id' => saifr_schema_webpage_id( $url ) ],
     ];
     if ( $description !== '' ) {
         $node['description'] = $description;
@@ -1223,42 +1347,66 @@ function saifr_schema_get_content_node( WP_Post $post ): array {
         $node['image'] = esc_url_raw( (string) $metadata['featured_image'] );
     }
 
+    $offer = saifr_schema_build_offer( (string) ( $values['price'] ?? '' ), (string) ( $values['priceCurrency'] ?? '' ), $url );
+
     if ( $type === 'Course' ) {
         foreach ( [ 'courseCode', 'educationalLevel' ] as $key ) {
-            $value = trim( (string) ( $schema[ $key ] ?? '' ) );
-            if ( $value !== '' ) $node[ $key ] = $value;
-        }
-        $node['provider'] = [ '@id' => saifr_schema_get_identity_node()['@id'] ];
-    } elseif ( $type === 'Event' ) {
-        foreach ( [ 'startDate', 'endDate' ] as $key ) {
-            $value = trim( (string) ( $schema[ $key ] ?? '' ) );
-            if ( $value !== '' ) {
-                try {
-                    $node[ $key ] = ( new DateTimeImmutable( $value, wp_timezone() ) )->format( DATE_W3C );
-                } catch ( Exception $exception ) {
-                    unset( $node[ $key ] );
-                }
+            if ( ! empty( $values[ $key ] ) ) {
+                $node[ $key ] = $values[ $key ];
             }
         }
-        $location_name = trim( (string) ( $schema['locationName'] ?? '' ) );
-        $location_address = trim( (string) ( $schema['locationAddress'] ?? '' ) );
-        if ( $location_name !== '' || $location_address !== '' ) {
-            $node['location'] = [ '@type' => 'Place' ];
-            if ( $location_name !== '' ) $node['location']['name'] = $location_name;
-            if ( $location_address !== '' ) $node['location']['address'] = $location_address;
-        } elseif ( saifr_schema_has_place( saifr_schema_get_options() ) ) {
-            $node['location'] = [ '@id' => saifr_schema_home_id( 'place' ) ];
+        $node['provider'] = $identity_ref;
+        if ( ! empty( $values['startDate'] ) ) {
+            $course_modes = [ 'offline' => 'Onsite', 'online' => 'Online', 'mixed' => 'Blended' ];
+            $instance = [
+                '@type' => 'CourseInstance',
+                'courseMode' => $course_modes[ $data['attendanceMode'] ],
+                'startDate' => $values['startDate'],
+            ];
+            if ( ! empty( $values['endDate'] ) ) {
+                $instance['endDate'] = $values['endDate'];
+            }
+            $location = saifr_schema_get_content_location( $values, $data['attendanceMode'], $url );
+            if ( ! empty( $location ) ) {
+                $instance['location'] = $location;
+            }
+            $node['hasCourseInstance'] = [ $instance ];
         }
-        $node['organizer'] = [ '@id' => saifr_schema_get_identity_node()['@id'] ];
+        if ( ! empty( $offer ) ) {
+            $node['offers'] = [ $offer ];
+        }
+    } elseif ( $type === 'Event' ) {
+        $attendance_modes = [ 'offline' => 'OfflineEventAttendanceMode', 'online' => 'OnlineEventAttendanceMode', 'mixed' => 'MixedEventAttendanceMode' ];
+        $node['startDate'] = $values['startDate'];
+        if ( ! empty( $values['endDate'] ) ) {
+            $node['endDate'] = $values['endDate'];
+        }
+        $node['eventStatus'] = 'https://schema.org/EventScheduled';
+        $node['eventAttendanceMode'] = 'https://schema.org/' . $attendance_modes[ $data['attendanceMode'] ];
+        $location = saifr_schema_get_content_location( $values, $data['attendanceMode'], $url );
+        if ( ! empty( $location ) ) {
+            $node['location'] = $location;
+        }
+        $node['organizer'] = $identity_ref;
+        if ( ! empty( $offer ) ) {
+            $node['offers'] = [ $offer ];
+            if ( $offer['price'] === '0' ) {
+                $node['isAccessibleForFree'] = true;
+            }
+        }
     } elseif ( $type === 'Service' ) {
         foreach ( [ 'serviceType', 'areaServed' ] as $key ) {
-            $value = trim( (string) ( $schema[ $key ] ?? '' ) );
-            if ( $value !== '' ) $node[ $key ] = $value;
+            if ( ! empty( $values[ $key ] ) ) {
+                $node[ $key ] = $values[ $key ];
+            }
         }
-        $node['provider'] = [ '@id' => saifr_schema_get_identity_node()['@id'] ];
+        $node['provider'] = $identity_ref;
+        if ( ! empty( $offer ) ) {
+            $node['offers'] = [ $offer ];
+        }
     } else {
         $node['mainEntity'] = [];
-        $rows = preg_split( '/\r\n|\r|\n/', (string) ( $schema['faq'] ?? '' ) );
+        $rows = preg_split( '/\r\n|\r|\n/', (string) ( $values['faq'] ?? '' ) );
         foreach ( is_array( $rows ) ? $rows : [] as $index => $row ) {
             $parts = array_map( 'trim', explode( '|', $row, 2 ) );
             if ( count( $parts ) !== 2 || $parts[0] === '' || $parts[1] === '' ) continue;
@@ -1271,7 +1419,33 @@ function saifr_schema_get_content_node( WP_Post $post ): array {
         }
         if ( empty( $node['mainEntity'] ) ) return [];
     }
-    return (array) apply_filters( 'saifr_schema_content_node', $node, $post, $schema );
+    $schema = get_post_meta( $post->ID, '_saifr_schema', true );
+    return (array) apply_filters( 'saifr_schema_content_node', $node, $post, is_array( $schema ) ? $schema : [], $data );
+}
+
+/**
+ * Luogo di un Event o CourseInstance: sede indicata, sede principale o luogo virtuale.
+ */
+function saifr_schema_get_content_location( array $values, string $attendance_mode, string $url ) {
+    $physical = [];
+    $location_name = (string) ( $values['locationName'] ?? '' );
+    $location_address = (string) ( $values['locationAddress'] ?? '' );
+    if ( $location_name !== '' || $location_address !== '' ) {
+        $physical = [ '@type' => 'Place' ];
+        if ( $location_name !== '' ) $physical['name'] = $location_name;
+        if ( $location_address !== '' ) $physical['address'] = $location_address;
+    } elseif ( $attendance_mode !== 'online' && saifr_schema_has_place( saifr_schema_get_options() ) ) {
+        $physical = [ '@id' => saifr_schema_home_id( 'place' ) ];
+    }
+
+    $virtual = [ '@type' => 'VirtualLocation', 'url' => $url ];
+    if ( $attendance_mode === 'online' ) {
+        return $virtual;
+    }
+    if ( $attendance_mode === 'mixed' ) {
+        return empty( $physical ) ? $virtual : [ $physical, $virtual ];
+    }
+    return $physical;
 }
 
 function saifr_schema_merge_faq_nodes( array $manual, array $automatic ): array {

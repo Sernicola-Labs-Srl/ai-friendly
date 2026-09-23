@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.2.0
+
+- Corretto il salvataggio della pagina impostazioni: dalla 2.1.1 il pulsante «Salva impostazioni» non veniva riconosciuto e le modifiche andavano perse.
+- Aggiunto lo schema automatico per tipo di contenuto: ogni post type può generare `Event`, `Course` o `Service` leggendo date, luogo, prezzo e altri campi da meta, ACF, tassonomie o valori fissi (`meta:`, `acf:`, `tax:`, `text:`), con suggerimento delle chiavi disponibili nell'interfaccia.
+- Il metabox del singolo contenuto mostra i valori ricavati automaticamente, permette di sovrascriverli, aggiunge modalità di partecipazione e prezzo e consente di disattivare lo schema automatico per quel contenuto.
+- Gli `Event` includono `eventStatus`, `eventAttendanceMode`, luogo fisico o `VirtualLocation`, `offers` e `isAccessibleForFree`; un `Event` senza data di inizio non viene più pubblicato. I `Course` con date generano `hasCourseInstance`.
+- Riconosciuti i formati data più comuni (ISO 8601, `Ymd` di ACF, timestamp Unix, gg/mm/aaaa con o senza orario) e i prezzi scritti a mano («€ 1.200,50», «Gratuito»).
+- Aggiunte le entità collegate: testate (`Periodical`, `Newspaper`), collane, podcast, siti, cicli di eventi (`EventSeries`), brand e società del gruppo, collegate all'organizzazione come `publisher`, `organizer`, `brand` o `subOrganization`, con ISSN/ISBN e `sameAs`.
+- Aggiunti al catalogo servizi l'indicazione IVA inclusa/esclusa e la periodicità mensile o annuale, emesse come `UnitPriceSpecification`; i prezzi vengono normalizzati nel formato Schema.org.
+- Gli orari dei contatti scritti come «Lu-Ve 09:00-13:00, 14:00-18:00» vengono convertiti in `OpeningHoursSpecification` strutturate.
+- In modalità Yoast i nodi del contenuto puntano alla `WebPage` di Yoast, che usa il permalink come `@id`.
+- `llms.txt` e il frontmatter dei file `.md` riportano data, luogo e prezzo di eventi e corsi.
+- Aggiunto il completamento dello schema `Product` di WooCommerce per le schede commerciante di Google: brand predefinito o letto dal prodotto (es. `tax:product_brand`), regole di spedizione per paese con soglia di gratuità e tempi di preparazione/consegna (`OfferShippingDetails`), politica di reso (`MerchantReturnPolicy`) e `validFrom` del prezzo. Funziona con i dati strutturati di WooCommerce, Yoast WooCommerce SEO e Rank Math e non sovrascrive valori già presenti; la sezione compare solo con WooCommerce attivo.
+- Nuovi filtri: `saifr_woo_schema_enabled`, `saifr_woo_product_markup`, `saifr_schema_type_rule`, `saifr_schema_mapped_value`, `saifr_schema_parse_datetime`, `saifr_schema_related_entity_types`, `saifr_schema_related_entity_node`, `saifr_schema_llms_facts`; `saifr_schema_content_node` riceve come quarto argomento i dati risolti.
+
 ## 2.1.1
 
 - Sanificati immediatamente tutti i valori inviati dalle pagine admin e dalle azioni AJAX in base al tipo atteso, prima della validazione o del salvataggio.

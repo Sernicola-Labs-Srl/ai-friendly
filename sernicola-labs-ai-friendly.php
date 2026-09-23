@@ -3,7 +3,7 @@
  * Plugin Name:        Sernicola Labs AI Friendly – llms.txt, Markdown & Schema
  * Plugin URI:         https://www.sernicola-labs.com/plugin-geo-aeo-posizionamento-intelligenza-artificiale/
  * Description:        Toolkit GEO/AEO per llms.txt, contenuti Markdown e Semantic Schema JSON-LD su WordPress.
- * Version:            2.1.1
+ * Version:            2.2.0
  * Author:             Sernicola Labs
  * Author URI:         https://www.sernicola-labs.com/
  * License:            GPL v3 or later
@@ -33,7 +33,7 @@ if ( ! defined( 'SAIFR_PLUGIN_DIR' ) ) {
     define( 'SAIFR_PLUGIN_DIR', __DIR__ );
 }
 if ( ! defined( 'SAIFR_VERSION' ) ) {
-    define( 'SAIFR_VERSION', '2.1.1' );
+    define( 'SAIFR_VERSION', '2.2.0' );
 }
 
 require_once SAIFR_PLUGIN_DIR . '/includes/boot.php';

@@ -88,12 +88,27 @@ function saifr_get_default_options(): array {
         'schema_services'       => [],
         'schema_offer_sources'  => [],
         'schema_offer_catalog'  => '',
+        'schema_related_entities' => [],
+        'schema_type_rules'     => [],
         'schema_image_id'       => 0,
         'schema_same_as'        => '',
         'schema_knows_about'    => '',
         'schema_knows_language' => '',
         'schema_license'        => '',
         'schema_profile_page_id' => 0,
+
+        // WooCommerce: dati per le schede commerciante
+        'woo_schema_enabled'    => '',
+        'woo_brand_name'        => '',
+        'woo_brand_source'      => '',
+        'woo_shipping_rules'    => [],
+        'woo_return_category'   => '',
+        'woo_return_countries'  => '',
+        'woo_return_days'       => '',
+        'woo_return_method'     => 'mail',
+        'woo_return_fees'       => 'customer',
+        'woo_return_fee_amount' => '',
+        'woo_valid_from'        => '',
     ];
 }
 

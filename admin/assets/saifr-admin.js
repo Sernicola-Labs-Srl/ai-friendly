@@ -208,6 +208,24 @@
             '</label>';
     }
 
+    function serviceSelect(name, label, choices) {
+        var options = Object.keys(choices).map(function (value) {
+            return '<option value="' + esc(value) + '">' + esc(choices[value]) + '</option>';
+        }).join('');
+
+        return '<label class="saifr-field">' +
+            '<span>' + esc(label) + '</span>' +
+            '<select data-service-field="' + name + '">' + options + '</select>' +
+            '</label>';
+    }
+
+    function relatedTypeSelect() {
+        var options = (SaifrAdmin.relatedTypes || []).map(function (type) {
+            return '<option value="' + esc(type) + '">' + esc(type) + '</option>';
+        }).join('');
+        return '<select data-field="type">' + options + '</select>';
+    }
+
     function renderServiceRow() {
         return '<div class="saifr-schema-service">' +
             '<div class="saifr-schema-service-head">' +
@@ -225,6 +243,8 @@
             '</label>' +
             serviceField('price', t('price'), 'text', '0') +
             serviceField('priceCurrency', t('currency'), 'text', 'EUR') +
+            serviceSelect('vatIncluded', t('vatIncluded'), { '': t('vatUnspecified'), yes: t('vatYes'), no: t('vatNo') }) +
+            serviceSelect('billingPeriod', t('billingPeriod'), { '': t('billingOnce'), month: t('billingMonth'), year: t('billingYear') }) +
             '</div>' +
             '</div>';
     }
@@ -254,7 +274,9 @@
         hours: '<input data-field="dayOfWeek" placeholder="Monday, Tuesday"><input type="time" data-field="opens"><input type="time" data-field="closes"><input type="date" data-field="validFrom"><input type="date" data-field="validThrough"><button type="button" class="button-link-delete saifr-repeater-remove">' + esc(t('remove')) + '</button>',
         certifications: '<input data-field="name" placeholder="ISO 9001"><input data-field="identifier" placeholder="' + esc(t('certificateNumber')) + '"><input data-field="issuedBy" placeholder="' + esc(t('certificationIssuer')) + '"><input type="url" data-field="url" placeholder="https://..."><button type="button" class="button-link-delete saifr-repeater-remove">' + esc(t('remove')) + '</button>',
         identifiers: '<input data-field="propertyID" placeholder="RUNTS"><input data-field="value" placeholder="' + esc(t('identifierNumber')) + '"><button type="button" class="button-link-delete saifr-repeater-remove">' + esc(t('remove')) + '</button>',
-        offerSources: '<input data-field="value" placeholder="' + esc(t('sourceReference')) + '"><button type="button" class="button-link-delete saifr-repeater-remove">' + esc(t('remove')) + '</button>'
+        offerSources: '<input data-field="value" placeholder="' + esc(t('sourceReference')) + '"><button type="button" class="button-link-delete saifr-repeater-remove">' + esc(t('remove')) + '</button>',
+        shipping: '<input data-field="countries" placeholder="IT"><input data-field="rate" placeholder="5.90"><input data-field="freeThreshold" placeholder="49"><input data-field="handlingMin" placeholder="0"><input data-field="handlingMax" placeholder="3"><input data-field="transitMin" placeholder="1"><input data-field="transitMax" placeholder="4"><button type="button" class="button-link-delete saifr-repeater-remove">' + esc(t('remove')) + '</button>',
+        related: relatedTypeSelect() + '<input data-field="name"><input type="url" data-field="url" placeholder="https://..."><input data-field="identifier" placeholder="ISSN 1234-5678"><textarea data-field="description" rows="2"></textarea><textarea data-field="sameAs" rows="2" placeholder="https://www.linkedin.com/..."></textarea><button type="button" class="button-link-delete saifr-repeater-remove">' + esc(t('remove')) + '</button>'
     };
 
     var schemaRepeaterLabels = {
@@ -263,7 +285,9 @@
         hours: { title: t('timeSlot'), fields: { dayOfWeek: t('days'), opens: t('opens'), closes: t('closes'), validFrom: t('validFrom'), validThrough: t('validThrough') } },
         certifications: { title: t('certification'), fields: { name: t('name'), identifier: t('identifier'), issuedBy: t('certificationIssuer'), url: 'URL' } },
         identifiers: { title: t('identifier'), fields: { propertyID: t('identifier'), value: t('value') } },
-        offerSources: { title: t('source'), fields: { value: 'ID / URL' } }
+        offerSources: { title: t('source'), fields: { value: 'ID / URL' } },
+        shipping: { title: t('shippingRule'), fields: { countries: t('countries'), rate: t('shippingRate'), freeThreshold: t('freeThreshold'), handlingMin: t('handlingMin'), handlingMax: t('handlingMax'), transitMin: t('transitMin'), transitMax: t('transitMax') } },
+        related: { title: t('relatedEntity'), fields: { type: t('entityType'), name: t('name'), url: 'URL', identifier: t('issnOrIdentifier'), description: t('description'), sameAs: t('sameAsProfiles') } }
     };
 
     var schemaRepeaterEmptyLabels = {
@@ -272,7 +296,9 @@
         hours: t('noTimeSlots'),
         certifications: t('noCertifications'),
         identifiers: t('noIdentifiers'),
-        offerSources: t('noOfferSources')
+        offerSources: t('noOfferSources'),
+        shipping: t('noShippingRules'),
+        related: t('noRelatedEntities')
     };
 
     function decorateSchemaRepeater($repeater) {
@@ -305,7 +331,8 @@
         var type = $repeater.data('repeater');
         var option = {
             types: 'schema_types', contacts: 'schema_contacts', hours: 'schema_opening_hours',
-            certifications: 'schema_certifications', identifiers: 'schema_identifiers', offerSources: 'schema_offer_sources'
+            certifications: 'schema_certifications', identifiers: 'schema_identifiers', offerSources: 'schema_offer_sources',
+            related: 'schema_related_entities', shipping: 'woo_shipping_rules'
         }[type];
         $repeater.children('.saifr-empty-state').remove();
         decorateSchemaRepeater($repeater);
