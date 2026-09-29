@@ -33,7 +33,7 @@ jobs:
           set -euo pipefail
           mkdir -p build/sernicola-labs-ai-friendly
           cp sernicola-labs-ai-friendly.php uninstall.php README.md readme.txt CHANGELOG.md LICENSE build/sernicola-labs-ai-friendly/
-          cp -R admin includes build/sernicola-labs-ai-friendly/
+          cp -R admin includes languages build/sernicola-labs-ai-friendly/
           cd build
           zip -r ../sernicola-labs-ai-friendly.zip sernicola-labs-ai-friendly
 
