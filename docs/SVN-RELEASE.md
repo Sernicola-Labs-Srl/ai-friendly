@@ -9,6 +9,8 @@ Non inserire mai la password SVN in un file, nel terminale condiviso o nel repos
 1. Unisci su `main` la PR della release e resta su `main` aggiornato: lo script pubblica solo file tracciati da git e senza modifiche non committate.
 2. Verifica che la stessa versione compaia in `Version:` e `SAIFR_VERSION` di `sernicola-labs-ai-friendly.php`, in `Stable tag:` di `readme.txt` e come voce `= x.y.z =` nel changelog del readme. Lo script si ferma se non coincidono.
 3. Valida il readme con il validatore ufficiale: https://wordpress.org/plugins/developers/readme-validator/
+4. Rigenera `languages/sernicola-labs-ai-friendly.pot` con WP-CLI e compila `languages/sernicola-labs-ai-friendly-it_IT.mo` dal relativo `.po`. Verifica che placeholder, tag HTML, URL e proprietà Schema.org coincidano fra originale e traduzione.
+5. Dopo il commit SVN, invia le stringhe italiane revisionate a Translate WordPress nel progetto Stable. La directory mostra una lingua solo dopo l'approvazione; il primo language pack richiede almeno il 90% delle stringhe Stable approvate.
 
 ## Preparazione
 

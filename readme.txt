@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -66,6 +66,11 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 Use the WordPress.org support forum for support. The maintained development source is available at https://github.com/Sernicola-Labs-Srl/ai-friendly.
 
 == Changelog ==
+
+= 2.2.1 =
+* Refined the Schema administration layout with compact, grouped mapping fields, clearer repeaters, and aligned field controls at every desktop width.
+* Grouped manual service identity and offer data, and WooCommerce shipping controls, without changing saved option names or Schema.org output.
+* Added the plugin language directory, translation loading, release localization guidance, and the Italian source catalogue.
 
 = 2.2.0 =
 * Fixed the settings page Save button, which stopped saving changes in 2.1.1.

@@ -1,0 +1,2515 @@
+# Copyright (C) 2026 Sernicola Labs
+# This file is distributed under the GPL v3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Sernicola Labs AI Friendly – llms.txt, Markdown & Schema 2.2.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sernicola-labs-ai-friendly\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-29T14:52:59+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: sernicola-labs-ai-friendly\n"
+
+#. Plugin Name of the plugin
+#: sernicola-labs-ai-friendly.php
+msgid "Sernicola Labs AI Friendly – llms.txt, Markdown & Schema"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: sernicola-labs-ai-friendly.php
+msgid "https://www.sernicola-labs.com/plugin-geo-aeo-posizionamento-intelligenza-artificiale/"
+msgstr ""
+
+#. Description of the plugin
+#: sernicola-labs-ai-friendly.php
+msgid "Toolkit GEO/AEO per llms.txt, contenuti Markdown e Semantic Schema JSON-LD su WordPress."
+msgstr ""
+
+#. Author of the plugin
+#: sernicola-labs-ai-friendly.php
+#: admin/settings-page.php:1968
+msgid "Sernicola Labs"
+msgstr ""
+
+#. Author URI of the plugin
+#: sernicola-labs-ai-friendly.php
+msgid "https://www.sernicola-labs.com/"
+msgstr ""
+
+#: admin/metabox.php:37
+msgid "AI Friendly Schema"
+msgstr ""
+
+#: admin/metabox.php:56
+msgid "Escludi da llms.txt e dalla versione Markdown"
+msgstr ""
+
+#: admin/metabox.php:61
+msgid "Ultima generazione Markdown:"
+msgstr ""
+
+#: admin/metabox.php:76
+#: admin/metabox.php:135
+msgid "Inizio"
+msgstr ""
+
+#: admin/metabox.php:77
+#: admin/metabox.php:136
+msgid "Fine"
+msgstr ""
+
+#: admin/metabox.php:78
+msgid "Luogo"
+msgstr ""
+
+#: admin/metabox.php:79
+#: admin/metabox.php:138
+#: admin/settings-page.php:1367
+msgid "Indirizzo"
+msgstr ""
+
+#: admin/metabox.php:80
+#: admin/metabox.php:146
+#: admin/settings-page.php:102
+#: admin/settings-page.php:1591
+#: admin/settings-page.php:1639
+msgid "Prezzo"
+msgstr ""
+
+#: admin/metabox.php:81
+#: admin/settings-page.php:103
+#: admin/settings-page.php:1595
+#: admin/settings-page.php:1640
+msgid "Valuta"
+msgstr ""
+
+#: admin/metabox.php:82
+#: admin/metabox.php:133
+#: admin/settings-page.php:1641
+msgid "Codice corso"
+msgstr ""
+
+#: admin/metabox.php:83
+#: admin/metabox.php:133
+#: admin/settings-page.php:1642
+msgid "Livello"
+msgstr ""
+
+#: admin/metabox.php:84
+#: admin/metabox.php:147
+#: admin/settings-page.php:99
+#: admin/settings-page.php:1576
+#: admin/settings-page.php:1643
+msgid "Tipo servizio"
+msgstr ""
+
+#: admin/metabox.php:85
+#: admin/metabox.php:147
+#: admin/settings-page.php:100
+#: admin/settings-page.php:1580
+#: admin/settings-page.php:1644
+msgid "Area servita"
+msgstr ""
+
+#: admin/metabox.php:94
+#: admin/settings-page.php:1667
+msgid "In presenza"
+msgstr ""
+
+#: admin/metabox.php:95
+#: admin/settings-page.php:1668
+msgid "Online"
+msgstr ""
+
+#: admin/metabox.php:96
+#: admin/settings-page.php:1669
+msgid "Mista"
+msgstr ""
+
+#: admin/metabox.php:99
+msgid "Genera un nodo per questo contenuto riusando automaticamente titolo, permalink, riassunto, descrizione, immagine in evidenza e date WordPress."
+msgstr ""
+
+#. translators: %s: Schema.org type configured for the post type.
+#: admin/metabox.php:104
+#, php-format
+msgid "Questo tipo di contenuto genera in automatico un nodo %s in base alla mappatura della sezione Semantic Schema. I campi compilati qui hanno la precedenza."
+msgstr ""
+
+#: admin/metabox.php:109
+msgid "Valori ricavati automaticamente:"
+msgstr ""
+
+#: admin/metabox.php:112
+msgid "Nessuna data di inizio disponibile: il nodo Event non viene pubblicato finché non la indichi qui o nella mappatura."
+msgstr ""
+
+#: admin/metabox.php:115
+#: admin/settings-page.php:1656
+msgid "Tipo Schema"
+msgstr ""
+
+#. translators: %s: Schema.org type configured for the post type.
+#: admin/metabox.php:119
+#, php-format
+msgid "Automatico (%s)"
+msgstr ""
+
+#: admin/metabox.php:121
+#: admin/settings-page.php:122
+msgid "Nessuno"
+msgstr ""
+
+#: admin/metabox.php:127
+msgid "Disattiva per questo contenuto"
+msgstr ""
+
+#: admin/metabox.php:131
+#: admin/settings-page.php:1295
+msgid "Nome alternativo"
+msgstr ""
+
+#: admin/metabox.php:131
+msgid "Lascia vuoto per usare il titolo"
+msgstr ""
+
+#: admin/metabox.php:132
+msgid "Descrizione alternativa"
+msgstr ""
+
+#: admin/metabox.php:132
+msgid "Lascia vuoto per usare il riassunto o la meta description"
+msgstr ""
+
+#: admin/metabox.php:134
+msgid "Event / Course"
+msgstr ""
+
+#: admin/metabox.php:137
+#: admin/settings-page.php:1637
+msgid "Nome luogo"
+msgstr ""
+
+#: admin/metabox.php:139
+#: admin/settings-page.php:1665
+msgid "Modalità di partecipazione"
+msgstr ""
+
+#: admin/metabox.php:140
+msgid "Modalità: predefinita"
+msgstr ""
+
+#: admin/metabox.php:146
+msgid "0 = gratuito"
+msgstr ""
+
+#: admin/metabox.php:146
+#: admin/settings-page.php:1596
+msgid "EUR"
+msgstr ""
+
+#: admin/metabox.php:148
+msgid "Una FAQ per riga: Domanda | Risposta"
+msgstr ""
+
+#: admin/metabox.php:148
+msgid "Una coppia domanda/risposta per riga, separata da |."
+msgstr ""
+
+#: admin/settings-page.php:67
+msgid "Caricamento..."
+msgstr ""
+
+#: admin/settings-page.php:68
+msgid "Si è verificato un errore."
+msgstr ""
+
+#: admin/settings-page.php:69
+msgid "Nessun heading trovato."
+msgstr ""
+
+#: admin/settings-page.php:70
+msgid "Nessun avviso."
+msgstr ""
+
+#: admin/settings-page.php:71
+msgid "Inclusa"
+msgstr ""
+
+#: admin/settings-page.php:72
+msgid "Esclusa"
+msgstr ""
+
+#: admin/settings-page.php:73
+msgid "Includi"
+msgstr ""
+
+#: admin/settings-page.php:74
+msgid "Escludi"
+msgstr ""
+
+#: admin/settings-page.php:75
+msgid "(Senza titolo)"
+msgstr ""
+
+#: admin/settings-page.php:76
+msgid "Nessun contenuto."
+msgstr ""
+
+#: admin/settings-page.php:77
+msgid "Pagina"
+msgstr ""
+
+#: admin/settings-page.php:78
+msgid "Nessun evento."
+msgstr ""
+
+#: admin/settings-page.php:79
+msgid "Ripristina"
+msgstr ""
+
+#: admin/settings-page.php:80
+msgid "Nessuno snapshot."
+msgstr ""
+
+#: admin/settings-page.php:81
+msgid "Seleziona esattamente 2 snapshot."
+msgstr ""
+
+#: admin/settings-page.php:82
+msgid "Nessuna differenza."
+msgstr ""
+
+#: admin/settings-page.php:83
+#: admin/settings-page.php:1308
+#: admin/settings-page.php:1327
+#: admin/settings-page.php:1340
+#: admin/settings-page.php:1393
+#: admin/settings-page.php:1410
+#: admin/settings-page.php:1492
+#: admin/settings-page.php:1506
+#: admin/settings-page.php:1528
+#: admin/settings-page.php:1546
+#: admin/settings-page.php:1562
+#: admin/settings-page.php:1761
+msgid "Rimuovi"
+msgstr ""
+
+#: admin/settings-page.php:84
+#: admin/settings-page.php:1336
+msgid "Nessuna immagine"
+msgstr ""
+
+#: admin/settings-page.php:85
+#: admin/settings-page.php:1323
+msgid "Nessun logo"
+msgstr ""
+
+#: admin/settings-page.php:86
+msgid "Salvataggio in corso…"
+msgstr ""
+
+#: admin/settings-page.php:87
+#: admin/settings-page.php:959
+msgid "Salva e genera"
+msgstr ""
+
+#: admin/settings-page.php:88
+msgid "Configurazione completata. L’output è stato verificato."
+msgstr ""
+
+#: admin/settings-page.php:89
+msgid "Impossibile completare la richiesta. Riprova senza perdere le scelte effettuate."
+msgstr ""
+
+#: admin/settings-page.php:90
+msgid "Rigenerazione completata."
+msgstr ""
+
+#: admin/settings-page.php:91
+msgid "Rigenerazione forzata completata."
+msgstr ""
+
+#: admin/settings-page.php:92
+msgid "Eliminare tutti i file Markdown salvati?"
+msgstr ""
+
+#: admin/settings-page.php:93
+#: admin/settings-page.php:1561
+msgid "Servizio"
+msgstr ""
+
+#: admin/settings-page.php:94
+#: admin/settings-page.php:1566
+msgid "Identità del servizio"
+msgstr ""
+
+#: admin/settings-page.php:95
+#: admin/settings-page.php:1589
+#: admin/settings-page.php:1688
+msgid "Offerta"
+msgstr ""
+
+#: admin/settings-page.php:96
+#: admin/settings-page.php:1651
+msgid "Solo manuale"
+msgstr ""
+
+#: admin/settings-page.php:97
+#: admin/settings-page.php:943
+#: admin/settings-page.php:1291
+#: admin/settings-page.php:1568
+msgid "Nome"
+msgstr ""
+
+#: admin/settings-page.php:98
+#: admin/settings-page.php:1572
+msgid "URL pagina"
+msgstr ""
+
+#: admin/settings-page.php:101
+#: admin/settings-page.php:1436
+#: admin/settings-page.php:1584
+msgid "Descrizione"
+msgstr ""
+
+#: admin/settings-page.php:104
+msgid "Nessun servizio manuale configurato."
+msgstr ""
+
+#: admin/settings-page.php:105
+msgid "Tipo aggiuntivo"
+msgstr ""
+
+#: admin/settings-page.php:106
+msgid "Tipo Schema.org"
+msgstr ""
+
+#: admin/settings-page.php:107
+msgid "Contatto"
+msgstr ""
+
+#: admin/settings-page.php:108
+msgid "Reparto / funzione"
+msgstr ""
+
+#: admin/settings-page.php:109
+msgid "Telefono"
+msgstr ""
+
+#: admin/settings-page.php:110
+msgid "Lingue"
+msgstr ""
+
+#: admin/settings-page.php:111
+msgid "Disponibilità"
+msgstr ""
+
+#: admin/settings-page.php:112
+msgid "Fascia oraria"
+msgstr ""
+
+#: admin/settings-page.php:113
+msgid "Giorni"
+msgstr ""
+
+#: admin/settings-page.php:114
+msgid "Apertura"
+msgstr ""
+
+#: admin/settings-page.php:115
+msgid "Chiusura"
+msgstr ""
+
+#: admin/settings-page.php:116
+msgid "Valida dal"
+msgstr ""
+
+#: admin/settings-page.php:117
+msgid "Valida fino al"
+msgstr ""
+
+#: admin/settings-page.php:118
+msgid "Certificazione"
+msgstr ""
+
+#: admin/settings-page.php:119
+msgid "Identificatore"
+msgstr ""
+
+#: admin/settings-page.php:120
+msgid "Sorgente WordPress"
+msgstr ""
+
+#: admin/settings-page.php:121
+msgid "Nessun elemento configurato."
+msgstr ""
+
+#: admin/settings-page.php:123
+#: admin/settings-page.php:927
+msgid "File Markdown statici"
+msgstr ""
+
+#: admin/settings-page.php:124
+msgid "Output dinamico"
+msgstr ""
+
+#: admin/settings-page.php:125
+msgid "Rigenerazione pianificata disattivata"
+msgstr ""
+
+#: admin/settings-page.php:126
+msgid "Disattivato"
+msgstr ""
+
+#: admin/settings-page.php:127
+msgid "Attivato"
+msgstr ""
+
+#: admin/settings-page.php:128
+msgid "Campi ACF"
+msgstr ""
+
+#: admin/settings-page.php:129
+msgid "Contenuti inclusi"
+msgstr ""
+
+#: admin/settings-page.php:130
+#: admin/settings-page.php:1251
+msgid "Output"
+msgstr ""
+
+#: admin/settings-page.php:131
+msgid "Automazione"
+msgstr ""
+
+#: admin/settings-page.php:132
+#: admin/settings-page.php:939
+#: admin/settings-page.php:1014
+#: admin/settings-page.php:1235
+msgid "Semantic Schema"
+msgstr ""
+
+#: admin/settings-page.php:133
+msgid "Seleziona immagine identitaria"
+msgstr ""
+
+#: admin/settings-page.php:134
+msgid "Usa questa immagine"
+msgstr ""
+
+#: admin/settings-page.php:135
+msgid "Seleziona logo aziendale"
+msgstr ""
+
+#: admin/settings-page.php:136
+msgid "Usa questo logo"
+msgstr ""
+
+#: admin/settings-page.php:137
+msgid "problema"
+msgstr ""
+
+#: admin/settings-page.php:138
+msgid "problemi"
+msgstr ""
+
+#: admin/settings-page.php:139
+msgid "Sitemap"
+msgstr ""
+
+#: admin/settings-page.php:140
+msgid "Robots"
+msgstr ""
+
+#: admin/settings-page.php:141
+#: admin/settings-page.php:986
+msgid "n/d"
+msgstr ""
+
+#: admin/settings-page.php:142
+msgid "token"
+msgstr ""
+
+#: admin/settings-page.php:143
+msgid "Linee"
+msgstr ""
+
+#: admin/settings-page.php:144
+msgid "Delta token"
+msgstr ""
+
+#: admin/settings-page.php:145
+msgid "Punteggio"
+msgstr ""
+
+#: admin/settings-page.php:146
+msgid "Duplicati"
+msgstr ""
+
+#: admin/settings-page.php:147
+msgid "Numero certificato"
+msgstr ""
+
+#: admin/settings-page.php:148
+#: admin/settings-page.php:1490
+msgid "Ente certificatore"
+msgstr ""
+
+#: admin/settings-page.php:149
+#: admin/settings-page.php:1505
+msgid "Numero identificativo"
+msgstr ""
+
+#: admin/settings-page.php:150
+#: admin/settings-page.php:1545
+msgid "ID termine, taxonomy:slug o permalink WordPress"
+msgstr ""
+
+#: admin/settings-page.php:151
+msgid "Valore"
+msgstr ""
+
+#: admin/settings-page.php:152
+msgid "Nessun tipo aggiuntivo configurato."
+msgstr ""
+
+#: admin/settings-page.php:153
+msgid "Nessun contatto configurato."
+msgstr ""
+
+#: admin/settings-page.php:154
+msgid "Nessuna fascia oraria configurata."
+msgstr ""
+
+#: admin/settings-page.php:155
+msgid "Nessuna certificazione configurata."
+msgstr ""
+
+#: admin/settings-page.php:156
+msgid "Nessun identificatore aggiuntivo configurato."
+msgstr ""
+
+#: admin/settings-page.php:157
+msgid "Nessuna sorgente WordPress configurata."
+msgstr ""
+
+#: admin/settings-page.php:158
+msgid "Regola di spedizione"
+msgstr ""
+
+#: admin/settings-page.php:159
+msgid "Costo"
+msgstr ""
+
+#: admin/settings-page.php:160
+msgid "Preparazione"
+msgstr ""
+
+#: admin/settings-page.php:161
+msgid "Consegna"
+msgstr ""
+
+#: admin/settings-page.php:162
+msgid "Nessuna regola di spedizione configurata."
+msgstr ""
+
+#: admin/settings-page.php:163
+msgid "Paesi (codici ISO)"
+msgstr ""
+
+#: admin/settings-page.php:164
+msgid "Costo spedizione"
+msgstr ""
+
+#: admin/settings-page.php:165
+msgid "Gratuita da (prezzo)"
+msgstr ""
+
+#: admin/settings-page.php:166
+msgid "Preparazione min (giorni)"
+msgstr ""
+
+#: admin/settings-page.php:167
+msgid "Preparazione max (giorni)"
+msgstr ""
+
+#: admin/settings-page.php:168
+msgid "Consegna min (giorni)"
+msgstr ""
+
+#: admin/settings-page.php:169
+msgid "Consegna max (giorni)"
+msgstr ""
+
+#: admin/settings-page.php:170
+msgid "Entità collegata"
+msgstr ""
+
+#: admin/settings-page.php:171
+msgid "Nessuna entità collegata configurata."
+msgstr ""
+
+#: admin/settings-page.php:172
+#: admin/settings-page.php:1132
+#: admin/settings-page.php:1284
+#: admin/settings-page.php:1827
+msgid "Tipo"
+msgstr ""
+
+#: admin/settings-page.php:173
+msgid "ISSN / ISBN / identificativo"
+msgstr ""
+
+#: admin/settings-page.php:174
+msgid "sameAs (uno per riga)"
+msgstr ""
+
+#: admin/settings-page.php:175
+#: admin/settings-page.php:1599
+msgid "IVA"
+msgstr ""
+
+#: admin/settings-page.php:176
+#: admin/settings-page.php:1601
+msgid "Non indicata"
+msgstr ""
+
+#: admin/settings-page.php:177
+#: admin/settings-page.php:1602
+msgid "IVA inclusa"
+msgstr ""
+
+#: admin/settings-page.php:178
+#: admin/settings-page.php:1603
+msgid "IVA esclusa"
+msgstr ""
+
+#: admin/settings-page.php:179
+#: admin/settings-page.php:1607
+msgid "Periodicità"
+msgstr ""
+
+#: admin/settings-page.php:180
+#: admin/settings-page.php:1609
+msgid "Una tantum / non indicata"
+msgstr ""
+
+#: admin/settings-page.php:181
+#: admin/settings-page.php:1610
+msgid "Mensile"
+msgstr ""
+
+#: admin/settings-page.php:182
+#: admin/settings-page.php:1611
+msgid "Annuale"
+msgstr ""
+
+#: admin/settings-page.php:183
+msgid "Ogni"
+msgstr ""
+
+#: admin/settings-page.php:184
+msgid "ore, batch da"
+msgstr ""
+
+#: admin/settings-page.php:185
+msgid "nome non indicato"
+msgstr ""
+
+#: admin/settings-page.php:186
+msgid "Salvataggio delle impostazioni e verifica dell’output in corso."
+msgstr ""
+
+#: admin/settings-page.php:187
+msgid "Generazione non riuscita. Le impostazioni salvate restano attive."
+msgstr ""
+
+#: admin/settings-page.php:188
+msgid "Batch completato."
+msgstr ""
+
+#: admin/settings-page.php:189
+#: admin/settings-page.php:1944
+msgid "Processati"
+msgstr ""
+
+#: admin/settings-page.php:190
+msgid "rigenerati"
+msgstr ""
+
+#: admin/settings-page.php:191
+msgid "File eliminati"
+msgstr ""
+
+#: admin/settings-page.php:192
+msgid "Modifiche non salvate"
+msgstr ""
+
+#: admin/settings-page.php:193
+#: admin/settings-page.php:1962
+msgid "Tutte le modifiche sono salvate"
+msgstr ""
+
+#: admin/settings-page.php:194
+#: admin/settings-page.php:1585
+msgid "Descrizione breve del servizio."
+msgstr ""
+
+#: admin/settings-page.php:204
+msgid "Permessi insufficienti."
+msgstr ""
+
+#: admin/settings-page.php:365
+#: includes/markdown.php:1003
+msgid "Contenuto non trovato."
+msgstr ""
+
+#: admin/settings-page.php:440
+msgid "Impossibile creare snapshot."
+msgstr ""
+
+#: admin/settings-page.php:470
+msgid "Ripristino fallito."
+msgstr ""
+
+#: admin/settings-page.php:486
+msgid "Seleziona due snapshot da confrontare."
+msgstr ""
+
+#: admin/settings-page.php:492
+msgid "Uno o entrambi gli snapshot non sono disponibili."
+msgstr ""
+
+#: admin/settings-page.php:597
+msgid "Le impostazioni sono state salvate, ma la prima generazione non è riuscita."
+msgstr ""
+
+#: admin/settings-page.php:839
+msgid "AI Friendly"
+msgstr ""
+
+#: admin/settings-page.php:840
+msgid "AI Content Hub"
+msgstr ""
+
+#: admin/settings-page.php:842
+msgid "Riapri configurazione guidata"
+msgstr ""
+
+#: admin/settings-page.php:846
+msgid "Impostazioni salvate"
+msgstr ""
+
+#: admin/settings-page.php:847
+msgid "Nascondi notifica"
+msgstr ""
+
+#: admin/settings-page.php:847
+msgid "×"
+msgstr ""
+
+#: admin/settings-page.php:855
+msgid "Configurazione guidata"
+msgstr ""
+
+#: admin/settings-page.php:856
+msgid "Prepariamo l’Hub sui dati reali del sito."
+msgstr ""
+
+#: admin/settings-page.php:858
+msgid "Configura più tardi"
+msgstr ""
+
+#: admin/settings-page.php:860
+msgid "Avanzamento configurazione"
+msgstr ""
+
+#: admin/settings-page.php:863
+msgid "Analisi"
+msgstr ""
+
+#: admin/settings-page.php:864
+msgid "Contenuti"
+msgstr ""
+
+#: admin/settings-page.php:865
+msgid "Markdown"
+msgstr ""
+
+#: admin/settings-page.php:866
+#: admin/settings-page.php:973
+msgid "Schema"
+msgstr ""
+
+#: admin/settings-page.php:867
+#: admin/settings-page.php:950
+msgid "Riepilogo"
+msgstr ""
+
+#: admin/settings-page.php:876
+msgid "Analisi del sito"
+msgstr ""
+
+#: admin/settings-page.php:876
+msgid "Questi dati sono stati rilevati da WordPress e dai plugin attivi."
+msgstr ""
+
+#: admin/settings-page.php:878
+msgid "Sito"
+msgstr ""
+
+#: admin/settings-page.php:879
+msgid "Provider SEO"
+msgstr ""
+
+#: admin/settings-page.php:879
+msgid "Nessuno rilevato"
+msgstr ""
+
+#: admin/settings-page.php:880
+msgid "WooCommerce"
+msgstr ""
+
+#: admin/settings-page.php:880
+#: admin/settings-page.php:881
+#: admin/settings-page.php:1240
+msgid "Attivo"
+msgstr ""
+
+#: admin/settings-page.php:880
+#: admin/settings-page.php:881
+msgid "Non rilevato"
+msgstr ""
+
+#: admin/settings-page.php:881
+msgid "Breakdance"
+msgstr ""
+
+#. translators: %s: formatted number of published items.
+#: admin/settings-page.php:889
+#, php-format
+msgid "%s pubblicato"
+msgid_plural "%s pubblicati"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/settings-page.php:898
+msgid "Contenuti da esporre"
+msgstr ""
+
+#: admin/settings-page.php:898
+msgid "Scegli solo i tipi destinati alla consultazione pubblica."
+msgstr ""
+
+#: admin/settings-page.php:911
+msgid "Includi i campi ACF nell’output Markdown"
+msgstr ""
+
+#: admin/settings-page.php:912
+msgid "Disattivato per impostazione predefinita: i valori estratti diventano pubblici negli endpoint .md."
+msgstr ""
+
+#: admin/settings-page.php:915
+msgid "Attenzione:"
+msgstr ""
+
+#: admin/settings-page.php:915
+msgid "attiva questa opzione solo se tutti i campi testuali ACF dei contenuti inclusi sono destinati alla pubblicazione."
+msgstr ""
+
+#: admin/settings-page.php:918
+msgid "Escludi contenuti noindex"
+msgstr ""
+
+#: admin/settings-page.php:919
+#: admin/settings-page.php:1189
+msgid "Escludi contenuti protetti da password"
+msgstr ""
+
+#: admin/settings-page.php:924
+msgid "Markdown e automazione"
+msgstr ""
+
+#: admin/settings-page.php:924
+msgid "Le impostazioni proposte mantengono l’output aggiornato ogni 24 ore."
+msgstr ""
+
+#: admin/settings-page.php:926
+msgid "Lista automatica"
+msgstr ""
+
+#: admin/settings-page.php:926
+msgid "Aggiunge i contenuti selezionati a llms.txt."
+msgstr ""
+
+#: admin/settings-page.php:927
+msgid "Genera e serve copie .md persistenti."
+msgstr ""
+
+#: admin/settings-page.php:928
+#: admin/settings-page.php:1889
+msgid "Rigenerazione automatica"
+msgstr ""
+
+#: admin/settings-page.php:928
+msgid "Esegue il processo tramite cron WordPress."
+msgstr ""
+
+#: admin/settings-page.php:929
+msgid "Trigger su modifica"
+msgstr ""
+
+#: admin/settings-page.php:929
+msgid "Avvia la rigenerazione quando salvi un contenuto."
+msgstr ""
+
+#: admin/settings-page.php:932
+#: admin/settings-page.php:1896
+msgid "Intervallo (ore)"
+msgstr ""
+
+#: admin/settings-page.php:933
+#: admin/settings-page.php:1897
+msgid "Contenuti per esecuzione"
+msgstr ""
+
+#: admin/settings-page.php:934
+msgid "Solo se il checksum cambia"
+msgstr ""
+
+#: admin/settings-page.php:939
+msgid "Puoi attivarlo ora e completare i dettagli nella sezione Schema."
+msgstr ""
+
+#: admin/settings-page.php:940
+msgid "Abilita Semantic Schema"
+msgstr ""
+
+#: admin/settings-page.php:940
+msgid "Modalità automatica, compatibile con il provider SEO rilevato."
+msgstr ""
+
+#: admin/settings-page.php:942
+msgid "Entità principale"
+msgstr ""
+
+#: admin/settings-page.php:942
+#: admin/settings-page.php:1287
+#: admin/settings-page.php:1350
+#: admin/settings-page.php:1829
+msgid "Organization"
+msgstr ""
+
+#: admin/settings-page.php:942
+#: admin/settings-page.php:1286
+#: admin/settings-page.php:1830
+msgid "Person"
+msgstr ""
+
+#: admin/settings-page.php:944
+msgid "sameAs, un URL per riga"
+msgstr ""
+
+#: admin/settings-page.php:945
+#: admin/settings-page.php:1262
+msgid "Rileva automaticamente le FAQ di Breakdance"
+msgstr ""
+
+#: admin/settings-page.php:950
+msgid "Controlla le scelte prima del salvataggio e della prima generazione."
+msgstr ""
+
+#: admin/settings-page.php:956
+msgid "Indietro"
+msgstr ""
+
+#: admin/settings-page.php:958
+msgid "Continua"
+msgstr ""
+
+#: admin/settings-page.php:960
+msgid "Riprova generazione"
+msgstr ""
+
+#: admin/settings-page.php:969
+msgid "Sezioni AI Content Hub"
+msgstr ""
+
+#: admin/settings-page.php:970
+#: admin/settings-page.php:978
+msgid "Overview"
+msgstr ""
+
+#: admin/settings-page.php:971
+#: admin/settings-page.php:1034
+msgid "Content"
+msgstr ""
+
+#: admin/settings-page.php:972
+msgid "Rules"
+msgstr ""
+
+#: admin/settings-page.php:974
+#: admin/settings-page.php:1873
+msgid "Automation"
+msgstr ""
+
+#: admin/settings-page.php:978
+msgid "Stato dell’output, diagnostica e azioni principali."
+msgstr ""
+
+#: admin/settings-page.php:982
+msgid "Stato llms.txt"
+msgstr ""
+
+#: admin/settings-page.php:984
+msgid "Caratteri:"
+msgstr ""
+
+#: admin/settings-page.php:985
+msgid "Righe:"
+msgstr ""
+
+#: admin/settings-page.php:986
+msgid "Ultima rigenerazione:"
+msgstr ""
+
+#: admin/settings-page.php:987
+msgid "Anteprima llms.txt"
+msgstr ""
+
+#: admin/settings-page.php:991
+msgid "Markdown Pack"
+msgstr ""
+
+#: admin/settings-page.php:992
+msgid "Static mode:"
+msgstr ""
+
+#: admin/settings-page.php:994
+#: admin/settings-page.php:1017
+msgid "attivo"
+msgstr ""
+
+#: admin/settings-page.php:994
+#: admin/settings-page.php:1017
+msgid "disattivo"
+msgstr ""
+
+#: admin/settings-page.php:997
+msgid "File:"
+msgstr ""
+
+#: admin/settings-page.php:998
+#: admin/settings-page.php:1884
+msgid "Spazio:"
+msgstr ""
+
+#: admin/settings-page.php:999
+msgid "Rigenera llms/MD"
+msgstr ""
+
+#: admin/settings-page.php:1003
+msgid "Avvisi rapidi"
+msgstr ""
+
+#: admin/settings-page.php:1010
+msgid "Aggiorna diagnostica"
+msgstr ""
+
+#: admin/settings-page.php:1015
+msgid "Stato:"
+msgstr ""
+
+#: admin/settings-page.php:1020
+msgid "Provider SEO:"
+msgstr ""
+
+#: admin/settings-page.php:1021
+#: admin/settings-page.php:1243
+msgid "Output:"
+msgstr ""
+
+#: admin/settings-page.php:1022
+msgid "Configura Schema"
+msgstr ""
+
+#: admin/settings-page.php:1027
+msgid "Modifica llms.txt"
+msgstr ""
+
+#: admin/settings-page.php:1028
+msgid "Aggiorna Overview"
+msgstr ""
+
+#: admin/settings-page.php:1029
+msgid "Rigenera adesso"
+msgstr ""
+
+#: admin/settings-page.php:1034
+msgid "Modifica llms.txt, controlla l’anteprima e gestisci i contenuti esposti."
+msgstr ""
+
+#: admin/settings-page.php:1037
+msgid "Struttura documento"
+msgstr ""
+
+#: admin/settings-page.php:1042
+msgid "Editor llms.txt"
+msgstr ""
+
+#: admin/settings-page.php:1048
+msgid ""
+"# Nome sito\n"
+"> Sintesi del sito"
+msgstr ""
+
+#: admin/settings-page.php:1051
+msgid "Contenuto custom Markdown. Se vuoto, il plugin genera in automatico."
+msgstr ""
+
+#: admin/settings-page.php:1054
+msgid "Aggiungi lista automatica dopo il contenuto custom"
+msgstr ""
+
+#: admin/settings-page.php:1057
+msgid "Anteprima live"
+msgstr ""
+
+#: admin/settings-page.php:1063
+msgid "Helper"
+msgstr ""
+
+#: admin/settings-page.php:1064
+msgid "Token stimati:"
+msgstr ""
+
+#: admin/settings-page.php:1065
+msgid "Validazione link:"
+msgstr ""
+
+#: admin/settings-page.php:1065
+msgid "0 issue"
+msgstr ""
+
+#: admin/settings-page.php:1067
+msgid "+ Heading"
+msgstr ""
+
+#: admin/settings-page.php:1068
+msgid "+ Link sezione"
+msgstr ""
+
+#: admin/settings-page.php:1069
+msgid "Sintesi per AI in 1-2 frasi.\">+ Sintesi"
+msgstr ""
+
+#: admin/settings-page.php:1071
+msgid "Variabili utili:"
+msgstr ""
+
+#: admin/settings-page.php:1077
+msgid "AI Simulation"
+msgstr ""
+
+#: admin/settings-page.php:1083
+msgid "Versioning llms"
+msgstr ""
+
+#: admin/settings-page.php:1085
+msgid "Crea snapshot"
+msgstr ""
+
+#: admin/settings-page.php:1086
+msgid "Aggiorna lista"
+msgstr ""
+
+#: admin/settings-page.php:1087
+msgid "Confronta selezionati"
+msgstr ""
+
+#: admin/settings-page.php:1094
+msgid "Diff affiancato"
+msgstr ""
+
+#: admin/settings-page.php:1098
+msgid "Sinistra"
+msgstr ""
+
+#: admin/settings-page.php:1099
+msgid "Destra"
+msgstr ""
+
+#: admin/settings-page.php:1110
+msgid "Pagine del sito"
+msgstr ""
+
+#: admin/settings-page.php:1112
+msgid "Cerca titolo"
+msgstr ""
+
+#: admin/settings-page.php:1114
+msgid "Tutti i tipi"
+msgstr ""
+
+#: admin/settings-page.php:1115
+#: admin/settings-page.php:1157
+#: includes/llms.php:58
+msgid "Pagine"
+msgstr ""
+
+#: admin/settings-page.php:1116
+#: includes/llms.php:69
+msgid "Post"
+msgstr ""
+
+#: admin/settings-page.php:1117
+#: includes/llms.php:80
+msgid "Prodotti"
+msgstr ""
+
+#: admin/settings-page.php:1120
+msgid "Tutti gli stati"
+msgstr ""
+
+#: admin/settings-page.php:1121
+msgid "Pubblicato"
+msgstr ""
+
+#: admin/settings-page.php:1122
+msgid "Bozza"
+msgstr ""
+
+#: admin/settings-page.php:1123
+msgid "Privato"
+msgstr ""
+
+#: admin/settings-page.php:1125
+msgid "Filtra"
+msgstr ""
+
+#: admin/settings-page.php:1130
+msgid "Inclusa/Esclusa"
+msgstr ""
+
+#: admin/settings-page.php:1131
+msgid "Titolo"
+msgstr ""
+
+#: admin/settings-page.php:1133
+msgid "Lingua"
+msgstr ""
+
+#: admin/settings-page.php:1134
+msgid "Stato"
+msgstr ""
+
+#: admin/settings-page.php:1135
+msgid "Token"
+msgstr ""
+
+#: admin/settings-page.php:1136
+msgid "Azione"
+msgstr ""
+
+#: admin/settings-page.php:1142
+msgid "Precedente"
+msgstr ""
+
+#: admin/settings-page.php:1143
+msgid "Pagina 1"
+msgstr ""
+
+#: admin/settings-page.php:1144
+msgid "Successiva"
+msgstr ""
+
+#: admin/settings-page.php:1150
+msgid "Filtri & esclusioni"
+msgstr ""
+
+#: admin/settings-page.php:1150
+msgid "Definisci cosa entra nell’output pubblico e cosa deve restarne fuori."
+msgstr ""
+
+#: admin/settings-page.php:1153
+msgid "Tipi di contenuto"
+msgstr ""
+
+#: admin/settings-page.php:1153
+msgid "Seleziona le raccolte pubbliche da esporre."
+msgstr ""
+
+#: admin/settings-page.php:1161
+msgid "Articoli (Post)"
+msgstr ""
+
+#: admin/settings-page.php:1166
+msgid "Prodotti WooCommerce"
+msgstr ""
+
+#: admin/settings-page.php:1181
+msgid "Protezioni"
+msgstr ""
+
+#: admin/settings-page.php:1181
+msgid "Rispetta indicazioni SEO e accessi riservati."
+msgstr ""
+
+#: admin/settings-page.php:1185
+msgid "Escludi pagine con meta"
+msgstr ""
+
+#: admin/settings-page.php:1185
+msgid "noindex"
+msgstr ""
+
+#: admin/settings-page.php:1193
+msgid "Includi i valori testuali dei campi ACF nell'output pubblico"
+msgstr ""
+
+#: admin/settings-page.php:1195
+msgid "Disattivato per impostazione predefinita: abilitalo solo se tutti i campi ACF dei contenuti inclusi sono destinati alla pubblicazione."
+msgstr ""
+
+#: admin/settings-page.php:1199
+msgid "Esclusioni granulari"
+msgstr ""
+
+#: admin/settings-page.php:1199
+msgid "Categorie, tag, template e pattern URL."
+msgstr ""
+
+#: admin/settings-page.php:1201
+msgid "Categorie"
+msgstr ""
+
+#: admin/settings-page.php:1209
+msgid "Tag"
+msgstr ""
+
+#: admin/settings-page.php:1217
+msgid "Template"
+msgstr ""
+
+#: admin/settings-page.php:1225
+msgid "Pattern URL"
+msgstr ""
+
+#: admin/settings-page.php:1225
+msgid "Un pattern per riga, con wildcard"
+msgstr ""
+
+#: admin/settings-page.php:1236
+msgid "Aggiunge identità, profili e contesto AI-friendly al JSON-LD, senza duplicare il lavoro del plugin SEO."
+msgstr ""
+
+#: admin/settings-page.php:1238
+msgid "Stato Semantic Schema"
+msgstr ""
+
+#: admin/settings-page.php:1240
+msgid "Disattivo"
+msgstr ""
+
+#: admin/settings-page.php:1242
+msgid "Provider:"
+msgstr ""
+
+#: admin/settings-page.php:1244
+msgid "Apri Schema Validator"
+msgstr ""
+
+#: admin/settings-page.php:1252
+msgid "Decidi se AI Friendly deve estendere Yoast/Rank Math o stampare un grafo autonomo."
+msgstr ""
+
+#: admin/settings-page.php:1257
+msgid "Abilita JSON-LD semantico AI Friendly"
+msgstr ""
+
+#: admin/settings-page.php:1266
+msgid "Modalità"
+msgstr ""
+
+#: admin/settings-page.php:1268
+msgid "Auto"
+msgstr ""
+
+#: admin/settings-page.php:1269
+msgid "Standalone"
+msgstr ""
+
+#: admin/settings-page.php:1270
+msgid "Estendi Yoast"
+msgstr ""
+
+#: admin/settings-page.php:1271
+msgid "Estendi Rank Math"
+msgstr ""
+
+#: admin/settings-page.php:1279
+msgid "Identità principale"
+msgstr ""
+
+#: admin/settings-page.php:1280
+msgid "Il nodo `Person` o `Organization` che rappresenta il sito o il brand."
+msgstr ""
+
+#: admin/settings-page.php:1299
+msgid "Ruolo / job title"
+msgstr ""
+
+#: admin/settings-page.php:1303
+msgid "Tipi aggiuntivi"
+msgstr ""
+
+#: admin/settings-page.php:1307
+msgid "EducationalOrganization"
+msgstr ""
+
+#: admin/settings-page.php:1312
+msgid "Aggiungi tipo"
+msgstr ""
+
+#: admin/settings-page.php:1314
+msgid "Genera un vero array"
+msgstr ""
+
+#: admin/settings-page.php:1314
+msgid "@type"
+msgstr ""
+
+#: admin/settings-page.php:1314
+msgid ", per esempio Organization + EducationalOrganization + NGO."
+msgstr ""
+
+#: admin/settings-page.php:1317
+msgid "Immagini dell'identità"
+msgstr ""
+
+#: admin/settings-page.php:1319
+msgid "Logo aziendale"
+msgstr ""
+
+#: admin/settings-page.php:1319
+msgid "Usato nel nodo Organization."
+msgstr ""
+
+#: admin/settings-page.php:1326
+#: admin/settings-page.php:1339
+msgid "Seleziona"
+msgstr ""
+
+#: admin/settings-page.php:1332
+msgid "Immagine principale"
+msgstr ""
+
+#: admin/settings-page.php:1332
+msgid "Logo, ritratto o immagine identitaria."
+msgstr ""
+
+#: admin/settings-page.php:1349
+msgid "Dati societari"
+msgstr ""
+
+#: admin/settings-page.php:1350
+msgid "Campi opzionali per"
+msgstr ""
+
+#: admin/settings-page.php:1350
+msgid ". Inserisci solo dati ufficiali e pubblicamente verificabili."
+msgstr ""
+
+#: admin/settings-page.php:1353
+msgid "Ragione sociale"
+msgstr ""
+
+#: admin/settings-page.php:1353
+msgid "Azienda S.p.A."
+msgstr ""
+
+#: admin/settings-page.php:1354
+msgid "Partita IVA"
+msgstr ""
+
+#: admin/settings-page.php:1354
+msgid "IT01234567890"
+msgstr ""
+
+#: admin/settings-page.php:1355
+msgid "Codice fiscale / taxID"
+msgstr ""
+
+#: admin/settings-page.php:1356
+msgid "Codice LEI"
+msgstr ""
+
+#: admin/settings-page.php:1356
+msgid "Codice LEI (20 caratteri)"
+msgstr ""
+
+#: admin/settings-page.php:1357
+msgid "Simbolo di borsa"
+msgstr ""
+
+#: admin/settings-page.php:1357
+msgid "ACME"
+msgstr ""
+
+#: admin/settings-page.php:1363
+msgid "Sede fisica"
+msgstr ""
+
+#: admin/settings-page.php:1364
+msgid "Indirizzo, tipologia del luogo, coordinate e indicazioni per raggiungerlo."
+msgstr ""
+
+#: admin/settings-page.php:1367
+msgid "Via Esempio 10"
+msgstr ""
+
+#: admin/settings-page.php:1368
+msgid "CAP"
+msgstr ""
+
+#: admin/settings-page.php:1369
+msgid "Città"
+msgstr ""
+
+#: admin/settings-page.php:1369
+msgid "Esempiopoli"
+msgstr ""
+
+#: admin/settings-page.php:1370
+msgid "Provincia / regione"
+msgstr ""
+
+#: admin/settings-page.php:1370
+msgid "MI"
+msgstr ""
+
+#: admin/settings-page.php:1371
+msgid "Paese (codice ISO)"
+msgstr ""
+
+#: admin/settings-page.php:1371
+msgid "IT"
+msgstr ""
+
+#: admin/settings-page.php:1372
+msgid "Nome sede"
+msgstr ""
+
+#: admin/settings-page.php:1372
+msgid "Sede principale"
+msgstr ""
+
+#: admin/settings-page.php:1373
+msgid "Tipo sede Schema.org"
+msgstr ""
+
+#: admin/settings-page.php:1373
+msgid "PerformingArtsTheater"
+msgstr ""
+
+#: admin/settings-page.php:1374
+msgid "Latitudine"
+msgstr ""
+
+#: admin/settings-page.php:1375
+msgid "Longitudine"
+msgstr ""
+
+#: admin/settings-page.php:1376
+msgid "Accesso con trasporto pubblico"
+msgstr ""
+
+#: admin/settings-page.php:1376
+msgid "Metro M2, fermata ..."
+msgstr ""
+
+#: admin/settings-page.php:1384
+msgid "Reparti e contatti"
+msgstr ""
+
+#: admin/settings-page.php:1384
+msgid "ContactPoint ripetibili con telefono, email, lingue e orari specifici."
+msgstr ""
+
+#: admin/settings-page.php:1388
+msgid "segreteria corsi"
+msgstr ""
+
+#: admin/settings-page.php:1390
+msgid "email@example.com"
+msgstr ""
+
+#: admin/settings-page.php:1391
+msgid "it, en"
+msgstr ""
+
+#: admin/settings-page.php:1392
+msgid "Mo-Fr 09:00-18:00"
+msgstr ""
+
+#: admin/settings-page.php:1397
+msgid "Aggiungi contatto"
+msgstr ""
+
+#: admin/settings-page.php:1401
+msgid "Orari di apertura"
+msgstr ""
+
+#: admin/settings-page.php:1401
+msgid "Genera"
+msgstr ""
+
+#: admin/settings-page.php:1401
+msgid "openingHoursSpecification"
+msgstr ""
+
+#: admin/settings-page.php:1401
+msgid "sul nodo della sede fisica."
+msgstr ""
+
+#: admin/settings-page.php:1405
+msgid "Monday, Tuesday"
+msgstr ""
+
+#: admin/settings-page.php:1414
+msgid "Aggiungi fascia oraria"
+msgstr ""
+
+#: admin/settings-page.php:1419
+msgid "Fondatori"
+msgstr ""
+
+#: admin/settings-page.php:1420
+msgid "Uno per riga nel formato `Nome | ruolo attuale`. Il ruolo è opzionale: omettilo se non è verificato o aggiornato."
+msgstr ""
+
+#: admin/settings-page.php:1423
+msgid "Persone fondatrici"
+msgstr ""
+
+#: admin/settings-page.php:1424
+msgid ""
+"Mario Rossi\n"
+"Laura Bianchi | CEO"
+msgstr ""
+
+#: admin/settings-page.php:1431
+msgid "Descrizioni"
+msgstr ""
+
+#: admin/settings-page.php:1432
+msgid "Usale per chiarire chi sei e distinguerti da entità simili."
+msgstr ""
+
+#: admin/settings-page.php:1440
+msgid "Descrizione disambiguante"
+msgstr ""
+
+#: admin/settings-page.php:1444
+msgid "Slogan"
+msgstr ""
+
+#: admin/settings-page.php:1445
+msgid "E-problem solving: sviluppo web fuori dagli schemi."
+msgstr ""
+
+#: admin/settings-page.php:1448
+msgid "Data fondazione"
+msgstr ""
+
+#: admin/settings-page.php:1456
+msgid "Profili e competenze"
+msgstr ""
+
+#: admin/settings-page.php:1457
+msgid "Una voce per riga. Sono i campi più utili per la disambiguazione."
+msgstr ""
+
+#: admin/settings-page.php:1461
+msgid "sameAs / profili esterni"
+msgstr ""
+
+#: admin/settings-page.php:1462
+msgid ""
+"https://www.linkedin.com/in/...\n"
+"https://github.com/..."
+msgstr ""
+
+#: admin/settings-page.php:1466
+msgid "knowsAbout"
+msgstr ""
+
+#: admin/settings-page.php:1467
+msgid ""
+"SEO tecnico\n"
+"AI content strategy"
+msgstr ""
+
+#: admin/settings-page.php:1471
+msgid "knowsLanguage"
+msgstr ""
+
+#: admin/settings-page.php:1472
+msgid ""
+"it-IT\n"
+"en-US"
+msgstr ""
+
+#: admin/settings-page.php:1476
+msgid "areaServed"
+msgstr ""
+
+#: admin/settings-page.php:1477
+msgid ""
+"City: Esempiopoli\n"
+"Country: Italia"
+msgstr ""
+
+#: admin/settings-page.php:1484
+msgid "Certificazioni"
+msgstr ""
+
+#: admin/settings-page.php:1484
+msgid "Accreditamenti, norme ISO e iscrizioni ad albi come nodi"
+msgstr ""
+
+#: admin/settings-page.php:1484
+msgid "Certification"
+msgstr ""
+
+#: admin/settings-page.php:1488
+msgid "ISO 9001"
+msgstr ""
+
+#: admin/settings-page.php:1489
+msgid "Certificato n."
+msgstr ""
+
+#: admin/settings-page.php:1491
+msgid "https://..."
+msgstr ""
+
+#: admin/settings-page.php:1496
+msgid "Aggiungi certificazione"
+msgstr ""
+
+#: admin/settings-page.php:1500
+msgid "Identificatori aggiuntivi"
+msgstr ""
+
+#: admin/settings-page.php:1500
+msgid "Coppie chiave-valore per RUNTS, REA, ATECO e registri di settore."
+msgstr ""
+
+#: admin/settings-page.php:1504
+msgid "RUNTS"
+msgstr ""
+
+#: admin/settings-page.php:1510
+msgid "Aggiungi identificatore"
+msgstr ""
+
+#: admin/settings-page.php:1514
+msgid "Entità collegate"
+msgstr ""
+
+#: admin/settings-page.php:1514
+msgid "Testate, collane, podcast, cicli di eventi, brand e società del gruppo. Ogni voce diventa un nodo collegato all’organizzazione come"
+msgstr ""
+
+#: admin/settings-page.php:1514
+msgid "o"
+msgstr ""
+
+#: admin/settings-page.php:1523
+msgid "Nome della testata o del brand"
+msgstr ""
+
+#: admin/settings-page.php:1525
+msgid "ISSN 1234-5678"
+msgstr ""
+
+#: admin/settings-page.php:1526
+msgid "Descrizione breve"
+msgstr ""
+
+#: admin/settings-page.php:1532
+msgid "Aggiungi entità"
+msgstr ""
+
+#: admin/settings-page.php:1537
+msgid "Catalogo servizi"
+msgstr ""
+
+#: admin/settings-page.php:1538
+msgid "Aggiunge un"
+msgstr ""
+
+#: admin/settings-page.php:1538
+msgid "OfferCatalog"
+msgstr ""
+
+#: admin/settings-page.php:1538
+msgid ". Le sorgenti WordPress compilano automaticamente nome, URL e descrizione; le righe manuali restano disponibili per integrazioni."
+msgstr ""
+
+#: admin/settings-page.php:1541
+msgid "Sorgenti WordPress"
+msgstr ""
+
+#: admin/settings-page.php:1550
+msgid "Aggiungi sorgente"
+msgstr ""
+
+#: admin/settings-page.php:1551
+msgid "Accetta ID di termini,"
+msgstr ""
+
+#: admin/settings-page.php:1551
+msgid "taxonomy:slug"
+msgstr ""
+
+#: admin/settings-page.php:1551
+msgid ", permalink di categorie/tassonomie e permalink di pagine o CPT."
+msgstr ""
+
+#: admin/settings-page.php:1554
+msgid "Voci manuali"
+msgstr ""
+
+#: admin/settings-page.php:1555
+msgid "Usale per completare o sostituire i dati ricavati dalle sorgenti WordPress."
+msgstr ""
+
+#: admin/settings-page.php:1569
+msgid "UX e Graphic Design"
+msgstr ""
+
+#: admin/settings-page.php:1573
+msgid "https://example.com/servizio/"
+msgstr ""
+
+#: admin/settings-page.php:1577
+msgid "Web design, UX/UI design"
+msgstr ""
+
+#: admin/settings-page.php:1581
+msgid "Italia"
+msgstr ""
+
+#: admin/settings-page.php:1619
+msgid "Aggiungi servizio"
+msgstr ""
+
+#: admin/settings-page.php:1624
+msgid "Schema automatico per tipo di contenuto"
+msgstr ""
+
+#: admin/settings-page.php:1625
+msgid "Genera un nodo Event, Course o Service per ogni contenuto di un post type, leggendo date, luogo e prezzo dai suoi campi. Sorgenti accettate:"
+msgstr ""
+
+#: admin/settings-page.php:1625
+msgid "I valori inseriti nel metabox del singolo contenuto hanno la precedenza."
+msgstr ""
+
+#: admin/settings-page.php:1635
+msgid "Data inizio"
+msgstr ""
+
+#: admin/settings-page.php:1636
+msgid "Data fine"
+msgstr ""
+
+#: admin/settings-page.php:1638
+msgid "Indirizzo luogo"
+msgstr ""
+
+#: admin/settings-page.php:1658
+msgid "Nessuno (solo metabox)"
+msgstr ""
+
+#: admin/settings-page.php:1675
+msgid "Date e luogo"
+msgstr ""
+
+#: admin/settings-page.php:1675
+msgid "Per eventi e corsi"
+msgstr ""
+
+#: admin/settings-page.php:1688
+msgid "Prezzo e valuta"
+msgstr ""
+
+#: admin/settings-page.php:1701
+msgid "Campi specifici"
+msgstr ""
+
+#: admin/settings-page.php:1701
+msgid "Course o Service"
+msgstr ""
+
+#: admin/settings-page.php:1723
+msgid "Le date vengono riconosciute nei formati ISO, Ymd (ACF), timestamp Unix e gg/mm/aaaa. Un Event senza data di inizio non viene pubblicato."
+msgstr ""
+
+#: admin/settings-page.php:1729
+msgid "Prodotti WooCommerce: schede commerciante"
+msgstr ""
+
+#: admin/settings-page.php:1730
+msgid "Completa lo schema Product con brand, spedizioni, politica di reso e validFrom del prezzo, i campi segnalati da Search Console per le schede commerciante. Funziona con i dati strutturati di WooCommerce, Yoast WooCommerce SEO e Rank Math e non sovrascrive valori già presenti."
+msgstr ""
+
+#: admin/settings-page.php:1735
+msgid "Arricchisci lo schema dei prodotti"
+msgstr ""
+
+#: admin/settings-page.php:1738
+msgid "Brand predefinito"
+msgstr ""
+
+#: admin/settings-page.php:1739
+msgid "Nome del brand"
+msgstr ""
+
+#: admin/settings-page.php:1742
+msgid "Brand dal prodotto (sorgente)"
+msgstr ""
+
+#: admin/settings-page.php:1747
+msgid "Aggiungi validFrom al prezzo (inizio promozione o ultima modifica del prodotto)"
+msgstr ""
+
+#: admin/settings-page.php:1752
+msgid "Spedizioni"
+msgstr ""
+
+#: admin/settings-page.php:1753
+msgid "Una regola per area. Costo e soglia di gratuità sono nella valuta del negozio; lascia vuota la soglia se la spedizione ha sempre lo stesso costo."
+msgstr ""
+
+#: admin/settings-page.php:1765
+msgid "Aggiungi regola di spedizione"
+msgstr ""
+
+#: admin/settings-page.php:1768
+msgid "Politica di reso"
+msgstr ""
+
+#: admin/settings-page.php:1769
+msgid "Il paese a cui si restituisce la merce è quello del negozio impostato in WooCommerce."
+msgstr ""
+
+#: admin/settings-page.php:1773
+msgid "Resi"
+msgstr ""
+
+#: admin/settings-page.php:1775
+msgid "Non indicare"
+msgstr ""
+
+#: admin/settings-page.php:1776
+msgid "Entro un numero di giorni"
+msgstr ""
+
+#: admin/settings-page.php:1777
+msgid "Senza limite di tempo"
+msgstr ""
+
+#: admin/settings-page.php:1778
+msgid "Resi non accettati"
+msgstr ""
+
+#: admin/settings-page.php:1782
+msgid "Giorni per il reso"
+msgstr ""
+
+#: admin/settings-page.php:1786
+msgid "Paesi in cui vale"
+msgstr ""
+
+#: admin/settings-page.php:1790
+msgid "Modalità di reso"
+msgstr ""
+
+#: admin/settings-page.php:1792
+msgid "Spedizione"
+msgstr ""
+
+#: admin/settings-page.php:1793
+msgid "In negozio"
+msgstr ""
+
+#: admin/settings-page.php:1794
+msgid "Punto di ritiro"
+msgstr ""
+
+#: admin/settings-page.php:1798
+msgid "Costi del reso"
+msgstr ""
+
+#: admin/settings-page.php:1800
+msgid "A carico del cliente"
+msgstr ""
+
+#: admin/settings-page.php:1801
+msgid "Reso gratuito"
+msgstr ""
+
+#: admin/settings-page.php:1802
+msgid "Costo fisso di spedizione"
+msgstr ""
+
+#: admin/settings-page.php:1806
+msgid "Costo fisso del reso"
+msgstr ""
+
+#: admin/settings-page.php:1822
+msgid "Realizzazione del sito"
+msgstr ""
+
+#: admin/settings-page.php:1823
+msgid "Indica facoltativamente la persona o l'organizzazione che ha sviluppato il sito. Il dato viene pubblicato come"
+msgstr ""
+
+#: admin/settings-page.php:1823
+msgid "creator"
+msgstr ""
+
+#: admin/settings-page.php:1823
+msgid "del nodo"
+msgstr ""
+
+#: admin/settings-page.php:1823
+msgid "WebSite"
+msgstr ""
+
+#: admin/settings-page.php:1834
+msgid "Nome sviluppatore / agenzia"
+msgstr ""
+
+#: admin/settings-page.php:1835
+msgid "Nome agenzia o professionista"
+msgstr ""
+
+#: admin/settings-page.php:1838
+msgid "URL"
+msgstr ""
+
+#: admin/settings-page.php:1839
+msgid "https://www.esempio.it/"
+msgstr ""
+
+#: admin/settings-page.php:1846
+msgid "Profilo e licenza"
+msgstr ""
+
+#: admin/settings-page.php:1847
+msgid "Collega una pagina profilo e una licenza riutilizzabile sui contenuti."
+msgstr ""
+
+#: admin/settings-page.php:1851
+msgid "Pagina ProfilePage"
+msgstr ""
+
+#: admin/settings-page.php:1864
+msgid "License URL"
+msgstr ""
+
+#: admin/settings-page.php:1865
+msgid "https://creativecommons.org/licenses/by/4.0/"
+msgstr ""
+
+#: admin/settings-page.php:1873
+msgid "Controlla generazione, frequenza, notifiche e cronologia operativa."
+msgstr ""
+
+#: admin/settings-page.php:1876
+msgid "Output statico"
+msgstr ""
+
+#: admin/settings-page.php:1876
+msgid "Persistenza e spazio utilizzato dai file Markdown."
+msgstr ""
+
+#: admin/settings-page.php:1880
+msgid "Salva e servi file MD statici"
+msgstr ""
+
+#: admin/settings-page.php:1883
+msgid "File salvati:"
+msgstr ""
+
+#: admin/settings-page.php:1889
+msgid "Programmazione e dimensione dei batch."
+msgstr ""
+
+#: admin/settings-page.php:1893
+msgid "Rigenera i file .md ad intervallo su tutto il sito (cron)"
+msgstr ""
+
+#: admin/settings-page.php:1899
+msgid "Per siti molto grandi, il cron processa solo questo numero di contenuti per run e continua dal successivo."
+msgstr ""
+
+#: admin/settings-page.php:1901
+msgid "Prossima esecuzione:"
+msgstr ""
+
+#: admin/settings-page.php:1906
+msgid "Trigger su eventi"
+msgstr ""
+
+#: admin/settings-page.php:1906
+msgid "Decidi quando un contenuto deve aggiornare l’output."
+msgstr ""
+
+#: admin/settings-page.php:1910
+msgid "Rigenera quando un contenuto viene salvato/aggiornato"
+msgstr ""
+
+#: admin/settings-page.php:1914
+msgid "Rigenera solo se il contenuto e cambiato (checksum)"
+msgstr ""
+
+#: admin/settings-page.php:1919
+msgid "Notifiche"
+msgstr ""
+
+#: admin/settings-page.php:1919
+msgid "Segnala gli errori agli amministratori."
+msgstr ""
+
+#: admin/settings-page.php:1923
+msgid "Mostra notice admin quando una rigenerazione ha errori"
+msgstr ""
+
+#: admin/settings-page.php:1927
+msgid "Invia email in caso di errori rigenerazione"
+msgstr ""
+
+#: admin/settings-page.php:1929
+msgid "Email destinatario"
+msgstr ""
+
+#: admin/settings-page.php:1935
+msgid "Azioni manuali"
+msgstr ""
+
+#: admin/settings-page.php:1935
+msgid "Genera, forza o rimuovi i file statici."
+msgstr ""
+
+#: admin/settings-page.php:1937
+msgid "Rigenera tutti i file MD"
+msgstr ""
+
+#: admin/settings-page.php:1938
+msgid "Forza rigenerazione"
+msgstr ""
+
+#: admin/settings-page.php:1939
+msgid "Elimina tutti i file"
+msgstr ""
+
+#: admin/settings-page.php:1943
+msgid "Ultima esecuzione:"
+msgstr ""
+
+#: admin/settings-page.php:1945
+msgid "Rigenerati"
+msgstr ""
+
+#: admin/settings-page.php:1946
+msgid "Saltati"
+msgstr ""
+
+#: admin/settings-page.php:1947
+msgid "Errori"
+msgstr ""
+
+#: admin/settings-page.php:1955
+msgid "Timeline aggiornamenti"
+msgstr ""
+
+#: admin/settings-page.php:1956
+msgid "Aggiorna timeline"
+msgstr ""
+
+#: admin/settings-page.php:1963
+msgid "Salva impostazioni"
+msgstr ""
+
+#: admin/settings-page.php:1967
+msgid "Sviluppato da"
+msgstr ""
+
+#: admin/settings-page.php:1977
+msgid "Impostazioni"
+msgstr ""
+
+#: includes/admin-diagnostics.php:20
+msgid "Nessun tipo di contenuto abilitato."
+msgstr ""
+
+#: includes/admin-diagnostics.php:47
+msgid "Zero contenuti inclusi con le regole correnti."
+msgstr ""
+
+#. translators: %d: regeneration error count.
+#: includes/admin-diagnostics.php:57
+#, php-format
+msgid "Ultima rigenerazione con errori: %d"
+msgstr ""
+
+#: includes/admin-diagnostics.php:66
+msgid "Rigenerazione automatica non attiva (cron o file statici disabilitati)."
+msgstr ""
+
+#: includes/admin-diagnostics.php:77
+msgid "Semantic Schema attivo: nome entità non impostato, verrà usato il nome del sito."
+msgstr ""
+
+#: includes/admin-diagnostics.php:84
+msgid "Semantic Schema attivo: aggiungi profili sameAs per migliorare la disambiguazione."
+msgstr ""
+
+#: includes/admin-diagnostics.php:91
+msgid "Semantic Schema usa standalone perché la modalità scelta non corrisponde al provider SEO rilevato."
+msgstr ""
+
+#: includes/admin-diagnostics.php:100
+msgid "Semantic Schema: il catalogo servizi legacy non contiene JSON valido e non verrà aggiunto al grafo."
+msgstr ""
+
+#. translators: %s: comma-separated unresolved sources.
+#: includes/admin-diagnostics.php:116
+#, php-format
+msgid "Semantic Schema: sorgenti OfferCatalog non risolte: %s"
+msgstr ""
+
+#: includes/admin-diagnostics.php:128
+msgid "Sono presenti pattern URL duplicati nelle esclusioni."
+msgstr ""
+
+#: includes/admin-diagnostics.php:138
+msgid "Il sito scoraggia l'indicizzazione (Impostazioni > Lettura)."
+msgstr ""
+
+#: includes/admin-diagnostics.php:147
+msgid "robots.txt sembra bloccare tutto il sito (Disallow: /)."
+msgstr ""
+
+#. translators: 1: error count, 2: trigger, 3: processed items, 4: regenerated items, 5: skipped items.
+#: includes/admin-notifications.php:33
+#, php-format
+msgid "AI Friendly: rigenerazione con %1$d errori (%2$s). Processati %3$d, rigenerati %4$d, saltati %5$d."
+msgstr ""
+
+#: includes/admin-notifications.php:51
+msgid "AI Friendly - Rigenerazione con errori"
+msgstr ""
+
+#: includes/head.php:12
+msgid "Istruzioni LLM"
+msgstr ""
+
+#: includes/head.php:23
+msgid "Versione Markdown"
+msgstr ""
+
+#. translators: 1: added lines, 2: removed lines, 3: token delta sign, 4: token delta.
+#: includes/llms-history.php:82
+#, php-format
+msgid "Linee +%1$d / -%2$d, token %3$s%4$d"
+msgstr ""
+
+#: includes/llms-history.php:89
+msgid "Primo snapshot disponibile."
+msgstr ""
+
+#: includes/llms-history.php:130
+msgid "Snapshot non trovato."
+msgstr ""
+
+#: includes/llms-history.php:181
+msgid "Link con formato non valido (atteso http/https o percorso relativo)."
+msgstr ""
+
+#: includes/llms-history.php:192
+msgid "URL non interpretabile."
+msgstr ""
+
+#: includes/llms-history.php:202
+msgid "Link relativo senza estensione .md o llms.txt."
+msgstr ""
+
+#: includes/llms-history.php:367
+msgid "Riduci frasi ripetute o simili per migliorare compattezza."
+msgstr ""
+
+#: includes/llms-history.php:370
+msgid "Token elevati: valuta sintesi di sezioni secondarie."
+msgstr ""
+
+#: includes/llms-history.php:373
+msgid "Aggiungi heading per migliorare leggibilità strutturale."
+msgstr ""
+
+#: includes/llms-history.php:376
+msgid "Valuta link diretti alle risorse principali."
+msgstr ""
+
+#: includes/llms-history.php:379
+msgid "Struttura buona: mantieni sezioni brevi e stabili."
+msgstr ""
+
+#: includes/markdown.php:148
+msgid "Errore:"
+msgstr ""
+
+#: includes/markdown.php:149
+msgid "Errore nella generazione del contenuto Markdown."
+msgstr ""
+
+#: includes/migration.php:387
+msgid "Passaggio a Sernicola Labs AI Friendly completato."
+msgstr ""
+
+#: includes/migration.php:390
+msgid "I dati sono stati importati e il vecchio plugin è stato disattivato automaticamente."
+msgstr ""
+
+#: includes/migration.php:392
+msgid "I dati sono stati importati, ma il vecchio plugin richiede la disattivazione manuale."
+msgstr ""
+
+#: includes/migration.php:394
+msgid "I dati della versione precedente sono disponibili nel nuovo plugin."
+msgstr ""
+
+#: includes/migration.php:397
+msgid "Il riepilogo nella Content Hub scomparirà automaticamente dopo una rigenerazione riuscita e la rimozione manuale del vecchio plugin."
+msgstr ""
+
+#: includes/migration.php:424
+msgid "Passaggio dalla versione precedente"
+msgstr ""
+
+#: includes/migration.php:425
+msgid "Migrazione completata"
+msgstr ""
+
+#: includes/migration.php:426
+msgid "Questo riepilogo scomparirà automaticamente dopo una nuova rigenerazione completata senza errori e la rimozione del vecchio plugin."
+msgstr ""
+
+#: includes/migration.php:431
+msgid "Dati"
+msgstr ""
+
+#: includes/migration.php:432
+msgid "Completato"
+msgstr ""
+
+#: includes/migration.php:433
+msgid "Impostazioni, esclusioni, Schema personalizzati e snapshot disponibili sono stati collegati alla nuova versione."
+msgstr ""
+
+#: includes/migration.php:437
+msgid "Rigenerazione"
+msgstr ""
+
+#: includes/migration.php:439
+msgid "Completata"
+msgstr ""
+
+#: includes/migration.php:439
+msgid "Da completare"
+msgstr ""
+
+#: includes/migration.php:441
+msgid "La nuova generazione è terminata senza errori."
+msgstr ""
+
+#: includes/migration.php:441
+msgid "Forza una nuova rigenerazione dei contenuti dalla sezione Automation."
+msgstr ""
+
+#: includes/migration.php:445
+msgid "Vecchio plugin"
+msgstr ""
+
+#: includes/migration.php:447
+msgid "Rimosso"
+msgstr ""
+
+#: includes/migration.php:448
+msgid "Il vecchio plugin non è più installato."
+msgstr ""
+
+#: includes/migration.php:450
+msgid "Richiede intervento"
+msgstr ""
+
+#: includes/migration.php:451
+msgid "Il vecchio plugin è ancora attivo e deve essere disattivato manualmente."
+msgstr ""
+
+#: includes/migration.php:453
+msgid "Da rimuovere"
+msgstr ""
+
+#: includes/migration.php:454
+msgid "Il vecchio plugin è disattivato. Puoi eliminarlo dopo aver verificato i dati."
+msgstr ""
+
+#: includes/migration.php:459
+msgid "Vai alla rigenerazione"
+msgstr ""
+
+#: includes/migration.php:460
+msgid "Apri i plugin installati"
+msgstr ""
+
+#. translators: %d: regeneration interval in hours.
+#: includes/scheduler.php:28
+#, php-format
+msgid "Ogni %d ore"
+msgstr ""
+
+#. translators: %d: regeneration interval in hours.
+#: includes/scheduler.php:48
+#, php-format
+msgid "AI Friendly: ogni %d ore"
+msgstr ""
+
+#: includes/schema-mapping.php:431
+msgid "online"
+msgstr ""
+
+#. translators: %s: site name.
+#: includes/schema.php:624
+#, php-format
+msgid "Servizi %s"
+msgstr ""
+
+#: sernicola-labs-ai-friendly.php:24
+msgid "AI Friendly requires PHP 8.1 or later."
+msgstr ""
+
+#: sernicola-labs-ai-friendly.php:25
+msgid "Current version:"
+msgstr ""

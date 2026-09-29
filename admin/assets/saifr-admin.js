@@ -233,6 +233,8 @@
             '<button type="button" class="button button-link-delete saifr-schema-service-remove">' + esc(t('remove')) + '</button>' +
             '</div>' +
             '<div class="saifr-schema-service-grid">' +
+            '<div class="saifr-schema-field-group saifr-schema-service-identity">' +
+            '<div class="saifr-schema-field-group-head"><strong>' + esc(t('serviceIdentity')) + '</strong></div>' +
             serviceField('name', t('name'), 'text', 'UX e Graphic Design') +
             serviceField('url', t('pageUrl'), 'url', 'https://example.com/servizio/') +
             serviceField('serviceType', t('serviceType'), 'text', 'Web design, UX/UI design') +
@@ -241,10 +243,14 @@
             '<span>' + esc(t('description')) + '</span>' +
             '<textarea rows="3" data-service-field="description" placeholder="' + esc(t('serviceDescription')) + '"></textarea>' +
             '</label>' +
+            '</div>' +
+            '<div class="saifr-schema-field-group saifr-schema-service-offer">' +
+            '<div class="saifr-schema-field-group-head"><strong>' + esc(t('offer')) + '</strong></div>' +
             serviceField('price', t('price'), 'text', '0') +
             serviceField('priceCurrency', t('currency'), 'text', 'EUR') +
             serviceSelect('vatIncluded', t('vatIncluded'), { '': t('vatUnspecified'), yes: t('vatYes'), no: t('vatNo') }) +
             serviceSelect('billingPeriod', t('billingPeriod'), { '': t('billingOnce'), month: t('billingMonth'), year: t('billingYear') }) +
+            '</div>' +
             '</div>' +
             '</div>';
     }
@@ -323,6 +329,15 @@
                 $input.wrap('<label class="saifr-repeat-field"></label>');
                 $input.before('<span>' + esc(labels.fields[field] || field) + '</span>');
             });
+            if (type === 'shipping' && !$row.children('.saifr-shipping-group').length) {
+                var $fields = $row.children('.saifr-repeat-field');
+                $fields.slice(0, 3).wrapAll('<div class="saifr-shipping-group saifr-shipping-group-rate"></div>');
+                $fields.slice(3, 5).wrapAll('<div class="saifr-shipping-group saifr-shipping-group-handling"></div>');
+                $fields.slice(5, 7).wrapAll('<div class="saifr-shipping-group saifr-shipping-group-transit"></div>');
+                $row.find('.saifr-shipping-group-rate').prepend('<strong>' + esc(t('shippingCost')) + '</strong>');
+                $row.find('.saifr-shipping-group-handling').prepend('<strong>' + esc(t('handlingTime')) + '</strong>');
+                $row.find('.saifr-shipping-group-transit').prepend('<strong>' + esc(t('transitTime')) + '</strong>');
+            }
             $row.find('.saifr-schema-repeater-head strong').text(labels.title + ' ' + (index + 1));
         });
     }
@@ -353,6 +368,21 @@
         $('#saifr-section-schema [data-entity-scope]').each(function () {
             var visible = String($(this).data('entity-scope')).toLowerCase() === active;
             $(this).prop('hidden', !visible).attr('aria-hidden', visible ? 'false' : 'true');
+        });
+    }
+
+    function updateSchemaTypeRule($rule) {
+        var type = String($rule.find('.saifr-rule-type').val() || '');
+        var $summary = $rule.children('summary');
+        var $badge = $summary.find('.saifr-badge');
+        $rule.toggleClass('is-configured', type !== '');
+        $badge
+            .toggleClass('is-ok', type !== '')
+            .toggleClass('is-muted', type === '')
+            .text(type || t('manualOnly'));
+        $rule.find('[data-rule-applies]').each(function () {
+            var supported = String($(this).data('rule-applies') || '').split(/[\s,]+/).filter(Boolean);
+            $(this).prop('hidden', type === '' || supported.indexOf(type) === -1).attr('aria-hidden', type !== '' && supported.indexOf(type) !== -1 ? 'false' : 'true');
         });
     }
 
@@ -684,6 +714,8 @@
         });
         $('#saifr-schema-entity-type').on('change', updateSchemaEntityScope);
         updateSchemaEntityScope();
+        $('.saifr-type-rule').each(function () { updateSchemaTypeRule($(this)); });
+        $(document).on('change', '.saifr-rule-type', function () { updateSchemaTypeRule($(this).closest('.saifr-type-rule')); });
         syncSchemaMediaControls();
 
         $(document).on('click', '.saifr-repeater-add', function () {

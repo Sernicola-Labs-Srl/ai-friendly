@@ -91,6 +91,9 @@ add_action(
                     'forcedComplete'       => __( 'Rigenerazione forzata completata.', 'sernicola-labs-ai-friendly' ),
                     'confirmDeleteFiles'   => __( 'Eliminare tutti i file Markdown salvati?', 'sernicola-labs-ai-friendly' ),
                     'service'              => __( 'Servizio', 'sernicola-labs-ai-friendly' ),
+                    'serviceIdentity'      => __( 'Identità del servizio', 'sernicola-labs-ai-friendly' ),
+                    'offer'                => __( 'Offerta', 'sernicola-labs-ai-friendly' ),
+                    'manualOnly'           => __( 'Solo manuale', 'sernicola-labs-ai-friendly' ),
                     'name'                 => __( 'Nome', 'sernicola-labs-ai-friendly' ),
                     'pageUrl'              => __( 'URL pagina', 'sernicola-labs-ai-friendly' ),
                     'serviceType'          => __( 'Tipo servizio', 'sernicola-labs-ai-friendly' ),
@@ -153,6 +156,9 @@ add_action(
                     'noIdentifiers'         => __( 'Nessun identificatore aggiuntivo configurato.', 'sernicola-labs-ai-friendly' ),
                     'noOfferSources'        => __( 'Nessuna sorgente WordPress configurata.', 'sernicola-labs-ai-friendly' ),
                     'shippingRule'          => __( 'Regola di spedizione', 'sernicola-labs-ai-friendly' ),
+                    'shippingCost'          => __( 'Costo', 'sernicola-labs-ai-friendly' ),
+                    'handlingTime'          => __( 'Preparazione', 'sernicola-labs-ai-friendly' ),
+                    'transitTime'           => __( 'Consegna', 'sernicola-labs-ai-friendly' ),
                     'noShippingRules'       => __( 'Nessuna regola di spedizione configurata.', 'sernicola-labs-ai-friendly' ),
                     'countries'             => __( 'Paesi (codici ISO)', 'sernicola-labs-ai-friendly' ),
                     'shippingRate'          => __( 'Costo spedizione', 'sernicola-labs-ai-friendly' ),
@@ -1544,7 +1550,7 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                             <button type="button" class="button button-secondary saifr-repeater-add" data-target="offerSources"><?php esc_html_e( 'Aggiungi sorgente', 'sernicola-labs-ai-friendly' ); ?></button>
                             <small><?php esc_html_e( 'Accetta ID di termini,', 'sernicola-labs-ai-friendly' ); ?> <code><?php esc_html_e( 'taxonomy:slug', 'sernicola-labs-ai-friendly' ); ?></code><?php esc_html_e( ', permalink di categorie/tassonomie e permalink di pagine o CPT.', 'sernicola-labs-ai-friendly' ); ?></small>
                         </div>
-                        <div class="saifr-schema-subsection-head">
+                        <div class="saifr-schema-subsection-head saifr-schema-subsection-offer">
                             <strong><?php esc_html_e( 'Voci manuali', 'sernicola-labs-ai-friendly' ); ?></strong>
                             <span><?php esc_html_e( 'Usale per completare o sostituire i dati ricavati dalle sorgenti WordPress.', 'sernicola-labs-ai-friendly' ); ?></span>
                         </div>
@@ -1556,6 +1562,8 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                                         <button type="button" class="button button-link-delete saifr-schema-service-remove"><?php esc_html_e( 'Rimuovi', 'sernicola-labs-ai-friendly' ); ?></button>
                                     </div>
                                     <div class="saifr-schema-service-grid">
+                                        <div class="saifr-schema-field-group saifr-schema-service-identity">
+                                            <div class="saifr-schema-field-group-head"><strong><?php esc_html_e( 'Identità del servizio', 'sernicola-labs-ai-friendly' ); ?></strong></div>
                                         <label class="saifr-field">
                                             <span><?php esc_html_e( 'Nome', 'sernicola-labs-ai-friendly' ); ?></span>
                                             <input type="text" data-service-field="name" name="schema_services[<?php echo esc_attr( $index ); ?>][name]" value="<?php echo esc_attr( $service['name'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'UX e Graphic Design', 'sernicola-labs-ai-friendly' ); ?>">
@@ -1576,6 +1584,9 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                                             <span><?php esc_html_e( 'Descrizione', 'sernicola-labs-ai-friendly' ); ?></span>
                                             <textarea data-service-field="description" name="schema_services[<?php echo esc_attr( $index ); ?>][description]" rows="3" placeholder="<?php esc_attr_e( 'Descrizione breve del servizio.', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $service['description'] ?? '' ); ?></textarea>
                                         </label>
+                                        </div>
+                                        <div class="saifr-schema-field-group saifr-schema-service-offer">
+                                            <div class="saifr-schema-field-group-head"><strong><?php esc_html_e( 'Offerta', 'sernicola-labs-ai-friendly' ); ?></strong></div>
                                         <label class="saifr-field">
                                             <span><?php esc_html_e( 'Prezzo', 'sernicola-labs-ai-friendly' ); ?></span>
                                             <input type="text" data-service-field="price" name="schema_services[<?php echo esc_attr( $index ); ?>][price]" value="<?php echo esc_attr( $service['price'] ?? '' ); ?>" placeholder="0">
@@ -1600,6 +1611,7 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                                                 <option value="year" <?php selected( $service['billingPeriod'] ?? '', 'year' ); ?>><?php esc_html_e( 'Annuale', 'sernicola-labs-ai-friendly' ); ?></option>
                                             </select>
                                         </label>
+                                        </div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -1608,7 +1620,7 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                     </article>
 
                     <article class="saifr-schema-card saifr-schema-card-wide">
-                        <div class="saifr-schema-card-head">
+                        <div class="saifr-schema-card-head saifr-schema-mapping-head">
                             <h4><?php esc_html_e( 'Schema automatico per tipo di contenuto', 'sernicola-labs-ai-friendly' ); ?></h4>
                             <p><?php esc_html_e( 'Genera un nodo Event, Course o Service per ogni contenuto di un post type, leggendo date, luogo e prezzo dai suoi campi. Sorgenti accettate:', 'sernicola-labs-ai-friendly' ); ?> <code>meta:chiave</code>, <code>acf:campo</code>, <code>tax:tassonomia</code>, <code>text:valore fisso</code>. <?php esc_html_e( 'I valori inseriti nel metabox del singolo contenuto hanno la precedenza.', 'sernicola-labs-ai-friendly' ); ?></p>
                         </div>
@@ -1638,17 +1650,18 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                                         <code><?php echo esc_html( $rule_post_type ); ?></code>
                                         <span class="saifr-badge <?php echo $rule_type !== '' ? 'is-ok' : 'is-muted'; ?>"><?php echo $rule_type !== '' ? esc_html( $rule_type ) : esc_html__( 'Solo manuale', 'sernicola-labs-ai-friendly' ); ?></span>
                                     </summary>
-                                    <div class="saifr-schema-fields">
+                                    <div class="saifr-schema-rule-body">
+                                    <div class="saifr-schema-rule-controls">
                                         <label class="saifr-field">
                                             <span><?php esc_html_e( 'Tipo Schema', 'sernicola-labs-ai-friendly' ); ?></span>
-                                            <select name="<?php echo esc_attr( $rule_name . '[type]' ); ?>">
+                                            <select class="saifr-rule-type" name="<?php echo esc_attr( $rule_name . '[type]' ); ?>">
                                                 <option value=""><?php esc_html_e( 'Nessuno (solo metabox)', 'sernicola-labs-ai-friendly' ); ?></option>
                                                 <?php foreach ( saifr_schema_rule_types() as $allowed_rule_type ) : ?>
                                                     <option value="<?php echo esc_attr( $allowed_rule_type ); ?>" <?php selected( $rule_type, $allowed_rule_type ); ?>><?php echo esc_html( $allowed_rule_type ); ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </label>
-                                        <label class="saifr-field">
+                                        <label class="saifr-field saifr-rule-attendance" data-rule-applies="Event">
                                             <span><?php esc_html_e( 'Modalità di partecipazione', 'sernicola-labs-ai-friendly' ); ?></span>
                                             <select name="<?php echo esc_attr( $rule_name . '[attendanceMode]' ); ?>">
                                                 <option value="offline" <?php selected( $type_rule['attendanceMode'] ?? 'offline', 'offline' ); ?>><?php esc_html_e( 'In presenza', 'sernicola-labs-ai-friendly' ); ?></option>
@@ -1656,12 +1669,48 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                                                 <option value="mixed" <?php selected( $type_rule['attendanceMode'] ?? '', 'mixed' ); ?>><?php esc_html_e( 'Mista', 'sernicola-labs-ai-friendly' ); ?></option>
                                             </select>
                                         </label>
+                                    </div>
+                                    <div class="saifr-rule-field-groups">
+                                        <section class="saifr-schema-field-group" data-rule-applies="Event Course">
+                                            <div class="saifr-schema-field-group-head"><strong><?php esc_html_e( 'Date e luogo', 'sernicola-labs-ai-friendly' ); ?></strong><span><?php esc_html_e( 'Per eventi e corsi', 'sernicola-labs-ai-friendly' ); ?></span></div>
+                                            <div class="saifr-schema-fields">
                                         <?php foreach ( $rule_fields as $rule_field => $rule_field_meta ) : ?>
-                                            <label class="saifr-field">
+                                            <?php if ( in_array( $rule_field, [ 'startDate', 'endDate', 'locationName', 'locationAddress' ], true ) ) : ?>
+                                            <label class="saifr-field" data-rule-applies="<?php echo esc_attr( $rule_field_meta[1] ); ?>">
                                                 <span><?php echo esc_html( $rule_field_meta[0] ); ?> <small>(<?php echo esc_html( $rule_field_meta[1] ); ?>)</small></span>
                                                 <input type="text" list="<?php echo esc_attr( $datalist_id ); ?>" name="<?php echo esc_attr( $rule_name . '[' . $rule_field . ']' ); ?>" value="<?php echo esc_attr( $type_rule[ $rule_field ] ?? '' ); ?>" placeholder="<?php echo esc_attr( $rule_field_meta[2] ); ?>">
                                             </label>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
+                                            </div>
+                                        </section>
+                                        <section class="saifr-schema-field-group" data-rule-applies="Event Course Service">
+                                            <div class="saifr-schema-field-group-head"><strong><?php esc_html_e( 'Offerta', 'sernicola-labs-ai-friendly' ); ?></strong><span><?php esc_html_e( 'Prezzo e valuta', 'sernicola-labs-ai-friendly' ); ?></span></div>
+                                            <div class="saifr-schema-fields">
+                                        <?php foreach ( $rule_fields as $rule_field => $rule_field_meta ) : ?>
+                                            <?php if ( in_array( $rule_field, [ 'price', 'priceCurrency' ], true ) ) : ?>
+                                            <label class="saifr-field" data-rule-applies="<?php echo esc_attr( $rule_field_meta[1] ); ?>">
+                                                <span><?php echo esc_html( $rule_field_meta[0] ); ?> <small>(<?php echo esc_html( $rule_field_meta[1] ); ?>)</small></span>
+                                                <input type="text" list="<?php echo esc_attr( $datalist_id ); ?>" name="<?php echo esc_attr( $rule_name . '[' . $rule_field . ']' ); ?>" value="<?php echo esc_attr( $type_rule[ $rule_field ] ?? '' ); ?>" placeholder="<?php echo esc_attr( $rule_field_meta[2] ); ?>">
+                                            </label>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                            </div>
+                                        </section>
+                                        <section class="saifr-schema-field-group" data-rule-applies="Course Service">
+                                            <div class="saifr-schema-field-group-head"><strong><?php esc_html_e( 'Campi specifici', 'sernicola-labs-ai-friendly' ); ?></strong><span><?php esc_html_e( 'Course o Service', 'sernicola-labs-ai-friendly' ); ?></span></div>
+                                            <div class="saifr-schema-fields">
+                                        <?php foreach ( $rule_fields as $rule_field => $rule_field_meta ) : ?>
+                                            <?php if ( in_array( $rule_field, [ 'courseCode', 'educationalLevel', 'serviceType', 'areaServed' ], true ) ) : ?>
+                                            <label class="saifr-field" data-rule-applies="<?php echo esc_attr( $rule_field_meta[1] ); ?>">
+                                                <span><?php echo esc_html( $rule_field_meta[0] ); ?> <small>(<?php echo esc_html( $rule_field_meta[1] ); ?>)</small></span>
+                                                <input type="text" list="<?php echo esc_attr( $datalist_id ); ?>" name="<?php echo esc_attr( $rule_name . '[' . $rule_field . ']' ); ?>" value="<?php echo esc_attr( $type_rule[ $rule_field ] ?? '' ); ?>" placeholder="<?php echo esc_attr( $rule_field_meta[2] ); ?>">
+                                            </label>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                            </div>
+                                        </section>
+                                    </div>
                                         <datalist id="<?php echo esc_attr( $datalist_id ); ?>">
                                             <?php foreach ( saifr_schema_discover_sources( $rule_post_type ) as $suggested_source ) : ?>
                                                 <option value="<?php echo esc_attr( $suggested_source ); ?>"></option>

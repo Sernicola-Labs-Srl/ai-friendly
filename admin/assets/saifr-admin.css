@@ -363,6 +363,12 @@
 .saifr-schema-card-head h4 { margin: 0 0 5px; font-size: 17px; letter-spacing: -.015em; }
 .saifr-schema-card-head p { max-width: 800px; margin: 0; color: var(--saifr-muted); font-size: 13px; line-height: 1.45; }
 .saifr-schema-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.saifr-schema-fields > .saifr-field:not(.saifr-field-check) > span {
+    display: flex;
+    align-items: flex-start;
+    min-block-size: var(--saifr-schema-label-height, 34px);
+    line-height: 1.35;
+}
 .saifr-schema-fields > .saifr-field:has(textarea) { grid-column: 1 / -1; }
 .saifr-schema-fields-inline { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; }
 .saifr-field-check { display: flex; align-items: center; gap: 9px; min-height: 42px; padding: 10px 12px; border: 1px solid var(--saifr-border); background: var(--saifr-bg); }
@@ -423,6 +429,43 @@
 .saifr-type-rule > .saifr-schema-fields { padding: 16px; }
 .saifr-type-rule .saifr-field small { color: var(--saifr-muted); font-weight: 400; }
 
+/* v2.2 schema controls: Swiss grid, flat surfaces and one blue signal color. */
+.saifr-schema-mapping-head { border-left: 4px solid var(--saifr-accent); padding-left: 16px; }
+.saifr-schema-rule-body { padding: 16px; background: var(--saifr-bg); }
+.saifr-schema-rule-controls { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr); gap: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--saifr-border-soft); }
+.saifr-rule-field-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.saifr-rule-field-groups > :first-child { grid-column: 1 / -1; }
+.saifr-schema-field-group { display: grid; gap: 14px; min-width: 0; padding: 16px; border: 1px solid var(--saifr-border); background: #fff; }
+.saifr-schema-field-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--saifr-border-soft); }
+.saifr-schema-field-group-head strong { font-size: 13px; }
+.saifr-schema-field-group-head span { color: var(--saifr-muted); font-size: 11px; }
+.saifr-schema-field-group .saifr-schema-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.saifr-schema-field-group .saifr-schema-fields { --saifr-schema-label-height: 46px; }
+.saifr-type-rule:not(.is-configured) .saifr-schema-rule-body { padding-bottom: 16px; }
+.saifr-type-rule:not(.is-configured) .saifr-rule-field-groups { display: none; }
+
+.saifr-schema-service-grid { grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); gap: 16px; }
+.saifr-schema-service-grid .saifr-schema-field-group { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
+.saifr-schema-service-grid .saifr-schema-field-group-head,
+.saifr-schema-service-grid .saifr-schema-service-description { grid-column: 1 / -1; }
+.saifr-schema-service-offer { background: var(--saifr-bg); }
+.saifr-schema-subsection-offer { margin-top: 24px; }
+
+.saifr-schema-repeaters[data-repeater="related"] .saifr-schema-repeater-row { background: var(--saifr-surface); }
+.saifr-schema-repeaters[data-repeater="related"] .saifr-repeat-field:nth-of-type(1) { grid-column: span 2; }
+.saifr-schema-repeaters[data-repeater="related"] .saifr-repeat-field:nth-of-type(2) { grid-column: span 4; }
+.saifr-schema-repeaters[data-repeater="related"] .saifr-repeat-field:nth-of-type(3) { grid-column: span 6; }
+.saifr-schema-repeaters[data-repeater="related"] .saifr-repeat-field:nth-of-type(4) { grid-column: span 4; }
+.saifr-schema-repeaters[data-repeater="related"] .saifr-repeat-field:nth-of-type(5),
+.saifr-schema-repeaters[data-repeater="related"] .saifr-repeat-field:nth-of-type(6) { grid-column: span 6; }
+
+.saifr-schema-repeaters[data-repeater="shipping"] .saifr-schema-repeater-row { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; padding: 0 16px 16px; }
+.saifr-schema-repeaters[data-repeater="shipping"] .saifr-schema-repeater-head { grid-column: 1 / -1; }
+.saifr-shipping-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px; border: 1px solid var(--saifr-border-soft); background: var(--saifr-bg); }
+.saifr-shipping-group > strong { grid-column: 1 / -1; color: var(--saifr-text); font-size: 12px; }
+.saifr-shipping-group-rate .saifr-repeat-field:first-of-type { grid-column: 1 / -1; }
+.saifr-schema-repeaters[data-repeater="shipping"] .saifr-repeater-remove { justify-self: start; }
+
 .saifr-onboarding { margin: 24px 0 0; border: 1px solid var(--saifr-border); background: #fff; }
 .saifr-wizard-topline { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 24px 28px; border-bottom: 1px solid var(--saifr-border); }
 .saifr-wizard-topline h2 { max-width: 720px; margin: 0; font-size: clamp(23px, 3vw, 36px); line-height: 1.05; letter-spacing: -.04em; }
@@ -478,6 +521,10 @@
     .saifr-schema-repeaters[data-repeater="contacts"] .saifr-repeat-field:nth-of-type(n),
     .saifr-schema-repeaters[data-repeater="hours"] .saifr-repeat-field:nth-of-type(n),
     .saifr-schema-repeaters[data-repeater="certifications"] .saifr-repeat-field:nth-of-type(n) { grid-column: span 6; }
+    .saifr-rule-field-groups { grid-template-columns: 1fr; }
+    .saifr-schema-service-grid { grid-template-columns: 1fr; }
+    .saifr-schema-repeaters[data-repeater="related"] .saifr-repeat-field:nth-of-type(n) { grid-column: span 6; }
+    .saifr-schema-repeaters[data-repeater="shipping"] .saifr-schema-repeater-row { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 782px) {
@@ -495,9 +542,14 @@
     .saifr-settings-card-wide, .saifr-schema-card-seven, .saifr-schema-card-five { grid-column: 1 / -1; }
     .saifr-schema-card { padding: 18px 16px 20px; }
     .saifr-schema-fields { grid-template-columns: 1fr; }
+    .saifr-schema-fields > .saifr-field:not(.saifr-field-check) > span { min-block-size: 0; }
     .saifr-schema-fields > .saifr-field:has(textarea), .saifr-field-wide, .saifr-schema-service-description { grid-column: auto; }
+    .saifr-schema-rule-controls, .saifr-schema-field-group .saifr-schema-fields, .saifr-schema-service-grid .saifr-schema-field-group { grid-template-columns: 1fr; }
+    .saifr-schema-field-group-head { display: block; }
+    .saifr-schema-field-group-head span { display: block; margin-top: 3px; }
     .saifr-schema-repeater-row { grid-template-columns: 1fr; }
     .saifr-schema-repeaters[data-repeater] .saifr-repeat-field:nth-of-type(n) { grid-column: 1 / -1; }
+    .saifr-shipping-group { grid-template-columns: 1fr; }
     .saifr-schema-media { align-items: flex-start; }
     .saifr-schema-subsection-head, .saifr-wizard-topline { display: block; }
     .saifr-schema-subsection-head span { display: block; margin-top: 3px; text-align: left; }

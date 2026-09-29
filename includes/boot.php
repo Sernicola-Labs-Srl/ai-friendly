@@ -10,6 +10,17 @@ if ( ! defined( 'SAIFR_PLUGIN_FILE' ) ) {
     define( 'SAIFR_PLUGIN_FILE', SAIFR_PLUGIN_DIR . '/sernicola-labs-ai-friendly.php' );
 }
 
+/**
+ * Register bundled translations while allowing WordPress.org language packs to
+ * retain priority when they are available.
+ */
+add_action(
+    'init',
+    static function (): void {
+        load_plugin_textdomain( 'sernicola-labs-ai-friendly', false, dirname( plugin_basename( SAIFR_PLUGIN_FILE ) ) . '/languages' );
+    }
+);
+
 require_once SAIFR_PLUGIN_DIR . '/includes/constants.php';
 require_once SAIFR_PLUGIN_DIR . '/includes/options.php';
 require_once SAIFR_PLUGIN_DIR . '/includes/migration.php';

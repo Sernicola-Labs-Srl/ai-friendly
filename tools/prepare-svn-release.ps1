@@ -43,7 +43,8 @@ $releaseItems = @(
     'CHANGELOG.md',
     'LICENSE',
     'admin',
-    'includes'
+    'includes',
+    'languages'
 )
 
 $sourceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
