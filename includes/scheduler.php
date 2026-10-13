@@ -284,6 +284,8 @@ function saifr_process_regeneration_posts( array $posts, SaifrContentFilter $fil
  * Salva timestamp ultima rigenerazione, log evento e notifiche.
  */
 function saifr_finalize_regeneration_stats( array $stats, string $trigger, bool $force ): void {
+    saifr_sync_static_llms_txt();
+
     update_option(
         'saifr_last_regeneration',
         [

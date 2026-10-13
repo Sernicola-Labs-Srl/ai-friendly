@@ -1,6 +1,6 @@
 # Sernicola Labs AI Friendly
 
-**Version:** 2.1.1
+**Version:** 2.2.2
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v3 or later
@@ -93,7 +93,9 @@ Note:
 
 ### 1) `llms.txt`
 
-`/llms.txt` viene generato dinamicamente e può combinare:
+`/llms.txt` viene pubblicato come file statico nel document root, così le richieste non avviano PHP. Il plugin lo aggiorna quando cambia il contenuto; se il file statico non è disponibile resta disponibile la rotta dinamica. I file già presenti o modificati esternamente vengono lasciati intatti. Il server web determina se aggiungere il charset alla risposta.
+
+Il contenuto può combinare:
 
 - contenuto custom scritto in admin
 - lista automatica dei contenuti inclusi
@@ -425,6 +427,7 @@ Usa questa checklist ad ogni nuova release.
 - Aggiorna `Version:` in `sernicola-labs-ai-friendly.php`
 - Aggiorna `SAIFR_VERSION` in `sernicola-labs-ai-friendly.php`
 - Aggiorna `CHANGELOG.md`
+- Aggiorna `Stable tag` in `readme.txt`
 - Usa tag coerenti con la versione del plugin, nel formato `v2.1.0`
 
 2. **Documentazione**

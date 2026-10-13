@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.2
+
+- Pubblicato `llms.txt` come file statico nel document root per evitare l'avvio di PHP sulle richieste; la rotta dinamica resta disponibile quando il file non è presente.
+- Aggiornato atomicamente il file statico solo quando il contenuto cambia e sincronizzato dopo salvataggi, cambi di stato, impostazioni, ripristino snapshot e rigenerazioni.
+- Preservati i file `llms.txt` preesistenti o modificati esternamente; segnalati nell'admin i conflitti e gli errori di scrittura, e rimossi alla disinstallazione solo i file ancora riconosciuti come generati dal plugin.
+
 ## 2.2.0
 
 - Corretto il salvataggio della pagina impostazioni: dalla 2.1.1 il pulsante «Salva impostazioni» non veniva riconosciuto e le modifiche andavano perse.

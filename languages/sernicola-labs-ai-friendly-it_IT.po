@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Sernicola Labs AI Friendly – llms.txt, Markdown & Schema "
-"2.2.1\n"
+"2.2.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sernicola-labs-ai-"
 "friendly\n"
 "Last-Translator: Automatically generated\n"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-29T14:52:59+00:00\n"
-"PO-Revision-Date: 2026-09-29T14:52:59+00:00\n"
+"POT-Creation-Date: 2026-10-13T00:00:00+00:00\n"
+"PO-Revision-Date: 2026-10-13T00:00:00+00:00\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: sernicola-labs-ai-friendly\n"
 "Language: it_IT\n"
@@ -2587,3 +2587,11 @@ msgstr "AI Friendly requires PHP 8.1 or later."
 #: sernicola-labs-ai-friendly.php:25
 msgid "Current version:"
 msgstr "Current version:"
+
+#: includes/llms.php:90
+msgid "AI Friendly: impossibile aggiornare il file statico llms.txt; resta disponibile la risposta dinamica."
+msgstr "AI Friendly: impossibile aggiornare il file statico llms.txt; resta disponibile la risposta dinamica."
+
+#: includes/llms.php:96
+msgid "AI Friendly: llms.txt esistente non è gestito dal plugin ed è stato lasciato intatto."
+msgstr "AI Friendly: llms.txt esistente non è gestito dal plugin ed è stato lasciato intatto."

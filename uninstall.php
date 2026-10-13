@@ -10,6 +10,17 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 function saifr_uninstall_site_data(): void {
     global $wpdb;
 
+    // Rimuove llms.txt soltanto se il contenuto corrisponde all'ultimo file
+    // pubblicato dal plugin; un file esterno o modificato manualmente resta intatto.
+    $static_llms_hash = (string) get_option( 'saifr_static_llms_hash', '' );
+    $static_llms_file = trailingslashit( ABSPATH ) . 'llms.txt';
+    if ( $static_llms_hash !== '' && is_file( $static_llms_file ) ) {
+        $static_llms_content = @file_get_contents( $static_llms_file );
+        if ( is_string( $static_llms_content ) && hash_equals( $static_llms_hash, hash( 'sha256', $static_llms_content ) ) ) {
+            wp_delete_file( $static_llms_file );
+        }
+    }
+
     $history = get_option( 'saifr_llms_history_index', [] );
     if ( is_array( $history ) ) {
         foreach ( $history as $entry ) {
@@ -58,6 +69,7 @@ function saifr_uninstall_site_data(): void {
             'saifr_last_regeneration',
             'saifr_regeneration_cursor',
             'saifr_llms_history_index',
+            'saifr_static_llms_hash',
             'saifr_faq_cache_version',
             'saifr_legacy_migration_version',
             'saifr_legacy_migration_notice',

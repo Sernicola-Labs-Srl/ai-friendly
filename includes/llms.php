@@ -28,6 +28,97 @@ function saifr_serve_llms_txt(): void {
     exit;
 }
 
+/**
+ * Scrive llms.txt nel document root, preservando eventuali file non gestiti.
+ *
+ * Il checksum salvato nell'opzione identifica il contenuto dell'ultimo file
+ * pubblicato dal plugin e impedisce di sovrascrivere file esterni o modificati
+ * manualmente.
+ */
+function saifr_sync_static_llms_txt(): bool {
+    $target = trailingslashit( ABSPATH ) . 'llms.txt';
+    $body   = (string) apply_filters( 'saifr_llms_txt_response_body', saifr_build_llms_txt() );
+    $hash   = hash( 'sha256', $body );
+    $known  = (string) get_option( 'saifr_static_llms_hash', '' );
+
+    if ( is_file( $target ) ) {
+        $current = @file_get_contents( $target );
+        if ( ! is_string( $current ) ) {
+            saifr_notify_static_llms_failure();
+            return false;
+        }
+
+        $current_hash = hash( 'sha256', $current );
+        if ( $known === '' || ! hash_equals( $known, $current_hash ) ) {
+            // File preesistente o modificato fuori dal plugin: non prenderne possesso.
+            saifr_notify_static_llms_external_file();
+            return false;
+        }
+
+        if ( hash_equals( $current_hash, $hash ) ) {
+            return true;
+        }
+    } elseif ( $known !== '' ) {
+        // Il file gestito è stato rimosso: può essere ricreato dal plugin.
+    }
+
+    if ( ! is_dir( dirname( $target ) ) || ! is_writable( dirname( $target ) ) ) {
+        saifr_notify_static_llms_failure();
+        return false;
+    }
+
+    $temporary = @tempnam( dirname( $target ), '.saifr-llms-' );
+    if ( ! is_string( $temporary ) ) {
+        saifr_notify_static_llms_failure();
+        return false;
+    }
+
+    $written = @file_put_contents( $temporary, $body, LOCK_EX );
+    if ( $written !== strlen( $body ) || ! @chmod( $temporary, 0644 ) || ! @rename( $temporary, $target ) ) {
+        @unlink( $temporary );
+        saifr_notify_static_llms_failure();
+        return false;
+    }
+
+    update_option( 'saifr_static_llms_hash', $hash, false );
+    delete_transient( 'saifr_static_llms_notice' );
+    return true;
+}
+
+function saifr_notify_static_llms_failure(): void {
+    if ( function_exists( 'saifr_push_admin_notice' ) ) {
+        saifr_push_admin_notice( __( 'AI Friendly: impossibile aggiornare il file statico llms.txt; resta disponibile la risposta dinamica.', 'sernicola-labs-ai-friendly' ), 'warning' );
+    }
+}
+
+function saifr_notify_static_llms_external_file(): void {
+    if ( function_exists( 'saifr_push_admin_notice' ) && ! get_transient( 'saifr_static_llms_notice' ) ) {
+        saifr_push_admin_notice( __( 'AI Friendly: llms.txt esistente non è gestito dal plugin ed è stato lasciato intatto.', 'sernicola-labs-ai-friendly' ), 'info' );
+        set_transient( 'saifr_static_llms_notice', 1, DAY_IN_SECONDS );
+    }
+}
+
+add_action( 'save_post', static function ( int $post_id ): void {
+    if ( ! wp_is_post_autosave( $post_id ) && ! wp_is_post_revision( $post_id ) ) {
+        saifr_sync_static_llms_txt();
+    }
+}, 100 );
+
+add_action( 'deleted_post', 'saifr_sync_static_llms_txt', 100 );
+add_action( 'trashed_post', 'saifr_sync_static_llms_txt', 100 );
+add_action( 'untrashed_post', 'saifr_sync_static_llms_txt', 100 );
+add_action( 'transition_post_status', static function ( string $new_status, string $old_status ): void {
+    if ( $new_status !== $old_status ) {
+        saifr_sync_static_llms_txt();
+    }
+}, 100, 2 );
+
+add_action( 'updated_option', static function ( string $option ): void {
+    if ( $option === 'saifr_options' ) {
+        saifr_sync_static_llms_txt();
+    }
+}, 10, 1 );
+
 function saifr_build_llms_txt(): string {
 
     $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );

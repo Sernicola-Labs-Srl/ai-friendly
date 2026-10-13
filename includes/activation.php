@@ -30,6 +30,9 @@ function saifr_activate( bool $network_wide = false ): void {
     if ( ! get_option( 'saifr_options' ) ) {
         update_option( 'saifr_options', $defaults );
     }
+
+    // Genera llms.txt al primo avvio se non esiste già un file esterno.
+    saifr_sync_static_llms_txt();
     
     // Schedula cron se necessario
     saifr_schedule_cron();
