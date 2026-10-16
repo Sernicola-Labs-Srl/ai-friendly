@@ -128,7 +128,7 @@ function saifr_build_llms_txt(): string {
     $include_auto   = ! empty( $options['llms_include_auto'] );
 
     if ( $custom_content !== '' && ! $include_auto ) {
-        return apply_filters( 'saifr_llms_txt_content', $custom_content );
+        return apply_filters( 'saifr_llms_txt_content', html_entity_decode( $custom_content, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
     }
 
     $out = '';
@@ -193,7 +193,79 @@ function saifr_build_llms_txt(): string {
         }
     }
 
-    return apply_filters( 'saifr_llms_txt_content', $out );
+    return apply_filters( 'saifr_llms_txt_content', html_entity_decode( $out, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+}
+
+/** The full corpus is published only after a complete successful pass. */
+function saifr_llms_full_target(): string {
+    return trailingslashit( ABSPATH ) . 'llms-full.txt';
+}
+
+function saifr_llms_full_begin( string $job_id ): string {
+    $target = saifr_llms_full_target();
+    $temporary = dirname( $target ) . '/.saifr-llms-full-' . sanitize_file_name( $job_id ) . '.tmp';
+    if ( ! is_dir( dirname( $target ) ) || ! is_writable( dirname( $target ) ) ) {
+        return '';
+    }
+    return file_put_contents( $temporary, '', LOCK_EX ) === false ? '' : $temporary;
+}
+
+function saifr_llms_full_append( string $temporary, WP_Post $post, string $markdown ): bool {
+    $entry = "\n\n---\n\nSource: " . get_permalink( $post ) . "\n\n" . trim( $markdown ) . "\n";
+    return file_put_contents( $temporary, $entry, FILE_APPEND | LOCK_EX ) === strlen( $entry );
+}
+
+function saifr_llms_full_publish( string $temporary ): bool {
+    $target = saifr_llms_full_target();
+    $known = (string) get_option( 'saifr_static_llms_full_hash', '' );
+    if ( is_file( $target ) ) {
+        $current_hash = hash_file( 'sha256', $target );
+        if ( ! is_string( $current_hash ) || $known === '' || ! hash_equals( $known, $current_hash ) ) {
+            return false;
+        }
+    }
+    $hash = hash_file( 'sha256', $temporary );
+    if ( ! is_string( $hash ) || ! @rename( $temporary, $target ) ) {
+        return false;
+    }
+    update_option( 'saifr_static_llms_full_hash', $hash, false );
+    return true;
+}
+
+add_action( 'updated_option', static function ( string $name ): void {
+    if ( $name !== 'saifr_options' ) return;
+    $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
+    if ( ! empty( $options['llms_full_enabled'] ) ) {
+        saifr_request_corpus_refresh();
+        return;
+    }
+    $target = saifr_llms_full_target();
+    $known = (string) get_option( 'saifr_static_llms_full_hash', '' );
+    if ( $known !== '' && is_file( $target ) ) {
+        $hash = hash_file( 'sha256', $target );
+        if ( is_string( $hash ) && hash_equals( $known, $hash ) ) wp_delete_file( $target );
+    }
+    delete_option( 'saifr_static_llms_full_hash' );
+}, 20, 1 );
+
+function saifr_serve_llms_full(): void {
+    $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
+    $file = saifr_llms_full_target();
+    if ( empty( $options['llms_full_enabled'] ) || ! is_file( $file ) ) {
+        saifr_404();
+    }
+    $size = filesize( $file );
+    if ( $size === false ) {
+        saifr_404();
+    }
+    saifr_reset_output_buffers();
+    status_header( 200 );
+    header( 'Content-Type: text/plain; charset=UTF-8' );
+    header( 'X-Content-Type-Options: nosniff' );
+    header( 'Content-Length: ' . $size );
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text response.
+    readfile( $file );
+    exit;
 }
 
 function saifr_section( string $heading, array $query_args, SaifrContentFilter $filter ): string {

@@ -310,7 +310,7 @@ add_action(
         $mode  = saifr_post_key( 'mode', 'full' );
         if ( $mode === 'batch' ) {
             $options = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
-            $batch_size = min( 1000, max( 10, intval( $options['regenerate_batch_size'] ?? 100 ) ) );
+            $batch_size = min( 1000, max( 1, intval( $options['regenerate_batch_size'] ?? 100 ) ) );
             $stats = saifr_regenerate_batch( $batch_size, $force, 'manual_ajax_batch' );
         } else {
             $stats = saifr_regenerate_all( $force, 'manual_ajax' );
@@ -318,6 +318,16 @@ add_action(
         wp_send_json_success( $stats );
     }
 );
+
+add_action( 'wp_ajax_saifr_regeneration_step', function (): void {
+    saifr_admin_require_permissions();
+    wp_send_json_success( saifr_run_regeneration_step() );
+} );
+
+add_action( 'wp_ajax_saifr_regeneration_status', function (): void {
+    saifr_admin_require_permissions();
+    wp_send_json_success( get_option( 'saifr_regeneration_job', [] ) );
+} );
 
 add_action(
     'wp_ajax_saifr_clear_versions',
@@ -541,13 +551,14 @@ add_action(
         $options['exclude_noindex']   = saifr_post_bool( 'exclude_noindex' ) ? '1' : '';
         $options['exclude_password']  = saifr_post_bool( 'exclude_password' ) ? '1' : '';
         $options['llms_include_auto'] = saifr_post_bool( 'llms_include_auto' ) ? '1' : '';
+        $options['llms_full_enabled'] = saifr_post_bool( 'llms_full_enabled' ) ? '1' : '';
         $options['static_md_files']   = saifr_post_bool( 'static_md_files' ) ? '1' : '';
         $options['auto_regenerate']   = saifr_post_bool( 'auto_regenerate' ) ? '1' : '';
         if ( ! empty( $options['auto_regenerate'] ) ) {
             $options['static_md_files'] = '1';
         }
         $options['regenerate_interval']   = min( 168, max( 1, saifr_post_int( 'regenerate_interval', 24 ) ) );
-        $options['regenerate_batch_size'] = min( 1000, max( 10, saifr_post_int( 'regenerate_batch_size', 100 ) ) );
+        $options['regenerate_batch_size'] = min( 1000, max( 1, saifr_post_int( 'regenerate_batch_size', 100 ) ) );
         $options['regenerate_on_save']    = saifr_post_bool( 'regenerate_on_save' ) ? '1' : '';
         $options['regenerate_on_change']  = saifr_post_bool( 'regenerate_on_change' ) ? '1' : '';
         $options['schema_enabled']        = saifr_post_bool( 'schema_enabled' ) ? '1' : '';
@@ -573,7 +584,7 @@ add_action(
         try {
             if ( ! empty( $options['static_md_files'] ) ) {
                 $stats = saifr_regenerate_all( false, 'setup_wizard' );
-                if ( ! empty( $stats['errors'] ) ) {
+                if ( ( $stats['status'] ?? '' ) === 'failed' ) {
                     throw new RuntimeException( 'La generazione ha restituito uno o piu errori.' );
                 }
                 $output = [
@@ -657,7 +668,8 @@ function saifr_render_options_page(): void {
             $options['static_md_files'] = '1';
         }
         $options['regenerate_interval']  = max( 1, saifr_post_int( 'regenerate_interval', 24 ) );
-        $options['regenerate_batch_size'] = min( 1000, max( 10, saifr_post_int( 'regenerate_batch_size', 100 ) ) );
+        $options['regenerate_batch_size'] = min( 1000, max( 1, saifr_post_int( 'regenerate_batch_size', 100 ) ) );
+        $options['llms_full_enabled'] = saifr_post_bool( 'llms_full_enabled' ) ? '1' : '';
         $options['regenerate_on_save']   = saifr_post_bool( 'regenerate_on_save' ) ? '1' : '';
         $options['regenerate_on_change'] = saifr_post_bool( 'regenerate_on_change' ) ? '1' : '';
         $options['onboarding_done']      = saifr_post_bool( 'onboarding_done' ) ? '1' : '';
@@ -930,7 +942,7 @@ function saifr_render_options_page(): void {
                 </div>
                 <div class="saifr-number-fields">
                     <label><?php esc_html_e( 'Intervallo (ore)', 'sernicola-labs-ai-friendly' ); ?><input type="number" min="1" max="168" data-wizard-field="regenerate_interval" value="<?php echo esc_attr( $onboarding_done ? $options['regenerate_interval'] : 24 ); ?>"></label>
-                    <label><?php esc_html_e( 'Contenuti per esecuzione', 'sernicola-labs-ai-friendly' ); ?><input type="number" min="10" max="1000" data-wizard-field="regenerate_batch_size" value="<?php echo esc_attr( $onboarding_done ? $options['regenerate_batch_size'] : 100 ); ?>"></label>
+                    <label><?php esc_html_e( 'Contenuti per esecuzione', 'sernicola-labs-ai-friendly' ); ?><input type="number" min="1" max="1000" data-wizard-field="regenerate_batch_size" value="<?php echo esc_attr( $onboarding_done ? $options['regenerate_batch_size'] : 100 ); ?>"></label>
                     <label class="saifr-compact-check"><input type="checkbox" data-wizard-field="regenerate_on_change" <?php checked( $options['regenerate_on_change'] ); ?>> <?php esc_html_e( 'Solo se il checksum cambia', 'sernicola-labs-ai-friendly' ); ?></label>
                 </div>
             </div>
@@ -1417,7 +1429,7 @@ function saifr_render_options_page(): void {
                     <article class="saifr-schema-card saifr-schema-card-wide" data-entity-scope="organization">
                         <div class="saifr-schema-card-head">
                             <h4><?php esc_html_e( 'Fondatori', 'sernicola-labs-ai-friendly' ); ?></h4>
-                            <p><?php esc_html_e( 'Uno per riga nel formato `Nome | ruolo attuale`. Il ruolo è opzionale: omettilo se non è verificato o aggiornato.', 'sernicola-labs-ai-friendly' ); ?></p>
+                            <p><?php esc_html_e( 'Uno per riga: Nome | ruolo attuale | URL profilo. Ruolo e URL sono opzionali.', 'sernicola-labs-ai-friendly' ); ?></p>
                         </div>
                         <label class="saifr-field">
                             <span><?php esc_html_e( 'Persone fondatrici', 'sernicola-labs-ai-friendly' ); ?></span>
@@ -1879,6 +1891,8 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                                 <input type="checkbox" id="saifr-static-md-files" name="static_md_files" value="1" <?php checked( $options['static_md_files'] ); ?>>
                                 <?php esc_html_e( 'Salva e servi file MD statici', 'sernicola-labs-ai-friendly' ); ?>
                             </label>
+                            <label><input type="checkbox" name="llms_full_enabled" value="1" <?php checked( $options['llms_full_enabled'] ); ?>> <?php esc_html_e( 'Pubblica llms-full.txt dopo la rigenerazione completa', 'sernicola-labs-ai-friendly' ); ?></label>
+                            <?php if ( ! empty( $options['llms_full_enabled'] ) ) : ?><p><?php echo is_file( saifr_llms_full_target() ) ? esc_html__( 'Corpus pronto', 'sernicola-labs-ai-friendly' ) . ' (' . esc_html( size_format( filesize( saifr_llms_full_target() ) ) ) . ')' : esc_html__( 'Corpus in attesa della prima generazione completa', 'sernicola-labs-ai-friendly' ); ?> · <a href="<?php echo esc_url( home_url( '/llms-full.txt' ) ); ?>" target="_blank"><?php esc_html_e( 'Apri llms-full.txt', 'sernicola-labs-ai-friendly' ); ?></a></p><?php endif; ?>
                             <p class="description saifr-statline">
                                 <?php esc_html_e( 'File salvati:', 'sernicola-labs-ai-friendly' ); ?> <?php echo intval( $version_stats['count'] ); ?> |
                                 <?php esc_html_e( 'Spazio:', 'sernicola-labs-ai-friendly' ); ?> <?php echo esc_html( size_format( intval( $version_stats['size'] ) ) ); ?>
@@ -1894,7 +1908,7 @@ Country: Italia', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $
                             </label>
                             <div class="saifr-number-fields">
                                 <label><?php esc_html_e( 'Intervallo (ore)', 'sernicola-labs-ai-friendly' ); ?><input type="number" name="regenerate_interval" min="1" max="168" value="<?php echo esc_attr( $options['regenerate_interval'] ); ?>"></label>
-                                <label><?php esc_html_e( 'Contenuti per esecuzione', 'sernicola-labs-ai-friendly' ); ?><input type="number" name="regenerate_batch_size" min="10" max="1000" value="<?php echo esc_attr( intval( $options['regenerate_batch_size'] ?? 100 ) ); ?>"></label>
+                                <label><?php esc_html_e( 'Contenuti per esecuzione', 'sernicola-labs-ai-friendly' ); ?><input type="number" name="regenerate_batch_size" min="1" max="1000" value="<?php echo esc_attr( intval( $options['regenerate_batch_size'] ?? 100 ) ); ?>"></label>
                             </div>
                             <p class="description"><?php esc_html_e( 'Per siti molto grandi, il cron processa solo questo numero di contenuti per run e continua dal successivo.', 'sernicola-labs-ai-friendly' ); ?></p>
                             <?php if ( $next_cron ) : ?>

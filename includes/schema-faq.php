@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'SAIFR_FAQ_VERSION' ) ) {
-    define( 'SAIFR_FAQ_VERSION', '2.0.0' );
+    define( 'SAIFR_FAQ_VERSION', '2.1.0' );
 }
 
 // Evita redeclaration se il precedente snippet autonomo e ancora attivo.
@@ -83,6 +83,40 @@ function saifr_faq_collect( array $node, array &$items, array &$seen_blocks ): v
     }
 }
 
+/** Advanced Accordion items are FAQ only after a FAQ heading. */
+function saifr_faq_collect_accordion( array $node, array &$items, bool $in_faq = false ): bool {
+    $type = (string) ( $node['data']['type'] ?? '' );
+    $content = $node['data']['properties']['content']['content'] ?? [];
+    if ( $type === 'EssentialElements\\Heading' ) {
+        $heading = saifr_faq_clean_question( $content['text'] ?? '' );
+        $in_faq = (bool) preg_match( '/domande\s+frequenti|\bfaq\b|frequently\s+asked/iu', $heading );
+    }
+    if ( $in_faq && $type === 'EssentialElements\\AccordionContent' ) {
+        $question = saifr_faq_clean_question( $content['title'] ?? '' );
+        $answer = '';
+        $collect = static function ( array $part ) use ( &$collect ): string {
+            $data = $part['data']['properties']['content']['content'] ?? [];
+            $text = '';
+            foreach ( [ 'text', 'content' ] as $key ) {
+                if ( isset( $data[ $key ] ) && is_string( $data[ $key ] ) ) $text .= ' ' . $data[ $key ];
+            }
+            foreach ( (array) ( $part['children'] ?? [] ) as $child ) {
+                if ( is_array( $child ) ) $text .= ' ' . $collect( $child );
+            }
+            return $text;
+        };
+        foreach ( (array) ( $node['children'] ?? [] ) as $child ) {
+            if ( is_array( $child ) ) $answer .= ' ' . $collect( $child );
+        }
+        if ( $question !== '' && trim( $answer ) !== '' ) $items[] = [ 'question' => $question, 'answer' => $answer ];
+        return $in_faq;
+    }
+    foreach ( (array) ( $node['children'] ?? [] ) as $child ) {
+        if ( is_array( $child ) ) $in_faq = saifr_faq_collect_accordion( $child, $items, $in_faq );
+    }
+    return $in_faq;
+}
+
 function saifr_faq_clean_question( $value ): string {
     $value = (string) $value;
     if ( str_contains( $value, '[' ) ) {
@@ -123,6 +157,7 @@ function saifr_faq_get_items( WP_Post $post ): array {
         $root = saifr_faq_get_tree( $post->ID );
         if ( ! empty( $root ) ) {
             saifr_faq_collect( $root, $raw_items, $seen_blocks );
+            saifr_faq_collect_accordion( $root, $raw_items );
         }
 
         $items = [];

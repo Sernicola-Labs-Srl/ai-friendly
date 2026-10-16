@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.2.2
+Stable tag: 2.3.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -17,6 +17,7 @@ Sernicola Labs AI Friendly is a GEO/AEO content publishing toolkit, not only an 
 The plugin provides:
 
 * Static `/llms.txt` delivery with dynamic WordPress fallback when the static file is unavailable.
+* Optional `/llms-full.txt` corpus, built in batches and published after a successful complete run.
 * Public `.md` endpoints for published content.
 * Optional static Markdown files with regeneration workflows.
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
@@ -66,6 +67,10 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 Use the WordPress.org support forum for support. The maintained development source is available at https://github.com/Sernicola-Labs-Srl/ai-friendly.
 
 == Changelog ==
+
+= 2.3.0 =
+* Run full Markdown regeneration in resumable batches and refresh author content after display-name changes.
+* Add optional, atomically published `/llms-full.txt` and improve Schema compatibility, FAQ extraction, and generic site configuration hooks.
 
 = 2.2.2 =
 * Serve `/llms.txt` as a static file from the document root to avoid starting PHP for requests; retain the dynamic endpoint as a fallback.

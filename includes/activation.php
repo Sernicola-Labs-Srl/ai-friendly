@@ -41,4 +41,6 @@ function saifr_activate( bool $network_wide = false ): void {
 function saifr_deactivate(): void {
     // Rimuovi cron
     wp_clear_scheduled_hook( 'saifr_cron_regenerate' );
+    wp_clear_scheduled_hook( 'saifr_regeneration_step' );
+    wp_clear_scheduled_hook( 'saifr_start_corpus_refresh' );
 }

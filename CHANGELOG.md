@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.0
+
+- Rigenerazione completa persistente a blocchi, batch configurabili da 1 contenuto e tempi separati per query, generazione, pulizia e sincronizzazione dell'indice.
+- Aggiornamento delle versioni Markdown e della cache quando cambia il nome visualizzato di un autore.
+- Corpus opzionale `/llms-full.txt` pubblicato atomicamente dopo la rigenerazione completa; entità HTML decodificate nell'indice breve.
+- Schema Service coordinato con Rank Math e Yoast SEO, Place e fondatori migliorati, FAQ Advanced Accordion e adattatori generici per tipi pagina, Organization, Article, FAQ ACF e traduzioni dei nodi globali.
+
 ## 2.2.2
 
 - Pubblicato `llms.txt` come file statico nel document root per evitare l'avvio di PHP sulle richieste; la rotta dinamica resta disponibile quando il file non è presente.

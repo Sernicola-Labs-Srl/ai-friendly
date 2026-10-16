@@ -34,6 +34,11 @@ add_action( 'template_redirect', function () {
         exit;
     }
 
+    if ( $rel === '/llms-full.txt' ) {
+        saifr_serve_llms_full();
+        exit;
+    }
+
     if ( $rel === '/index.html.md' || $rel === '/.md' ) {
         saifr_serve_markdown( '/' );
         exit;

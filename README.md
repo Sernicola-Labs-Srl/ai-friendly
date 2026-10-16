@@ -1,6 +1,6 @@
 # Sernicola Labs AI Friendly
 
-**Version:** 2.2.2
+**Version:** 2.3.0
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v3 or later
@@ -107,6 +107,18 @@ Per i contenuti pubblici inclusi dalle regole:
 - `https://sito.tld/pagina/` -> `https://sito.tld/pagina.md`
 - `https://sito.tld/cpt/slug/` -> `https://sito.tld/cpt/slug.md`
 
+`/llms.txt` resta un indice breve. L'opzione **Pubblica llms-full.txt** crea invece un corpus Markdown completo con gli stessi contenuti pubblici ammessi per gli endpoint `.md`. Il corpus viene costruito a blocchi e pubblicato solo al termine di una rigenerazione riuscita; l'opzione è disattivata inizialmente.
+
+La rigenerazione completa e la configurazione iniziale avviano un lavoro persistente, riprendibile tramite WP-Cron o dalla pagina admin. Le statistiche separano i tempi di query, generazione, pulizia e aggiornamento di `llms.txt`. Il valore "Contenuti per esecuzione" ammette anche batch piccoli, a partire da 1.
+
+Per le integrazioni PHP, `saifr_regenerate_all()` restituisce ora lo stato del lavoro (`id`, `status`, `last_id`, `total`, `stats`) senza attendere la conclusione; `saifr_run_regeneration_step()` ne elabora il blocco successivo.
+
+Quando cambia il nome visualizzato di un autore, AI Friendly aggiorna in background le versioni Markdown dei suoi contenuti e invalida la cache dinamica.
+
+### Adattatori Schema per dati del sito
+
+Il core espone filtri per configurazioni che dipendono dal sito: `saifr_schema_page_type_overrides` (ID pagina => tipo Schema), `saifr_schema_organization_post_rules` (regole con `post_type`, eventuali `categories`, `fragment` e `urls` indicizzati per ID), `saifr_schema_article_rules` (post type, categorie e sezione degli Article), `saifr_schema_acf_faq_config` (chiavi e prefissi dei campi FAQ), `saifr_schema_global_localizations` (proprietà per `@id` nella lingua corrente) e `saifr_schema_suppress_article` (soppressione del nodo Article per un contenuto). Questi filtri non contengono ID, URL o testi predefiniti. Le FAQ Breakdance Advanced Accordion vengono riconosciute dopo un titolo FAQ. Con Polylang, `x-default` punta alla traduzione nella lingua predefinita quando presente.
+
 Per CPT con archive pubblico (`has_archive`), se abilitati:
 
 - `https://sito.tld/podcast/` -> `https://sito.tld/podcast.md`
@@ -196,6 +208,8 @@ Per CPT creati/gestiti con ACF:
 Il modulo **Semantic Schema** aggiunge un layer JSON-LD pensato per descrivere meglio l'identità del sito e renderla più chiara a crawler, motori di ricerca e sistemi AI.
 
 Non sostituisce Yoast SEO o Rank Math: quando uno dei due è attivo, AI Friendly estende il grafo esistente e fonde i propri dati nei nodi già presenti con lo stesso `@id`. In questo modo evita duplicati come due nodi `Organization` o `Person` concorrenti.
+
+Quando AI Friendly genera un nodo `Service` per una pagina, rimuove il nodo `Article` concorrente dal grafo di Rank Math o Yoast SEO. Restano i nodi `WebSite`, `BreadcrumbList` e `FAQPage`. L'identificativo del servizio usa il permalink canonico seguito da `#service`.
 
 ### Modalità disponibili
 

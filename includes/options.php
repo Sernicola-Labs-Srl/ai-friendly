@@ -8,6 +8,7 @@ function saifr_get_default_options(): array {
         // Contenuto llms.txt
         'llms_content'      => '',
         'llms_include_auto' => '1',
+        'llms_full_enabled' => '',
         
         // Tipi di contenuto da includere
         'include_pages'     => '1',

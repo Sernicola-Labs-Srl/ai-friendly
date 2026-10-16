@@ -419,11 +419,9 @@ function saifr_schema_get_place_node( array $options ): array {
     $transport = trim( (string) ( $options['schema_public_transportation_access'] ?? '' ) );
     if ( $transport !== '' ) {
         $node['publicAccess'] = true;
-        $node['amenityFeature'] = [
-            '@type' => 'LocationFeatureSpecification',
-            'name'   => 'Public transportation access',
-            'value'  => $transport,
-        ];
+        $node['amenityFeature'] = array_map( static fn( string $line ): array => [
+            '@type' => 'LocationFeatureSpecification', 'name' => $line, 'value' => true,
+        ], array_values( array_filter( array_map( 'trim', preg_split( '/\R/u', $transport ) ?: [] ) ) ) );
     }
     $hours = saifr_schema_get_opening_hours( $options );
     if ( ! empty( $hours ) ) {
@@ -561,13 +559,16 @@ function saifr_schema_parse_founders( string $value ): array {
 
     $founders = [];
     foreach ( $rows as $row ) {
-        $parts = array_map( 'trim', explode( '|', $row, 2 ) );
+        $parts = array_map( 'trim', explode( '|', $row, 3 ) );
         if ( $parts[0] === '' ) {
             continue;
         }
         $person = [ '@type' => 'Person', 'name' => sanitize_text_field( $parts[0] ) ];
         if ( ! empty( $parts[1] ) ) {
             $person['jobTitle'] = sanitize_text_field( $parts[1] );
+        }
+        if ( ! empty( $parts[2] ) && wp_http_validate_url( $parts[2] ) ) {
+            $person['sameAs'] = [ esc_url_raw( $parts[2] ) ];
         }
         $founders[] = $person;
     }
@@ -883,7 +884,7 @@ function saifr_schema_normalize_service_offer( array $source ): array {
     ];
 
     if ( $url !== '' ) {
-        $service['@id'] = trailingslashit( $url ) . '#service';
+        $service['@id'] = $url . '#service';
         $service['url'] = $url;
     }
 
@@ -1271,7 +1272,12 @@ function saifr_schema_cleanup_node( $value ) {
             continue;
         }
 
-        $value[ $key ] = saifr_schema_cleanup_node( $item );
+        if ( is_string( $item ) ) {
+            $url_fields = [ '@id', 'url', 'sameAs', 'image', 'logo', 'contentUrl', 'thumbnailUrl', 'license' ];
+            $value[ $key ] = $key === 'inLanguage' ? str_replace( '_', '-', $item ) : ( in_array( $key, $url_fields, true ) || preg_match( '#^[a-z][a-z0-9+.-]*://#i', $item ) ? $item : html_entity_decode( $item, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+        } else {
+            $value[ $key ] = saifr_schema_cleanup_node( $item );
+        }
     }
 
     return $value;
@@ -1334,7 +1340,7 @@ function saifr_schema_get_content_node( WP_Post $post ): array {
     $identity_ref = [ '@id' => saifr_schema_get_identity_node()['@id'] ];
     $node = [
         '@type' => $type,
-        '@id' => trailingslashit( $url ) . '#' . $fragments[ $type ],
+        '@id' => $url . '#' . $fragments[ $type ],
         'url' => $url,
         'name' => $name,
         'inLanguage' => get_locale(),
@@ -1395,11 +1401,9 @@ function saifr_schema_get_content_node( WP_Post $post ): array {
             }
         }
     } elseif ( $type === 'Service' ) {
-        foreach ( [ 'serviceType', 'areaServed' ] as $key ) {
-            if ( ! empty( $values[ $key ] ) ) {
-                $node[ $key ] = $values[ $key ];
-            }
-        }
+        if ( ! empty( $values['serviceType'] ) ) $node['serviceType'] = $values['serviceType'];
+        if ( ! empty( $values['areaServed'] ) ) $node['areaServed'] = [ '@type' => 'Country', 'name' => $values['areaServed'] ];
+        unset( $node['inLanguage'] );
         $node['provider'] = $identity_ref;
         if ( ! empty( $offer ) ) {
             $node['offers'] = [ $offer ];
@@ -1548,6 +1552,18 @@ add_filter(
     1
 );
 
+add_filter( 'rank_math/json_ld', static function ( $data ) {
+    if ( ! is_array( $data ) ) return $data;
+    if ( saifr_schema_is_enabled() && is_singular() ) {
+        $post = get_post();
+        $service = $post instanceof WP_Post ? saifr_schema_get_content_node( $post ) : [];
+        if ( ( $service['@type'] ?? '' ) === 'Service' ) {
+            unset( $data['richSnippet'] );
+        }
+    }
+    return saifr_schema_cleanup_graph( $data );
+}, 999 );
+
 add_filter(
     'wpseo_schema_graph',
     function ( array $graph ): array {
@@ -1560,3 +1576,17 @@ add_filter(
     99,
     1
 );
+
+/** Yoast emits Article as a separate graph node on some pages. */
+add_filter( 'wpseo_schema_graph', static function ( $graph ) {
+    if ( ! is_array( $graph ) || ! saifr_schema_is_enabled() || ! is_singular() ) return $graph;
+    $post = get_post();
+    $service = $post instanceof WP_Post ? saifr_schema_get_content_node( $post ) : [];
+    if ( ( $service['@type'] ?? '' ) !== 'Service' ) return $graph;
+    $article_types = [ 'Article', 'BlogPosting', 'NewsArticle', 'TechArticle', 'ScholarlyArticle' ];
+    foreach ( $graph as $key => $node ) {
+        if ( ! is_array( $node ) ) continue;
+        if ( array_intersect( $article_types, (array) ( $node['@type'] ?? [] ) ) ) unset( $graph[ $key ] );
+    }
+    return array_values( $graph );
+}, 999 );

@@ -10,6 +10,34 @@
         }));
     }
 
+    var regenerationRunning = false;
+    function runFullRegeneration(force) {
+        if (regenerationRunning) return;
+        regenerationRunning = true;
+        ajax('saifr_regenerate_all', { force: force ? 1 : 0, mode: 'full' }).done(function (res) {
+            if (!res || !res.success) { regenerationRunning = false; return; }
+            function step() {
+                ajax('saifr_regeneration_step', {}).done(function (reply) {
+                    var job = (reply || {}).data || {};
+                    var stats = job.stats || {};
+                    $('#saifr-action-status').text('Rigenerazione: ' + (stats.processed || 0) + '/' + (job.total || 0) + ' contenuti elaborati, ' + (stats.errors || 0) + ' errori.');
+                    if (job.status === 'running') {
+                        window.setTimeout(step, 400);
+                    } else {
+                        regenerationRunning = false;
+                        if (job.status === 'failed') $('#saifr-action-status').text(job.error || t('generationFailed'));
+                        refreshOverview();
+                        refreshTimeline();
+                    }
+                }).fail(function () {
+                    regenerationRunning = false;
+                    $('#saifr-action-status').text(t('requestFailed'));
+                });
+            }
+            step();
+        }).fail(function () { regenerationRunning = false; });
+    }
+
     function esc(text) {
         return $('<div/>').text(text || '').html();
     }
@@ -573,20 +601,15 @@
         });
 
         $('#saifr-regenerate').on('click', function () {
-            ajax('saifr_regenerate_all', { force: 0, mode: 'full' }).done(function (res) {
-                if (!res || !res.success) return;
-                $('#saifr-action-status').text(t('regenerationComplete'));
-                refreshOverview();
-                refreshTimeline();
-            });
+            runFullRegeneration(false);
         });
 
         $('#saifr-regenerate-force').on('click', function () {
-            ajax('saifr_regenerate_all', { force: 1, mode: 'full' }).done(function () {
-                $('#saifr-action-status').text(t('forcedComplete'));
-                refreshOverview();
-                refreshTimeline();
-            });
+            runFullRegeneration(true);
+        });
+
+        ajax('saifr_regeneration_status', {}).done(function (res) {
+            if (res && res.success && (res.data || {}).status === 'running') runFullRegeneration(false);
         });
 
         $('#saifr-clear-versions').on('click', function () {

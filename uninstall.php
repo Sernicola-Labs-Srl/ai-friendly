@@ -14,6 +14,12 @@ function saifr_uninstall_site_data(): void {
     // pubblicato dal plugin; un file esterno o modificato manualmente resta intatto.
     $static_llms_hash = (string) get_option( 'saifr_static_llms_hash', '' );
     $static_llms_file = trailingslashit( ABSPATH ) . 'llms.txt';
+    $full_hash = (string) get_option( 'saifr_static_llms_full_hash', '' );
+    $full_file = trailingslashit( ABSPATH ) . 'llms-full.txt';
+    if ( $full_hash !== '' && is_file( $full_file ) ) {
+        $current_hash = hash_file( 'sha256', $full_file );
+        if ( is_string( $current_hash ) && hash_equals( $full_hash, $current_hash ) ) wp_delete_file( $full_file );
+    }
     if ( $static_llms_hash !== '' && is_file( $static_llms_file ) ) {
         $static_llms_content = @file_get_contents( $static_llms_file );
         if ( is_string( $static_llms_content ) && hash_equals( $static_llms_hash, hash( 'sha256', $static_llms_content ) ) ) {
@@ -44,6 +50,9 @@ function saifr_uninstall_site_data(): void {
         delete_option( (string) $snapshot_option );
     }
 
+    $author_options = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'saifr_author_regeneration_' ) . '%' ) );
+    foreach ( $author_options as $author_option ) delete_option( (string) $author_option );
+
     // Remove dynamically named Markdown, FAQ, and admin-notice transients.
     // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup must discover dynamically named plugin transients.
     $transient_options = $wpdb->get_col(
@@ -68,8 +77,12 @@ function saifr_uninstall_site_data(): void {
             'saifr_event_log',
             'saifr_last_regeneration',
             'saifr_regeneration_cursor',
+            'saifr_regeneration_job',
+            'saifr_regeneration_lock',
+            'saifr_corpus_dirty',
             'saifr_llms_history_index',
             'saifr_static_llms_hash',
+            'saifr_static_llms_full_hash',
             'saifr_faq_cache_version',
             'saifr_legacy_migration_version',
             'saifr_legacy_migration_notice',
@@ -86,6 +99,8 @@ function saifr_uninstall_site_data(): void {
     delete_metadata( 'post', 0, '_saifr_md_generated', '', true );
     delete_metadata( 'post', 0, '_saifr_md_filename', '', true );
     wp_clear_scheduled_hook( 'saifr_cron_regenerate' );
+    wp_clear_scheduled_hook( 'saifr_regeneration_step' );
+    wp_clear_scheduled_hook( 'saifr_start_corpus_refresh' );
 
     $uploads      = wp_upload_dir();
     $storage_root = trailingslashit( (string) $uploads['basedir'] ) . 'sernicola-labs-ai-friendly';

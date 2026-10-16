@@ -22,6 +22,12 @@ function saifr_get_overview_stats(): array {
             'last_regen_time' => $last_regen['time'] ?? '',
             'valid'           => trim( $llms_content ) !== '',
         ],
+        'llms_full'  => [
+            'enabled' => ! empty( $options['llms_full_enabled'] ),
+            'ready'   => is_file( saifr_llms_full_target() ),
+            'size'    => is_file( saifr_llms_full_target() ) ? (int) filesize( saifr_llms_full_target() ) : 0,
+            'url'     => home_url( '/llms-full.txt' ),
+        ],
         'markdown'   => [
             'static_enabled' => ! empty( $options['static_md_files'] ),
             'count'          => intval( $versioning['count'] ?? 0 ),
