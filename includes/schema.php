@@ -65,6 +65,15 @@ function saifr_schema_split_lines( string $value ): array {
     return array_values( array_unique( $items ) );
 }
 
+/** URL lists are line-separated: a comma may be part of a valid URL. */
+function saifr_schema_split_url_lines( string $value ): array {
+    $items = preg_split( '/\r\n|\r|\n/', $value );
+    if ( ! is_array( $items ) ) {
+        return [];
+    }
+    return array_values( array_unique( array_filter( array_map( 'trim', $items ), static fn( string $item ): bool => $item !== '' ) ) );
+}
+
 function saifr_schema_dedupe_urls( array $urls ): array {
     $unique = [];
     $seen   = [];
@@ -154,7 +163,7 @@ function saifr_schema_get_identity_node(): array {
         }
     }
 
-    $same_as = saifr_schema_split_lines( (string) ( $options['schema_same_as'] ?? '' ) );
+    $same_as = saifr_schema_split_url_lines( (string) ( $options['schema_same_as'] ?? '' ) );
     $same_as = saifr_schema_dedupe_urls( $same_as );
     if ( ! empty( $same_as ) ) {
         $node['sameAs'] = $same_as;
@@ -530,7 +539,7 @@ function saifr_schema_get_related_entities( array $options ): array {
             $node[ $identifier_key ] = $identifier;
         }
 
-        $same_as = saifr_schema_dedupe_urls( saifr_schema_split_lines( (string) ( $row['sameAs'] ?? '' ) ) );
+        $same_as = saifr_schema_dedupe_urls( saifr_schema_split_url_lines( (string) ( $row['sameAs'] ?? '' ) ) );
         if ( ! empty( $same_as ) ) {
             $node['sameAs'] = $same_as;
         }

@@ -152,12 +152,27 @@ class SaifrMetadata {
 
     private static function generateExcerpt( WP_Post $post ): string {
         $raw = $post->post_excerpt !== '' ? $post->post_excerpt : $post->post_content;
+        if ( $post->post_excerpt === '' ) {
+            // Skip leading headings and navigation links before deriving a description.
+            $raw = preg_replace( '/^\s*(?:(?:<h[1-3]\b[^>]*>.*?<\/h[1-3]>|<p\b[^>]*>\s*<a\b[^>]*>\s*Torna\s+al(?:la|lo|l[\x{2019}\x{0027}])?\s+.*?<\/a>\s*<\/p>)\s*)+/isu', '', $raw ) ?? $raw;
+        }
         $text = preg_replace( '/\[[^\]]+\]/', '', $raw ) ?? $raw;
         $text = wp_strip_all_tags( $text );
         $text = preg_replace( '/\s+/', ' ', $text ) ?? $text;
         $text = trim( $text );
 
-        return wp_html_excerpt( $text, 300, '...' );
+        if ( mb_strlen( $text ) <= 300 ) {
+            return $text;
+        }
+
+        $candidate = mb_substr( $text, 0, 301 );
+        if ( preg_match( '/^(.+[.!?])(?:\s|$)/us', $candidate, $matches ) ) {
+            return trim( $matches[1] );
+        }
+
+        $cut = mb_substr( $text, 0, 300 );
+        $whole_words = trim( (string) preg_replace( '/\s+\S*$/u', '', $cut ) );
+        return $whole_words !== '' ? $whole_words : $cut;
     }
 
     private static function yamlEscape( string $s ): string {
