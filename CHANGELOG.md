@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.1
+
+- Conservate le virgole presenti negli URL `sameAs` configurati per l'identità e le entità collegate.
+- Migliorate le descrizioni ricavate dal contenuto: eliminati i titoli e i link di ritorno iniziali e il troncamento con puntini di sospensione.
+
 ## 2.3.0
 
 - Rigenerazione completa persistente a blocchi, batch configurabili da 1 contenuto e tempi separati per query, generazione, pulizia e sincronizzazione dell'indice.

@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -67,6 +67,10 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 Use the WordPress.org support forum for support. The maintained development source is available at https://github.com/Sernicola-Labs-Srl/ai-friendly.
 
 == Changelog ==
+
+= 2.3.1 =
+* Keep commas inside `sameAs` URLs when reading external profile lists.
+* Improve generated descriptions by skipping leading headings and return links and ending at a complete sentence or word without ellipses.
 
 = 2.3.0 =
 * Run full Markdown regeneration in resumable batches and refresh author content after display-name changes.
