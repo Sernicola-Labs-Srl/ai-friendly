@@ -1,6 +1,8 @@
+![AI Friendly: Your site, readable by AI.](assets/branding/cover-1544x500.png)
+
 # Sernicola Labs AI Friendly
 
-**Version:** 2.3.1
+**Version:** 2.3.2
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v3 or later
@@ -93,7 +95,7 @@ Note:
 
 ### 1) `llms.txt`
 
-`/llms.txt` viene pubblicato come file statico nel document root, così le richieste non avviano PHP. Il plugin lo aggiorna quando cambia il contenuto; se il file statico non è disponibile resta disponibile la rotta dinamica. I file già presenti o modificati esternamente vengono lasciati intatti. Il server web determina se aggiungere il charset alla risposta.
+`/llms.txt` è sempre una risposta dinamica con `Content-Type: text/plain; charset=UTF-8`, così gli accenti restano corretti anche sui web server che servirebbero un file statico senza charset. Dalla 2.3.2 il plugin non scrive più alcun file nel document root e, all'aggiornamento, rimuove i file `llms.txt` e `llms-full.txt` delle versioni precedenti solo se coincidono ancora con quanto aveva pubblicato; un file di altri resta intatto e viene segnalato nell'admin. Con WPML o Polylang ogni lingua ha il proprio `llms.txt` (per esempio `/en/llms.txt`).
 
 Il contenuto può combinare:
 
@@ -107,7 +109,7 @@ Per i contenuti pubblici inclusi dalle regole:
 - `https://sito.tld/pagina/` -> `https://sito.tld/pagina.md`
 - `https://sito.tld/cpt/slug/` -> `https://sito.tld/cpt/slug.md`
 
-`/llms.txt` resta un indice breve. L'opzione **Pubblica llms-full.txt** crea invece un corpus Markdown completo con gli stessi contenuti pubblici ammessi per gli endpoint `.md`. Il corpus viene costruito a blocchi e pubblicato solo al termine di una rigenerazione riuscita; l'opzione è disattivata inizialmente.
+`/llms.txt` resta un indice breve. L'opzione **Pubblica llms-full.txt** crea invece un corpus Markdown completo con gli stessi contenuti pubblici ammessi per gli endpoint `.md`. Il corpus viene costruito a blocchi, salvato in `uploads/sernicola-labs-ai-friendly/corpus` (fuori dal document root) e servito dalla risposta dinamica `/llms-full.txt` solo al termine di una rigenerazione riuscita; l'opzione è disattivata inizialmente.
 
 La rigenerazione completa e la configurazione iniziale avviano un lavoro persistente, riprendibile tramite WP-Cron o dalla pagina admin. Le statistiche separano i tempi di query, generazione, pulizia e aggiornamento di `llms.txt`. Il valore "Contenuti per esecuzione" ammette anche batch piccoli, a partire da 1.
 
