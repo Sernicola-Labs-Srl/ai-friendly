@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.2
+
+- `/llms.txt` e `/llms-full.txt` escono solo da risposte dinamiche con `Content-Type: text/plain; charset=UTF-8`: i web server che servono i file statici senza charset non rovinano più gli accenti. All'aggiornamento i file statici delle versioni precedenti vengono rimossi solo se coincidono ancora con l'hash salvato dal plugin; un file di altri resta intatto e viene segnalato nell'admin. Il corpus completo ora risiede in `uploads/sernicola-labs-ai-friendly/corpus`, fuori dalla radice pubblica.
+- Corretto l'incollaggio delle parole in corrispondenza di `<br>` e della chiusura dei blocchi nel convertitore HTML → Markdown (titoli, liste, link, tabelle) e nella generazione di descrizioni, estratti e testo dei prodotti WooCommerce.
+- Con WPML o Polylang le sezioni di `llms.txt` e gli indici degli archivi Markdown elencano solo i contenuti della lingua attiva; la home di ogni lingua usa il proprio `index.html.md` e il proprio URL nel frontmatter e nell'intestazione `Link: canonical`.
+- Aggiunto `wpml-config.xml` per registrare i testi traducibili del plugin in WPML String Translation.
+- Le pagine Elementor, compresi i widget atomici di Elementor 4, vengono lette dall'HTML renderizzato per conservare titoli, link e pulsanti.
+
 ## 2.3.1
 
 - Conservate le virgole presenti negli URL `sameAs` configurati per l'identità e le entità collegate.

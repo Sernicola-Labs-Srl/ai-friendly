@@ -48,7 +48,7 @@ function saifr_serve_markdown( string $rel_path ): void {
             saifr_404();
         }
 
-        $canonical = get_permalink( $post_id );
+        $canonical = saifr_post_public_url( $post );
         $canonical = apply_filters( 'saifr_md_canonical_url', $canonical, $post_id, $post );
 
         // Prova a servire versione statica se abilitato
@@ -270,6 +270,12 @@ function saifr_try_page_builders( int $post_id, string $content, bool $debug = f
 
     $elementor_data = get_post_meta( $post_id, '_elementor_data', true );
     if ( ! empty( $elementor_data ) ) {
+        // L'HTML renderizzato da Elementor conserva titoli, paragrafi, link e pulsanti
+        // (anche per i widget atomici di Elementor 4); il JSON grezzo li appiattirebbe.
+        $rendered = saifr_render_elementor_html( $post_id );
+        if ( trim( wp_strip_all_tags( $rendered ) ) !== '' ) {
+            return $rendered;
+        }
         if ( is_string( $elementor_data ) ) {
             $data = json_decode( $elementor_data, true );
             if ( is_array( $data ) ) {
@@ -325,7 +331,51 @@ function saifr_extract_breakdance_text( $data ): string {
 }
 
 function saifr_extract_elementor_text( array $data ): string {
-    return saifr_recursive_text_extract( $data, [ 'title', 'description', 'content', 'text', 'editor', 'html', 'heading_title' ] );
+    return saifr_recursive_text_extract( $data, [ 'title', 'description', 'content', 'text', 'editor', 'html', 'heading_title', 'paragraph' ] );
+}
+
+/** HTML del contenuto costruito con Elementor, come lo vedrebbe il visitatore. */
+function saifr_render_elementor_html( int $post_id ): string {
+    if ( ! class_exists( '\Elementor\Plugin' ) ) {
+        return '';
+    }
+
+    try {
+        $plugin = \Elementor\Plugin::$instance;
+        if ( ! is_object( $plugin ) || ! isset( $plugin->frontend ) || ! method_exists( $plugin->frontend, 'get_builder_content_for_display' ) ) {
+            return '';
+        }
+        $html = $plugin->frontend->get_builder_content_for_display( $post_id, false );
+    } catch ( Throwable $e ) {
+        return '';
+    }
+
+    return is_string( $html ) ? $html : '';
+}
+
+/**
+ * Valore testuale di una proprietà atomica di Elementor 4, del tipo
+ * {"$$type":"html","value":"..."} o {"$$type":"html-v3","value":{"content":{"value":"..."}}}.
+ */
+function saifr_atomic_prop_string( $prop, int $depth = 0 ): string {
+    if ( $depth > 6 ) {
+        return '';
+    }
+    if ( is_string( $prop ) ) {
+        return $prop;
+    }
+    if ( ! is_array( $prop ) || ! array_key_exists( '$$type', $prop ) ) {
+        return '';
+    }
+    $value = $prop['value'] ?? '';
+    if ( is_string( $value ) ) {
+        return $value;
+    }
+    if ( is_array( $value ) ) {
+        $inner = $value['content'] ?? ( $value['value'] ?? '' );
+        return saifr_atomic_prop_string( $inner, $depth + 1 );
+    }
+    return '';
 }
 
 function saifr_extract_bricks_text( array $data ): string {
@@ -493,8 +543,15 @@ function saifr_is_media_like_array( array $value ): bool {
 
 function saifr_recursive_text_extract( array $data, array $keys, string $result = '' ): string {
     foreach ( $data as $key => $value ) {
+        if ( is_array( $value ) && in_array( $key, $keys, true ) && array_key_exists( '$$type', $value ) ) {
+            // Proprietà atomica (Elementor 4): il testo sta dentro "value".
+            $atomic = saifr_atomic_prop_string( $value );
+            if ( $atomic !== '' ) {
+                $value = $atomic;
+            }
+        }
         if ( is_string( $value ) && in_array( $key, $keys, true ) ) {
-            $clean = trim( wp_strip_all_tags( html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+            $clean = saifr_strip_tags_spaced( html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
             if ( ! empty( $clean ) && strlen( $clean ) > 2 ) {
                 $result .= $clean . "\n\n";
             }
@@ -509,15 +566,19 @@ function saifr_extract_text_from_raw( string $content ): string {
     $text = preg_replace( '/\[[^\]]+\]/', '', $content ) ?? $content;
     $text = preg_replace( '/\{[^}]+\}/', '', $text ) ?? $text;
     $text = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-    $text = wp_strip_all_tags( $text );
-    $text = preg_replace( '/\s+/', ' ', $text ) ?? $text;
-    return trim( $text );
+    return saifr_strip_tags_spaced( $text );
 }
 
 function saifr_resolve_post( string $path ): int {
     $path = saifr_normalize_relative_path( $path );
     if ( empty( $path ) ) {
         return saifr_resolve_front_page_post();
+    }
+
+    // Home di una lingua secondaria (es. /en/index.html.md): serve la home tradotta.
+    $language_home_id = saifr_resolve_language_home_post( $path );
+    if ( $language_home_id > 0 ) {
+        return $language_home_id;
     }
 
     $public_types = get_post_types( [ 'public' => true ], 'names' );
@@ -591,6 +652,21 @@ function saifr_resolve_post( string $path ): int {
     return 0;
 }
 
+/** Risolve il percorso della home di una lingua (es. "en") nella home statica tradotta. */
+function saifr_resolve_language_home_post( string $path ): int {
+    foreach ( saifr_active_language_codes() as $lang ) {
+        if ( saifr_relative_path_from_url( saifr_home_url_for_language( $lang ) ) !== $path ) {
+            continue;
+        }
+        $front_id = saifr_front_page_id_for_language( $lang );
+        $post     = $front_id > 0 ? get_post( $front_id ) : null;
+        if ( $post && $post->post_status === 'publish' ) {
+            return $front_id;
+        }
+    }
+    return 0;
+}
+
 function saifr_resolve_front_page_post(): int {
     if ( get_option( 'show_on_front' ) !== 'page' ) {
         return 0;
@@ -599,6 +675,23 @@ function saifr_resolve_front_page_post(): int {
     $front_page_id = (int) get_option( 'page_on_front' );
     if ( $front_page_id <= 0 ) {
         return 0;
+    }
+
+    // Con WPML/Polylang la home richiesta è quella della lingua attiva (es. /en/index.html.md).
+    $current_lang = '';
+    if ( saifr_wpml_is_available() ) {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML public API hook.
+        $wpml_lang    = apply_filters( 'wpml_current_language', null );
+        $current_lang = is_string( $wpml_lang ) && $wpml_lang !== 'all' ? $wpml_lang : '';
+    } elseif ( function_exists( 'pll_current_language' ) ) {
+        $pll_lang     = pll_current_language();
+        $current_lang = is_string( $pll_lang ) ? $pll_lang : '';
+    }
+    if ( $current_lang !== '' ) {
+        $translated_id = saifr_front_page_id_for_language( $current_lang );
+        if ( $translated_id > 0 ) {
+            $front_page_id = $translated_id;
+        }
     }
 
     $post = get_post( $front_page_id );
@@ -623,13 +716,13 @@ function saifr_extract_woocommerce_product_text( int $post_id ): array {
     $parts = [];
 
     $short_description = method_exists( $product, 'get_short_description' ) ? (string) $product->get_short_description() : '';
-    $short_description = trim( wp_strip_all_tags( html_entity_decode( $short_description, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+    $short_description = saifr_strip_tags_spaced( html_entity_decode( $short_description, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
     if ( $short_description !== '' ) {
         $parts[] = $short_description;
     }
 
     $description = method_exists( $product, 'get_description' ) ? (string) $product->get_description() : '';
-    $description = trim( wp_strip_all_tags( html_entity_decode( $description, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+    $description = saifr_strip_tags_spaced( html_entity_decode( $description, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
     if ( $description !== '' ) {
         $parts[] = $description;
     }
@@ -896,14 +989,14 @@ function saifr_serve_archive_markdown( string $post_type, bool $debug_mode = fal
         saifr_404();
     }
 
-    $posts = get_posts( [
+    $posts = get_posts( array_merge( [
         'post_type'      => $post_type,
         'post_status'    => 'publish',
         'posts_per_page' => 50,
         'orderby'        => 'date',
         'order'          => 'DESC',
         'no_found_rows'  => true,
-    ] );
+    ], saifr_language_query_args() ) );
 
     $filter = new SaifrContentFilter();
     $items = array_filter(
@@ -918,7 +1011,7 @@ function saifr_serve_archive_markdown( string $post_type, bool $debug_mode = fal
         if ( ! is_string( $item_url ) || $item_url === '' ) {
             continue;
         }
-        $md_url = saifr_permalink_to_md( $item_url );
+        $md_url = saifr_post_md_url( $item );
         $excerpt = saifr_excerpt( $item );
         $md .= "- [{$item_title}]({$md_url})";
         $md .= $excerpt !== '' ? ": {$excerpt}" : '';

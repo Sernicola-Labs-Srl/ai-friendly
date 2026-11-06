@@ -56,4 +56,6 @@ Se qualcosa va storto prima del commit, `svn revert -R .` seguito dall'eliminazi
 Gli asset devono stare nella directory SVN superiore `assets/`, non in `trunk/assets/`.
 I nomi utili sono `icon-128x128.png`, `icon-256x256.png`, `banner-772x250.png` e, opzionalmente, `banner-1544x500.png`.
 
-Dopo averli copiati in `assets`, esegui `svn add assets`, verifica `svn status` e fai un commit separato con un messaggio descrittivo.
+Nel repository Git gli asset di WordPress.org stanno in `assets/wordpress-org/` (banner PNG e icona animata GIF); `prepare-svn-release.ps1` li copia nella cartella `assets/` del checkout SVN e imposta i `svn:mime-type`. Se in `assets/` ci sono file `icon.svg` o `icon-*.png`, WordPress.org li mostra al posto della GIF animata: non aggiungerli. I file di `assets/branding/` (avatar, cover, anteprima social 1280x640) servono solo al repository GitHub e non vanno in SVN.
+
+Dopo la preparazione verifica `svn status` e fai un commit separato per gli asset, se sono cambiati, con un messaggio descrittivo.

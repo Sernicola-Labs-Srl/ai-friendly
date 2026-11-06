@@ -38,6 +38,7 @@ function Get-TreeFingerprint {
 $releaseItems = @(
     'sernicola-labs-ai-friendly.php',
     'uninstall.php',
+    'wpml-config.xml',
     'readme.txt',
     'README.md',
     'CHANGELOG.md',
@@ -151,6 +152,23 @@ try {
 
     Get-ChildItem -LiteralPath $trunk -Recurse -File -Filter '*.php' | ForEach-Object {
         Invoke-Svn propset --quiet svn:mime-type text/plain (Get-RelativePath $checkoutRoot $_.FullName)
+    }
+
+    # Directory assets (icona e banner) di WordPress.org: sta accanto a trunk, non dentro.
+    $assetsSource = Join-Path $sourceRoot 'assets\wordpress-org'
+    if (Test-Path $assetsSource) {
+        $assetsTarget = Join-Path $checkoutRoot 'assets'
+        if (-not (Test-Path $assetsTarget)) {
+            New-Item -ItemType Directory -Path $assetsTarget | Out-Null
+        }
+        Get-ChildItem -LiteralPath $assetsSource -File | ForEach-Object {
+            Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $assetsTarget $_.Name) -Force
+        }
+        Invoke-Svn add --force --quiet assets
+        Get-ChildItem -LiteralPath $assetsTarget -File | ForEach-Object {
+            $mime = switch ($_.Extension.ToLower()) { '.png' { 'image/png' } '.gif' { 'image/gif' } '.jpg' { 'image/jpeg' } default { $null } }
+            if ($mime) { Invoke-Svn propset --quiet svn:mime-type $mime (Get-RelativePath $checkoutRoot $_.FullName) }
+        }
     }
 
     Invoke-Svn copy --quiet trunk (Join-Path 'tags' $Version)

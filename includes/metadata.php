@@ -85,7 +85,7 @@ class SaifrMetadata {
         $date = get_the_date( 'Y-m-d', $post_id );
         $modified = get_the_modified_date( 'Y-m-d', $post_id );
         $author = get_the_author_meta( 'display_name', $post->post_author );
-        $url = get_permalink( $post_id );
+        $url = saifr_post_public_url( $post );
 
         $categories = [];
         if ( $post->post_type === 'post' ) {
@@ -157,9 +157,7 @@ class SaifrMetadata {
             $raw = preg_replace( '/^\s*(?:(?:<h[1-3]\b[^>]*>.*?<\/h[1-3]>|<p\b[^>]*>\s*<a\b[^>]*>\s*Torna\s+al(?:la|lo|l[\x{2019}\x{0027}])?\s+.*?<\/a>\s*<\/p>)\s*)+/isu', '', $raw ) ?? $raw;
         }
         $text = preg_replace( '/\[[^\]]+\]/', '', $raw ) ?? $raw;
-        $text = wp_strip_all_tags( $text );
-        $text = preg_replace( '/\s+/', ' ', $text ) ?? $text;
-        $text = trim( $text );
+        $text = saifr_strip_tags_spaced( $text );
 
         if ( mb_strlen( $text ) <= 300 ) {
             return $text;

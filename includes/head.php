@@ -18,7 +18,7 @@ add_action( 'wp_head', function () {
         $post = get_post( get_the_ID() );
         
         if ( $post && $filter->shouldInclude( $post ) ) {
-            $md_url = saifr_permalink_to_md( get_permalink( get_the_ID() ) );
+            $md_url = saifr_post_md_url( $post );
 
             echo '<link rel="alternate" type="text/markdown" title="' . esc_attr__( 'Versione Markdown', 'sernicola-labs-ai-friendly' ) . '" href="'
                . esc_url( $md_url )
