@@ -431,9 +431,8 @@ function saifr_process_regeneration_posts( array $posts, SaifrContentFilter $fil
  * Salva timestamp ultima rigenerazione, log evento e notifiche.
  */
 function saifr_finalize_regeneration_stats( array $stats, string $trigger, bool $force, bool $sync_llms = true ): void {
-    $started = microtime( true );
-    if ( $sync_llms ) saifr_sync_static_llms_txt();
-    $stats['llms_seconds'] = round( microtime( true ) - $started, 4 );
+    // llms.txt è sempre dinamico: non c'è più alcun file statico da sincronizzare.
+    $stats['llms_seconds'] = 0;
 
     update_option(
         'saifr_last_regeneration',

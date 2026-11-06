@@ -31,8 +31,8 @@ function saifr_activate( bool $network_wide = false ): void {
         update_option( 'saifr_options', $defaults );
     }
 
-    // Genera llms.txt al primo avvio se non esiste già un file esterno.
-    saifr_sync_static_llms_txt();
+    // Rimuove i file statici llms.txt/llms-full.txt delle versioni precedenti.
+    saifr_cleanup_legacy_static_files();
     
     // Schedula cron se necessario
     saifr_schedule_cron();

@@ -69,6 +69,7 @@ class SaifrConverter {
         $s = $this->marks( $s );
         $s = $this->breaks( $s );
         $s = $this->paragraphs( $s );
+        $s = $this->blockBoundaries( $s );
         $s = wp_strip_all_tags( $s );
         $s = $this->removeNoiseText( $s );
         $s = $this->cleanup( $s );
@@ -163,7 +164,7 @@ class SaifrConverter {
             function( $m ) {
                 $level = (int) $m[1] + $this->headingShift;
                 $level = min( $level, 6 );
-                $text = trim( wp_strip_all_tags( $m[2] ) );
+                $text = $this->plain( $m[2] );
                 if ( $text === '' ) {
                     return '';
                 }
@@ -177,7 +178,7 @@ class SaifrConverter {
         return preg_replace_callback(
             '/<blockquote[^>]*>(.*?)<\/blockquote>/si',
             function ( $m ) {
-                $content = trim( wp_strip_all_tags( $m[1] ) );
+                $content = $this->plain( $m[1], "\n" );
                 if ( $content === '' ) return '';
                 $lines = explode( "\n", $content );
                 $quoted = array_map( fn( $l ) => '> ' . trim( $l ), $lines );
@@ -200,7 +201,7 @@ class SaifrConverter {
                 preg_match_all( '/<tr[^>]*>(.*?)<\/tr>/si', $tableHtml, $trMatches );
                 foreach ( $trMatches[1] as $i => $tr ) {
                     preg_match_all( '/<(th|td)[^>]*>(.*?)<\/\1>/si', $tr, $cellMatches );
-                    $cells = array_map( fn( $c ) => trim( wp_strip_all_tags( $c ) ), $cellMatches[2] );
+                    $cells = array_map( fn( $c ) => $this->plain( $c ), $cellMatches[2] );
                     if ( ! empty( $cells ) ) {
                         $rows[] = '| ' . implode( ' | ', $cells ) . ' |';
                         if ( $i === 0 ) {
@@ -218,7 +219,7 @@ class SaifrConverter {
         $s = preg_replace_callback(
             '/<li[^>]*>(.*?)<\/li>/si',
             function( $m ) {
-                $content = trim( wp_strip_all_tags( $m[1] ) );
+                $content = $this->plain( $m[1] );
                 return $content !== '' ? "\n- " . $content : '';
             },
             $s
@@ -274,7 +275,7 @@ class SaifrConverter {
         return preg_replace_callback(
             '/<figcaption[^>]*>(.*?)<\/figcaption>/si',
             function( $m ) {
-                $caption = trim( wp_strip_all_tags( $m[1] ) );
+                $caption = $this->plain( $m[1] );
                 return $caption !== '' ? "\n*{$caption}*\n" : '';
             },
             $s
@@ -286,7 +287,7 @@ class SaifrConverter {
             '/<a\s[^>]*href=["\']([^"\']*)["\'][^>]*>(.*?)<\/a>/si',
             function ( $m ) {
                 $url  = trim( $m[1] );
-                $text = trim( wp_strip_all_tags( $m[2] ) );
+                $text = $this->plain( $m[2] );
 
                 if ( $text === '' && $url === '' ) {
                     return '';
@@ -339,6 +340,26 @@ class SaifrConverter {
 
     private function breaks( string $s ): string {
         return preg_replace( '/<br\s*\/?>/i', "\n", $s ) ?? $s;
+    }
+
+    /**
+     * Testo semplice di un frammento HTML: <br> e la chiusura dei blocchi
+     * diventano un separatore, così le parole non si incollano.
+     */
+    private function plain( string $html, string $separator = ' ' ): string {
+        $html = preg_replace( '/<br\s*\/?>/i', $separator, $html ) ?? $html;
+        $html = preg_replace( '/<\/(?:p|div|li|h[1-6]|td|th|tr|blockquote|section|article|dt|dd)>/i', '$0' . $separator, $html ) ?? $html;
+        $text = trim( wp_strip_all_tags( $html ) );
+        if ( $separator === ' ' ) {
+            return trim( preg_replace( '/\s+/u', ' ', $text ) ?? $text );
+        }
+        $text = preg_replace( '/[^\S\n]+/u', ' ', $text ) ?? $text;
+        return trim( preg_replace( '/ ?\n ?/', "\n", $text ) ?? $text );
+    }
+
+    /** I contenitori a blocco restanti diventano un a capo prima di togliere i tag. */
+    private function blockBoundaries( string $s ): string {
+        return preg_replace( '/<\/?(?:div|section|article|header|main|figure|address|details|summary|fieldset)\b[^>]*>/i', "\n", $s ) ?? $s;
     }
 
     private function paragraphs( string $s ): string {

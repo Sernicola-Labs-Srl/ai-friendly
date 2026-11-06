@@ -10,20 +10,21 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 function saifr_uninstall_site_data(): void {
     global $wpdb;
 
-    // Rimuove llms.txt soltanto se il contenuto corrisponde all'ultimo file
-    // pubblicato dal plugin; un file esterno o modificato manualmente resta intatto.
-    $static_llms_hash = (string) get_option( 'saifr_static_llms_hash', '' );
-    $static_llms_file = trailingslashit( ABSPATH ) . 'llms.txt';
-    $full_hash = (string) get_option( 'saifr_static_llms_full_hash', '' );
-    $full_file = trailingslashit( ABSPATH ) . 'llms-full.txt';
-    if ( $full_hash !== '' && is_file( $full_file ) ) {
-        $current_hash = hash_file( 'sha256', $full_file );
-        if ( is_string( $current_hash ) && hash_equals( $full_hash, $current_hash ) ) wp_delete_file( $full_file );
-    }
-    if ( $static_llms_hash !== '' && is_file( $static_llms_file ) ) {
-        $static_llms_content = @file_get_contents( $static_llms_file );
-        if ( is_string( $static_llms_content ) && hash_equals( $static_llms_hash, hash( 'sha256', $static_llms_content ) ) ) {
-            wp_delete_file( $static_llms_file );
+    // Rimuove gli eventuali file statici lasciati dalle versioni precedenti,
+    // ma solo se corrispondono ancora all'ultimo contenuto pubblicato dal plugin.
+    foreach (
+        [
+            'llms.txt'      => 'saifr_static_llms_hash',
+            'llms-full.txt' => 'saifr_static_llms_full_hash',
+        ] as $static_name => $static_option
+    ) {
+        $static_hash = (string) get_option( $static_option, '' );
+        $static_file = trailingslashit( ABSPATH ) . $static_name;
+        if ( $static_hash !== '' && is_file( $static_file ) ) {
+            $static_current = hash_file( 'sha256', $static_file );
+            if ( is_string( $static_current ) && hash_equals( $static_hash, $static_current ) ) {
+                wp_delete_file( $static_file );
+            }
         }
     }
 
@@ -83,6 +84,7 @@ function saifr_uninstall_site_data(): void {
             'saifr_llms_history_index',
             'saifr_static_llms_hash',
             'saifr_static_llms_full_hash',
+            'saifr_static_files_cleaned',
             'saifr_faq_cache_version',
             'saifr_legacy_migration_version',
             'saifr_legacy_migration_notice',
@@ -120,7 +122,16 @@ function saifr_uninstall_site_data(): void {
         wp_delete_file( $htaccess );
     }
 
-    foreach ( [ $versions_dir, $storage_root ] as $directory ) {
+    $corpus_dir = trailingslashit( $storage_root ) . 'corpus';
+    $corpus_entries = is_dir( $corpus_dir ) ? scandir( $corpus_dir ) : [];
+    foreach ( is_array( $corpus_entries ) ? $corpus_entries : [] as $corpus_entry ) {
+        $corpus_file = trailingslashit( $corpus_dir ) . $corpus_entry;
+        if ( $corpus_entry !== '.' && $corpus_entry !== '..' && is_file( $corpus_file ) ) {
+            wp_delete_file( $corpus_file );
+        }
+    }
+
+    foreach ( [ $versions_dir, $corpus_dir, $storage_root ] as $directory ) {
         if ( is_dir( $directory ) ) {
             rmdir( $directory ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Exact plugin-owned directory, removed only when empty.
         }

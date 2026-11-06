@@ -1,0 +1,12 @@
+<wpml-config>
+  <admin-texts>
+    <key name="saifr_options">
+      <key name="llms_content"/>
+      <key name="schema_alternate_name"/>
+      <key name="schema_description"/>
+      <key name="schema_disambiguating_description"/>
+      <key name="schema_slogan"/>
+      <key name="schema_knows_about"/>
+    </key>
+  </admin-texts>
+</wpml-config>

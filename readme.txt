@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -16,8 +16,8 @@ Sernicola Labs AI Friendly is a GEO/AEO content publishing toolkit, not only an 
 
 The plugin provides:
 
-* Static `/llms.txt` delivery with dynamic WordPress fallback when the static file is unavailable.
-* Optional `/llms-full.txt` corpus, built in batches and published after a successful complete run.
+* Dynamic `/llms.txt` with a UTF-8 charset header, per language on WPML and Polylang sites.
+* Optional `/llms-full.txt` corpus, built in batches, stored outside the web root and served dynamically after a successful complete run.
 * Public `.md` endpoints for published content.
 * Optional static Markdown files with regeneration workflows.
 * Inclusion and exclusion rules for post types, taxonomy terms, templates, URL patterns, and noindex/password conditions.
@@ -67,6 +67,13 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 Use the WordPress.org support forum for support. The maintained development source is available at https://github.com/Sernicola-Labs-Srl/ai-friendly.
 
 == Changelog ==
+
+= 2.3.2 =
+* Serve `/llms.txt` and `/llms-full.txt` only from dynamic responses with `text/plain; charset=UTF-8`; accented letters are no longer corrupted by web servers that deliver static text files without a charset. Static files written by earlier versions are removed on update only when they still match what the plugin published; the full corpus now lives in a protected uploads folder.
+* Fix words being glued together at `<br>` tags and between block elements when converting HTML to Markdown, and when building descriptions, excerpts and WooCommerce product text.
+* Limit `llms.txt` sections and archive indexes to the current language on WPML and Polylang sites, and link each language's home page to its own `index.html.md` with the correct frontmatter URL.
+* Register the plugin's translatable texts with WPML through `wpml-config.xml`.
+* Read Elementor pages (including Elementor 4 atomic widgets) from the rendered markup so headings, links and buttons are preserved.
 
 = 2.3.1 =
 * Keep commas inside `sameAs` URLs when reading external profile lists.

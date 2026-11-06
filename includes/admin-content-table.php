@@ -67,7 +67,7 @@ function saifr_list_content_items( array $args = [] ): array {
         $token_source = $post->post_excerpt !== '' ? $post->post_excerpt : $post->post_content;
 
         $permalink = get_permalink( $post->ID );
-        $md_url    = is_string( $permalink ) ? saifr_permalink_to_md( $permalink ) : '';
+        $md_url    = is_string( $permalink ) ? saifr_permalink_to_md( $permalink, (int) $post->ID ) : '';
 
         $items[] = [
             'id'          => $post->ID,
