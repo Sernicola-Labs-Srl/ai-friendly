@@ -4,7 +4,7 @@ Tags: ai, llms, markdown, seo, content
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -67,6 +67,10 @@ No. When Yoast or Rank Math are active, AI Friendly enriches their existing JSON
 Use the WordPress.org support forum for support. The maintained development source is available at https://github.com/Sernicola-Labs-Srl/ai-friendly.
 
 == Changelog ==
+
+= 2.3.3 =
+* Use English as the source language of all admin interface strings so the plugin can be translated on translate.wordpress.org; the bundled Italian translation is rebuilt on top of them.
+* Fix the "+ Sintesi" snippet button in the llms.txt editor, whose label was merged into the snippet attribute, and translate the remaining hard-coded admin texts (editor snippets, profile page selector, regeneration progress message).
 
 = 2.3.2 =
 * Serve `/llms.txt` and `/llms-full.txt` only from dynamic responses with `text/plain; charset=UTF-8`; accented letters are no longer corrupted by web servers that deliver static text files without a charset. Static files written by earlier versions are removed on update only when they still match what the plugin published; the full corpus now lives in a protected uploads folder.

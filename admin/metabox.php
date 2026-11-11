@@ -53,12 +53,12 @@ function saifr_render_metabox( WP_Post $post ): void {
                name="_saifr_exclude"
                value="1"
                <?php checked( $excluded, '1' ); ?> />
-        <?php esc_html_e( 'Escludi da llms.txt e dalla versione Markdown', 'sernicola-labs-ai-friendly' ); ?>
+        <?php esc_html_e( 'Exclude from llms.txt and the Markdown version', 'sernicola-labs-ai-friendly' ); ?>
     </label>
     
     <?php if ( $last_generated ) : ?>
     <p style="margin-top:10px; color:#666; font-size:12px;">
-        <strong><?php esc_html_e( 'Ultima generazione Markdown:', 'sernicola-labs-ai-friendly' ); ?></strong><br>
+        <strong><?php esc_html_e( 'Last Markdown generation:', 'sernicola-labs-ai-friendly' ); ?></strong><br>
         <?php echo esc_html( $last_generated ); ?>
     </p>
     <?php endif; ?>
@@ -73,16 +73,16 @@ function saifr_render_schema_metabox( WP_Post $post ): void {
     $rule = saifr_schema_get_type_rule( $post->post_type );
     $data = saifr_schema_get_content_schema_data( $post );
     $field_labels = [
-        'startDate'        => __( 'Inizio', 'sernicola-labs-ai-friendly' ),
-        'endDate'          => __( 'Fine', 'sernicola-labs-ai-friendly' ),
-        'locationName'     => __( 'Luogo', 'sernicola-labs-ai-friendly' ),
-        'locationAddress'  => __( 'Indirizzo', 'sernicola-labs-ai-friendly' ),
-        'price'            => __( 'Prezzo', 'sernicola-labs-ai-friendly' ),
-        'priceCurrency'    => __( 'Valuta', 'sernicola-labs-ai-friendly' ),
-        'courseCode'       => __( 'Codice corso', 'sernicola-labs-ai-friendly' ),
-        'educationalLevel' => __( 'Livello', 'sernicola-labs-ai-friendly' ),
-        'serviceType'      => __( 'Tipo servizio', 'sernicola-labs-ai-friendly' ),
-        'areaServed'       => __( 'Area servita', 'sernicola-labs-ai-friendly' ),
+        'startDate'        => __( 'Start', 'sernicola-labs-ai-friendly' ),
+        'endDate'          => __( 'End', 'sernicola-labs-ai-friendly' ),
+        'locationName'     => __( 'Venue', 'sernicola-labs-ai-friendly' ),
+        'locationAddress'  => __( 'Address', 'sernicola-labs-ai-friendly' ),
+        'price'            => __( 'Price', 'sernicola-labs-ai-friendly' ),
+        'priceCurrency'    => __( 'Currency', 'sernicola-labs-ai-friendly' ),
+        'courseCode'       => __( 'Course code', 'sernicola-labs-ai-friendly' ),
+        'educationalLevel' => __( 'Level', 'sernicola-labs-ai-friendly' ),
+        'serviceType'      => __( 'Service type', 'sernicola-labs-ai-friendly' ),
+        'areaServed'       => __( 'Area served', 'sernicola-labs-ai-friendly' ),
     ];
     $auto_values = [];
     foreach ( (array) ( $data['sources'] ?? [] ) as $field => $source ) {
@@ -91,61 +91,61 @@ function saifr_render_schema_metabox( WP_Post $post ): void {
         }
     }
     $attendance_labels = [
-        'offline' => __( 'In presenza', 'sernicola-labs-ai-friendly' ),
+        'offline' => __( 'In person', 'sernicola-labs-ai-friendly' ),
         'online'  => __( 'Online', 'sernicola-labs-ai-friendly' ),
-        'mixed'   => __( 'Mista', 'sernicola-labs-ai-friendly' ),
+        'mixed'   => __( 'Blended', 'sernicola-labs-ai-friendly' ),
     ];
     ?>
-    <p><?php esc_html_e( 'Genera un nodo per questo contenuto riusando automaticamente titolo, permalink, riassunto, descrizione, immagine in evidenza e date WordPress.', 'sernicola-labs-ai-friendly' ); ?></p>
+    <p><?php esc_html_e( 'Generate a node for this content, automatically reusing the WordPress title, permalink, excerpt, description, featured image, and dates.', 'sernicola-labs-ai-friendly' ); ?></p>
     <?php if ( ! empty( $rule ) ) : ?>
         <p class="description">
             <?php
             /* translators: %s: Schema.org type configured for the post type. */
-            echo esc_html( sprintf( __( 'Questo tipo di contenuto genera in automatico un nodo %s in base alla mappatura della sezione Semantic Schema. I campi compilati qui hanno la precedenza.', 'sernicola-labs-ai-friendly' ), $rule['type'] ) );
+            echo esc_html( sprintf( __( 'This content type automatically generates a %s node based on the Semantic Schema section mapping. Fields filled in here take precedence.', 'sernicola-labs-ai-friendly' ), $rule['type'] ) );
             ?>
         </p>
     <?php endif; ?>
     <?php if ( ! empty( $auto_values ) ) : ?>
-        <p class="description"><strong><?php esc_html_e( 'Valori ricavati automaticamente:', 'sernicola-labs-ai-friendly' ); ?></strong> <?php echo esc_html( implode( ' · ', $auto_values ) ); ?></p>
+        <p class="description"><strong><?php esc_html_e( 'Automatically detected values:', 'sernicola-labs-ai-friendly' ); ?></strong> <?php echo esc_html( implode( ' · ', $auto_values ) ); ?></p>
     <?php endif; ?>
     <?php if ( ( $data['type'] ?? '' ) === 'Event' && empty( $data['values']['startDate'] ) ) : ?>
-        <p class="description" style="color:#b32d2e"><?php esc_html_e( 'Nessuna data di inizio disponibile: il nodo Event non viene pubblicato finché non la indichi qui o nella mappatura.', 'sernicola-labs-ai-friendly' ); ?></p>
+        <p class="description" style="color:#b32d2e"><?php esc_html_e( 'No start date available: the Event node is not published until you set one here or in the mapping.', 'sernicola-labs-ai-friendly' ); ?></p>
     <?php endif; ?>
     <table class="form-table" style="margin-top:0">
-        <tr><th><label for="saifr-schema-type"><?php esc_html_e( 'Tipo Schema', 'sernicola-labs-ai-friendly' ); ?></label></th><td>
+        <tr><th><label for="saifr-schema-type"><?php esc_html_e( 'Schema type', 'sernicola-labs-ai-friendly' ); ?></label></th><td>
             <select id="saifr-schema-type" name="_saifr_schema[type]">
                 <?php if ( ! empty( $rule ) ) : ?>
                     <?php /* translators: %s: Schema.org type configured for the post type. */ ?>
-                    <option value=""><?php echo esc_html( sprintf( __( 'Automatico (%s)', 'sernicola-labs-ai-friendly' ), $rule['type'] ) ); ?></option>
+                    <option value=""><?php echo esc_html( sprintf( __( 'Automatic (%s)', 'sernicola-labs-ai-friendly' ), $rule['type'] ) ); ?></option>
                 <?php else : ?>
-                    <option value=""><?php esc_html_e( 'Nessuno', 'sernicola-labs-ai-friendly' ); ?></option>
+                    <option value=""><?php esc_html_e( 'None', 'sernicola-labs-ai-friendly' ); ?></option>
                 <?php endif; ?>
                 <?php foreach ( saifr_schema_content_types() as $allowed ) : ?>
                     <option value="<?php echo esc_attr( $allowed ); ?>" <?php selected( $type, $allowed ); ?>><?php echo esc_html( $allowed ); ?></option>
                 <?php endforeach; ?>
                 <?php if ( ! empty( $rule ) ) : ?>
-                    <option value="none" <?php selected( $type, 'none' ); ?>><?php esc_html_e( 'Disattiva per questo contenuto', 'sernicola-labs-ai-friendly' ); ?></option>
+                    <option value="none" <?php selected( $type, 'none' ); ?>><?php esc_html_e( 'Disable for this content', 'sernicola-labs-ai-friendly' ); ?></option>
                 <?php endif; ?>
             </select>
         </td></tr>
-        <tr><th><label><?php esc_html_e( 'Nome alternativo', 'sernicola-labs-ai-friendly' ); ?></label></th><td><input class="widefat" name="_saifr_schema[name]" value="<?php echo esc_attr( $schema['name'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Lascia vuoto per usare il titolo', 'sernicola-labs-ai-friendly' ); ?>"></td></tr>
-        <tr><th><label><?php esc_html_e( 'Descrizione alternativa', 'sernicola-labs-ai-friendly' ); ?></label></th><td><textarea class="widefat" rows="3" name="_saifr_schema[description]" placeholder="<?php esc_attr_e( 'Lascia vuoto per usare il riassunto o la meta description', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $schema['description'] ?? '' ); ?></textarea></td></tr>
-        <tr><th>Course</th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_saifr_schema[courseCode]" value="<?php echo esc_attr( $schema['courseCode'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Codice corso', 'sernicola-labs-ai-friendly' ); ?>"><input name="_saifr_schema[educationalLevel]" value="<?php echo esc_attr( $schema['educationalLevel'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Livello', 'sernicola-labs-ai-friendly' ); ?>"></td></tr>
+        <tr><th><label><?php esc_html_e( 'Alternative name', 'sernicola-labs-ai-friendly' ); ?></label></th><td><input class="widefat" name="_saifr_schema[name]" value="<?php echo esc_attr( $schema['name'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Leave empty to use the title', 'sernicola-labs-ai-friendly' ); ?>"></td></tr>
+        <tr><th><label><?php esc_html_e( 'Alternative description', 'sernicola-labs-ai-friendly' ); ?></label></th><td><textarea class="widefat" rows="3" name="_saifr_schema[description]" placeholder="<?php esc_attr_e( 'Leave empty to use the excerpt or meta description', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $schema['description'] ?? '' ); ?></textarea></td></tr>
+        <tr><th>Course</th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_saifr_schema[courseCode]" value="<?php echo esc_attr( $schema['courseCode'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Course code', 'sernicola-labs-ai-friendly' ); ?>"><input name="_saifr_schema[educationalLevel]" value="<?php echo esc_attr( $schema['educationalLevel'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Level', 'sernicola-labs-ai-friendly' ); ?>"></td></tr>
         <tr><th><?php esc_html_e( 'Event / Course', 'sernicola-labs-ai-friendly' ); ?></th><td style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
-            <input type="datetime-local" name="_saifr_schema[startDate]" value="<?php echo esc_attr( $schema['startDate'] ?? '' ); ?>" aria-label="<?php esc_attr_e( 'Inizio', 'sernicola-labs-ai-friendly' ); ?>">
-            <input type="datetime-local" name="_saifr_schema[endDate]" value="<?php echo esc_attr( $schema['endDate'] ?? '' ); ?>" aria-label="<?php esc_attr_e( 'Fine', 'sernicola-labs-ai-friendly' ); ?>">
-            <input name="_saifr_schema[locationName]" value="<?php echo esc_attr( $schema['locationName'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Nome luogo', 'sernicola-labs-ai-friendly' ); ?>">
-            <input name="_saifr_schema[locationAddress]" value="<?php echo esc_attr( $schema['locationAddress'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Indirizzo', 'sernicola-labs-ai-friendly' ); ?>">
-            <select name="_saifr_schema[attendanceMode]" aria-label="<?php esc_attr_e( 'Modalità di partecipazione', 'sernicola-labs-ai-friendly' ); ?>">
-                <option value=""><?php esc_html_e( 'Modalità: predefinita', 'sernicola-labs-ai-friendly' ); ?></option>
+            <input type="datetime-local" name="_saifr_schema[startDate]" value="<?php echo esc_attr( $schema['startDate'] ?? '' ); ?>" aria-label="<?php esc_attr_e( 'Start', 'sernicola-labs-ai-friendly' ); ?>">
+            <input type="datetime-local" name="_saifr_schema[endDate]" value="<?php echo esc_attr( $schema['endDate'] ?? '' ); ?>" aria-label="<?php esc_attr_e( 'End', 'sernicola-labs-ai-friendly' ); ?>">
+            <input name="_saifr_schema[locationName]" value="<?php echo esc_attr( $schema['locationName'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Venue name', 'sernicola-labs-ai-friendly' ); ?>">
+            <input name="_saifr_schema[locationAddress]" value="<?php echo esc_attr( $schema['locationAddress'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Address', 'sernicola-labs-ai-friendly' ); ?>">
+            <select name="_saifr_schema[attendanceMode]" aria-label="<?php esc_attr_e( 'Attendance mode', 'sernicola-labs-ai-friendly' ); ?>">
+                <option value=""><?php esc_html_e( 'Mode: default', 'sernicola-labs-ai-friendly' ); ?></option>
                 <?php foreach ( $attendance_labels as $mode => $label ) : ?>
                     <option value="<?php echo esc_attr( $mode ); ?>" <?php selected( $schema['attendanceMode'] ?? '', $mode ); ?>><?php echo esc_html( $label ); ?></option>
                 <?php endforeach; ?>
             </select>
         </td></tr>
-        <tr><th><?php esc_html_e( 'Prezzo', 'sernicola-labs-ai-friendly' ); ?></th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_saifr_schema[price]" value="<?php echo esc_attr( $schema['price'] ?? '' ); ?>" placeholder="<?php esc_attr_e( '0 = gratuito', 'sernicola-labs-ai-friendly' ); ?>"><input name="_saifr_schema[priceCurrency]" value="<?php echo esc_attr( $schema['priceCurrency'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'EUR', 'sernicola-labs-ai-friendly' ); ?>"></td></tr>
-        <tr><th>Service</th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_saifr_schema[serviceType]" value="<?php echo esc_attr( $schema['serviceType'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Tipo servizio', 'sernicola-labs-ai-friendly' ); ?>"><input name="_saifr_schema[areaServed]" value="<?php echo esc_attr( $schema['areaServed'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Area servita', 'sernicola-labs-ai-friendly' ); ?>"></td></tr>
-        <tr><th><label>FAQPage</label></th><td><textarea class="widefat" rows="6" name="_saifr_schema[faq]" placeholder="<?php esc_attr_e( 'Una FAQ per riga: Domanda | Risposta', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $schema['faq'] ?? '' ); ?></textarea><p class="description"><?php esc_html_e( 'Una coppia domanda/risposta per riga, separata da |.', 'sernicola-labs-ai-friendly' ); ?></p></td></tr>
+        <tr><th><?php esc_html_e( 'Price', 'sernicola-labs-ai-friendly' ); ?></th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_saifr_schema[price]" value="<?php echo esc_attr( $schema['price'] ?? '' ); ?>" placeholder="<?php esc_attr_e( '0 = free', 'sernicola-labs-ai-friendly' ); ?>"><input name="_saifr_schema[priceCurrency]" value="<?php echo esc_attr( $schema['priceCurrency'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'EUR', 'sernicola-labs-ai-friendly' ); ?>"></td></tr>
+        <tr><th>Service</th><td style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input name="_saifr_schema[serviceType]" value="<?php echo esc_attr( $schema['serviceType'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Service type', 'sernicola-labs-ai-friendly' ); ?>"><input name="_saifr_schema[areaServed]" value="<?php echo esc_attr( $schema['areaServed'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Area served', 'sernicola-labs-ai-friendly' ); ?>"></td></tr>
+        <tr><th><label>FAQPage</label></th><td><textarea class="widefat" rows="6" name="_saifr_schema[faq]" placeholder="<?php esc_attr_e( 'One FAQ per line: Question | Answer', 'sernicola-labs-ai-friendly' ); ?>"><?php echo esc_textarea( $schema['faq'] ?? '' ); ?></textarea><p class="description"><?php esc_html_e( 'One question/answer pair per line, separated by |.', 'sernicola-labs-ai-friendly' ); ?></p></td></tr>
     </table>
     <?php
 }

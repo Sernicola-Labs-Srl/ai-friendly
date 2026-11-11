@@ -384,17 +384,17 @@ function saifr_show_legacy_migration_notice(): void {
     }
 
     echo '<div class="notice notice-success is-dismissible"><p><strong>'
-        . esc_html__( 'Passaggio a Sernicola Labs AI Friendly completato.', 'sernicola-labs-ai-friendly' )
+        . esc_html__( 'Switch to Sernicola Labs AI Friendly completed.', 'sernicola-labs-ai-friendly' )
         . '</strong> ';
     if ( ! empty( $status['legacy_deactivated'] ) ) {
-        esc_html_e( 'I dati sono stati importati e il vecchio plugin è stato disattivato automaticamente.', 'sernicola-labs-ai-friendly' );
+        esc_html_e( 'The data was imported and the old plugin was deactivated automatically.', 'sernicola-labs-ai-friendly' );
     } elseif ( ! empty( $status['legacy_remaining_active'] ) ) {
-        esc_html_e( 'I dati sono stati importati, ma il vecchio plugin richiede la disattivazione manuale.', 'sernicola-labs-ai-friendly' );
+        esc_html_e( 'The data was imported, but the old plugin needs to be deactivated manually.', 'sernicola-labs-ai-friendly' );
     } else {
-        esc_html_e( 'I dati della versione precedente sono disponibili nel nuovo plugin.', 'sernicola-labs-ai-friendly' );
+        esc_html_e( 'The data from the previous version is available in the new plugin.', 'sernicola-labs-ai-friendly' );
     }
     echo ' ';
-    esc_html_e( 'Il riepilogo nella Content Hub scomparirà automaticamente dopo una rigenerazione riuscita e la rimozione manuale del vecchio plugin.', 'sernicola-labs-ai-friendly' );
+    esc_html_e( 'The summary in the Content Hub will disappear automatically after a successful regeneration and the manual removal of the old plugin.', 'sernicola-labs-ai-friendly' );
     echo '</p></div>';
     delete_option( 'saifr_legacy_migration_notice' );
 }
@@ -421,43 +421,43 @@ function saifr_render_legacy_migration_status(): void {
     ?>
     <section class="saifr-migration-panel" aria-labelledby="saifr-migration-title">
         <div class="saifr-migration-intro">
-            <p class="saifr-eyebrow"><?php esc_html_e( 'Passaggio dalla versione precedente', 'sernicola-labs-ai-friendly' ); ?></p>
-            <h3 id="saifr-migration-title"><?php esc_html_e( 'Migrazione completata', 'sernicola-labs-ai-friendly' ); ?></h3>
-            <p><?php esc_html_e( 'Questo riepilogo scomparirà automaticamente dopo una nuova rigenerazione completata senza errori e la rimozione del vecchio plugin.', 'sernicola-labs-ai-friendly' ); ?></p>
+            <p class="saifr-eyebrow"><?php esc_html_e( 'Switch from the previous version', 'sernicola-labs-ai-friendly' ); ?></p>
+            <h3 id="saifr-migration-title"><?php esc_html_e( 'Migration complete', 'sernicola-labs-ai-friendly' ); ?></h3>
+            <p><?php esc_html_e( 'This summary will disappear automatically after a new regeneration completes without errors and the old plugin is removed.', 'sernicola-labs-ai-friendly' ); ?></p>
         </div>
         <div class="saifr-migration-steps">
             <div>
                 <span>01</span>
-                <strong><?php esc_html_e( 'Dati', 'sernicola-labs-ai-friendly' ); ?></strong>
-                <small class="saifr-migration-state is-done"><?php esc_html_e( 'Completato', 'sernicola-labs-ai-friendly' ); ?></small>
-                <p><?php esc_html_e( 'Impostazioni, esclusioni, Schema personalizzati e snapshot disponibili sono stati collegati alla nuova versione.', 'sernicola-labs-ai-friendly' ); ?></p>
+                <strong><?php esc_html_e( 'Data', 'sernicola-labs-ai-friendly' ); ?></strong>
+                <small class="saifr-migration-state is-done"><?php esc_html_e( 'Completed', 'sernicola-labs-ai-friendly' ); ?></small>
+                <p><?php esc_html_e( 'Settings, exclusions, custom Schema, and available snapshots have been linked to the new version.', 'sernicola-labs-ai-friendly' ); ?></p>
             </div>
             <div>
                 <span>02</span>
-                <strong><?php esc_html_e( 'Rigenerazione', 'sernicola-labs-ai-friendly' ); ?></strong>
+                <strong><?php esc_html_e( 'Regeneration', 'sernicola-labs-ai-friendly' ); ?></strong>
                 <small class="saifr-migration-state <?php echo $regeneration_complete ? 'is-done' : 'is-pending'; ?>">
-                    <?php echo $regeneration_complete ? esc_html__( 'Completata', 'sernicola-labs-ai-friendly' ) : esc_html__( 'Da completare', 'sernicola-labs-ai-friendly' ); ?>
+                    <?php echo $regeneration_complete ? esc_html__( 'Complete', 'sernicola-labs-ai-friendly' ) : esc_html__( 'To be completed', 'sernicola-labs-ai-friendly' ); ?>
                 </small>
-                <p><?php echo $regeneration_complete ? esc_html__( 'La nuova generazione è terminata senza errori.', 'sernicola-labs-ai-friendly' ) : esc_html__( 'Forza una nuova rigenerazione dei contenuti dalla sezione Automation.', 'sernicola-labs-ai-friendly' ); ?></p>
+                <p><?php echo $regeneration_complete ? esc_html__( 'The new generation finished without errors.', 'sernicola-labs-ai-friendly' ) : esc_html__( 'Force a new content regeneration from the Automation section.', 'sernicola-labs-ai-friendly' ); ?></p>
             </div>
             <div>
                 <span>03</span>
-                <strong><?php esc_html_e( 'Vecchio plugin', 'sernicola-labs-ai-friendly' ); ?></strong>
+                <strong><?php esc_html_e( 'Old plugin', 'sernicola-labs-ai-friendly' ); ?></strong>
                 <?php if ( empty( $legacy_plugins ) ) : ?>
-                    <small class="saifr-migration-state is-done"><?php esc_html_e( 'Rimosso', 'sernicola-labs-ai-friendly' ); ?></small>
-                    <p><?php esc_html_e( 'Il vecchio plugin non è più installato.', 'sernicola-labs-ai-friendly' ); ?></p>
+                    <small class="saifr-migration-state is-done"><?php esc_html_e( 'Removed', 'sernicola-labs-ai-friendly' ); ?></small>
+                    <p><?php esc_html_e( 'The old plugin is no longer installed.', 'sernicola-labs-ai-friendly' ); ?></p>
                 <?php elseif ( ! empty( $active_legacy ) ) : ?>
-                    <small class="saifr-migration-state is-pending"><?php esc_html_e( 'Richiede intervento', 'sernicola-labs-ai-friendly' ); ?></small>
-                    <p><?php esc_html_e( 'Il vecchio plugin è ancora attivo e deve essere disattivato manualmente.', 'sernicola-labs-ai-friendly' ); ?></p>
+                    <small class="saifr-migration-state is-pending"><?php esc_html_e( 'Action required', 'sernicola-labs-ai-friendly' ); ?></small>
+                    <p><?php esc_html_e( 'The old plugin is still active and must be deactivated manually.', 'sernicola-labs-ai-friendly' ); ?></p>
                 <?php else : ?>
-                    <small class="saifr-migration-state is-pending"><?php esc_html_e( 'Da rimuovere', 'sernicola-labs-ai-friendly' ); ?></small>
-                    <p><?php esc_html_e( 'Il vecchio plugin è disattivato. Puoi eliminarlo dopo aver verificato i dati.', 'sernicola-labs-ai-friendly' ); ?></p>
+                    <small class="saifr-migration-state is-pending"><?php esc_html_e( 'To be removed', 'sernicola-labs-ai-friendly' ); ?></small>
+                    <p><?php esc_html_e( 'The old plugin is deactivated. You can delete it after verifying the data.', 'sernicola-labs-ai-friendly' ); ?></p>
                 <?php endif; ?>
             </div>
         </div>
         <div class="saifr-migration-actions">
-            <button type="button" class="button button-primary" data-section-jump="automation"><?php esc_html_e( 'Vai alla rigenerazione', 'sernicola-labs-ai-friendly' ); ?></button>
-            <a class="button" href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>"><?php esc_html_e( 'Apri i plugin installati', 'sernicola-labs-ai-friendly' ); ?></a>
+            <button type="button" class="button button-primary" data-section-jump="automation"><?php esc_html_e( 'Go to regeneration', 'sernicola-labs-ai-friendly' ); ?></button>
+            <a class="button" href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>"><?php esc_html_e( 'Open installed plugins', 'sernicola-labs-ai-friendly' ); ?></a>
         </div>
     </section>
     <?php

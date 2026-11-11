@@ -25,7 +25,7 @@ function saifr_schedule_cron(): void {
             $schedules['saifr_interval'] = [
                 'interval' => $interval_hours * HOUR_IN_SECONDS,
                 // translators: %d: regeneration interval in hours.
-                'display'  => sprintf( __( 'Ogni %d ore', 'sernicola-labs-ai-friendly' ), $interval_hours ),
+                'display'  => sprintf( __( 'Every %d hours', 'sernicola-labs-ai-friendly' ), $interval_hours ),
             ];
             return $schedules;
         } );
@@ -45,7 +45,7 @@ add_filter( 'cron_schedules', function( $schedules ) {
         'interval' => $interval_hours * HOUR_IN_SECONDS,
         'display'  => sprintf(
             /* translators: %d: regeneration interval in hours. */
-            __( 'AI Friendly: ogni %d ore', 'sernicola-labs-ai-friendly' ),
+            __( 'AI Friendly: every %d hours', 'sernicola-labs-ai-friendly' ),
             $interval_hours
         ),
     ];

@@ -2,7 +2,7 @@
 
 # Sernicola Labs AI Friendly
 
-**Version:** 2.3.2
+**Version:** 2.3.3
 **Author:** Sernicola Labs
 **Requirements:** WordPress 6.0+, PHP 8.1+
 **License:** GPL v3 or later

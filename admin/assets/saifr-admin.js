@@ -20,7 +20,7 @@
                 ajax('saifr_regeneration_step', {}).done(function (reply) {
                     var job = (reply || {}).data || {};
                     var stats = job.stats || {};
-                    $('#saifr-action-status').text('Rigenerazione: ' + (stats.processed || 0) + '/' + (job.total || 0) + ' contenuti elaborati, ' + (stats.errors || 0) + ' errori.');
+                    $('#saifr-action-status').text(t('regenProgress').replace('%1$s', stats.processed || 0).replace('%2$s', job.total || 0).replace('%3$s', stats.errors || 0));
                     if (job.status === 'running') {
                         window.setTimeout(step, 400);
                     } else {

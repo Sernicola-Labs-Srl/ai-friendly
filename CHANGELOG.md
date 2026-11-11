@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.3
+
+- Le stringhe dell'interfaccia admin ora hanno l'inglese come lingua sorgente, come richiesto da WordPress.org: il plugin è traducibile su translate.wordpress.org e la traduzione italiana inclusa è ricostruita sopra di esse.
+- Corretto il pulsante "+ Sintesi" dell'editor llms.txt, la cui etichetta finiva dentro l'attributo dello snippet, e tradotti i testi admin rimasti fissi (snippet dell'editor, selettore della pagina profilo, messaggio di avanzamento della rigenerazione).
+
 ## 2.3.2
 
 - `/llms.txt` e `/llms-full.txt` escono solo da risposte dinamiche con `Content-Type: text/plain; charset=UTF-8`: i web server che servono i file statici senza charset non rovinano più gli accenti. All'aggiornamento i file statici delle versioni precedenti vengono rimossi solo se coincidono ancora con l'hash salvato dal plugin; un file di altri resta intatto e viene segnalato nell'admin. Il corpus completo ora risiede in `uploads/sernicola-labs-ai-friendly/corpus`, fuori dalla radice pubblica.

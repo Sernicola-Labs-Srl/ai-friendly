@@ -79,14 +79,14 @@ function saifr_create_llms_snapshot( string $content, string $reason = 'manual' 
         $diff = saifr_diff_llms_content( $prev_text, $content );
         $entry['note'] = sprintf(
             /* translators: 1: added lines, 2: removed lines, 3: token delta sign, 4: token delta. */
-            __( 'Linee +%1$d / -%2$d, token %3$s%4$d', 'sernicola-labs-ai-friendly' ),
+            __( 'Lines +%1$d / -%2$d, tokens %3$s%4$d', 'sernicola-labs-ai-friendly' ),
             intval( $diff['summary']['added_lines'] ?? 0 ),
             intval( $diff['summary']['removed_lines'] ?? 0 ),
             ( ( $diff['summary']['token_delta'] ?? 0 ) >= 0 ? '+' : '' ),
             intval( $diff['summary']['token_delta'] ?? 0 )
         );
     } else {
-        $entry['note'] = __( 'Primo snapshot disponibile.', 'sernicola-labs-ai-friendly' );
+        $entry['note'] = __( 'First snapshot available.', 'sernicola-labs-ai-friendly' );
     }
 
     array_unshift( $index, $entry );
@@ -127,7 +127,7 @@ function saifr_get_llms_snapshot_content( string $id ): ?string {
 function saifr_restore_llms_snapshot( string $id ): array {
     $content = saifr_get_llms_snapshot_content( $id );
     if ( $content === null ) {
-        return [ 'restored' => false, 'message' => __( 'Snapshot non trovato.', 'sernicola-labs-ai-friendly' ) ];
+        return [ 'restored' => false, 'message' => __( 'Snapshot not found.', 'sernicola-labs-ai-friendly' ) ];
     }
 
     $options                 = wp_parse_args( get_option( 'saifr_options', [] ), saifr_get_default_options() );
@@ -178,7 +178,7 @@ function saifr_validate_llms_links( string $content ): array {
             $issues[] = [
                 'url'     => $url,
                 'severity'=> 'warning',
-                'message' => __( 'Link con formato non valido (atteso http/https o percorso relativo).', 'sernicola-labs-ai-friendly' ),
+                'message' => __( 'Link with invalid format (expected http/https or relative path).', 'sernicola-labs-ai-friendly' ),
             ];
             continue;
         }
@@ -189,7 +189,7 @@ function saifr_validate_llms_links( string $content ): array {
                 $issues[] = [
                     'url'      => $url,
                     'severity' => 'warning',
-                    'message'  => __( 'URL non interpretabile.', 'sernicola-labs-ai-friendly' ),
+                    'message'  => __( 'URL could not be parsed.', 'sernicola-labs-ai-friendly' ),
                 ];
                 continue;
             }
@@ -199,7 +199,7 @@ function saifr_validate_llms_links( string $content ): array {
             $issues[] = [
                 'url'      => $url,
                 'severity' => 'info',
-                'message'  => __( 'Link relativo senza estensione .md o llms.txt.', 'sernicola-labs-ai-friendly' ),
+                'message'  => __( 'Relative link without .md or llms.txt extension.', 'sernicola-labs-ai-friendly' ),
             ];
         }
     }
@@ -364,19 +364,19 @@ function saifr_run_ai_simulation( string $content ): array {
 
     $suggestions = [];
     if ( $duplicates > 0 ) {
-        $suggestions[] = __( 'Riduci frasi ripetute o simili per migliorare compattezza.', 'sernicola-labs-ai-friendly' );
+        $suggestions[] = __( 'Reduce repeated or similar sentences to improve compactness.', 'sernicola-labs-ai-friendly' );
     }
     if ( $tokens > 2500 ) {
-        $suggestions[] = __( 'Token elevati: valuta sintesi di sezioni secondarie.', 'sernicola-labs-ai-friendly' );
+        $suggestions[] = __( 'High token count: consider summarizing secondary sections.', 'sernicola-labs-ai-friendly' );
     }
     if ( $headings < 2 ) {
-        $suggestions[] = __( 'Aggiungi heading per migliorare leggibilità strutturale.', 'sernicola-labs-ai-friendly' );
+        $suggestions[] = __( 'Add headings to improve structural readability.', 'sernicola-labs-ai-friendly' );
     }
     if ( $links === 0 ) {
-        $suggestions[] = __( 'Valuta link diretti alle risorse principali.', 'sernicola-labs-ai-friendly' );
+        $suggestions[] = __( 'Consider direct links to the main resources.', 'sernicola-labs-ai-friendly' );
     }
     if ( empty( $suggestions ) ) {
-        $suggestions[] = __( 'Struttura buona: mantieni sezioni brevi e stabili.', 'sernicola-labs-ai-friendly' );
+        $suggestions[] = __( 'Good structure: keep sections short and stable.', 'sernicola-labs-ai-friendly' );
     }
 
     return [

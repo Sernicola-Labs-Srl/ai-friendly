@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'wp_head', function () {
 
-    echo '<link rel="alternate" type="text/plain" title="' . esc_attr__( 'Istruzioni LLM', 'sernicola-labs-ai-friendly' ) . '" href="'
+    echo '<link rel="alternate" type="text/plain" title="' . esc_attr__( 'LLM instructions', 'sernicola-labs-ai-friendly' ) . '" href="'
        . esc_url( home_url( '/llms.txt' ) )
        . '" />' . "\n";
 
@@ -20,7 +20,7 @@ add_action( 'wp_head', function () {
         if ( $post && $filter->shouldInclude( $post ) ) {
             $md_url = saifr_post_md_url( $post );
 
-            echo '<link rel="alternate" type="text/markdown" title="' . esc_attr__( 'Versione Markdown', 'sernicola-labs-ai-friendly' ) . '" href="'
+            echo '<link rel="alternate" type="text/markdown" title="' . esc_attr__( 'Markdown version', 'sernicola-labs-ai-friendly' ) . '" href="'
                . esc_url( $md_url )
                . '" />' . "\n";
         }

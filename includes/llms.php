@@ -79,7 +79,7 @@ function saifr_cleanup_legacy_static_files(): void {
 
 function saifr_notify_static_llms_external_file(): void {
     if ( function_exists( 'saifr_push_admin_notice' ) && ! get_transient( 'saifr_static_llms_notice' ) ) {
-        saifr_push_admin_notice( __( 'AI Friendly: nella cartella principale del sito esiste un file llms.txt o llms-full.txt non gestito dal plugin. Il web server lo serve al posto della risposta dinamica, spesso senza charset UTF-8: rimuovilo o spostalo per ripristinare gli accenti corretti.', 'sernicola-labs-ai-friendly' ), 'warning' );
+        saifr_push_admin_notice( __( 'AI Friendly: a llms.txt or llms-full.txt file not managed by the plugin exists in the site root. The web server serves it instead of the dynamic response, often without a UTF-8 charset: remove or move it to restore correct accents.', 'sernicola-labs-ai-friendly' ), 'warning' );
         set_transient( 'saifr_static_llms_notice', 1, DAY_IN_SECONDS );
     }
 }
@@ -118,7 +118,7 @@ function saifr_build_llms_txt(): string {
         
         // Pagine
         if ( ! empty( $options['include_pages'] ) ) {
-            $out .= saifr_section( __( 'Pagine', 'sernicola-labs-ai-friendly' ), [
+            $out .= saifr_section( __( 'Pages', 'sernicola-labs-ai-friendly' ), [
                 'post_type'      => 'page',
                 'post_status'    => 'publish',
                 'posts_per_page' => SAIFR_PAGES_LIMIT,
@@ -129,7 +129,7 @@ function saifr_build_llms_txt(): string {
 
         // Post
         if ( ! empty( $options['include_posts'] ) ) {
-            $out .= saifr_section( __( 'Post', 'sernicola-labs-ai-friendly' ), [
+            $out .= saifr_section( __( 'Posts', 'sernicola-labs-ai-friendly' ), [
                 'post_type'      => 'post',
                 'post_status'    => 'publish',
                 'posts_per_page' => SAIFR_POSTS_LIMIT,
@@ -140,7 +140,7 @@ function saifr_build_llms_txt(): string {
 
         // Prodotti WooCommerce
         if ( ! empty( $options['include_products'] ) && class_exists( 'WooCommerce' ) ) {
-            $out .= saifr_section( __( 'Prodotti', 'sernicola-labs-ai-friendly' ), [
+            $out .= saifr_section( __( 'Products', 'sernicola-labs-ai-friendly' ), [
                 'post_type'      => 'product',
                 'post_status'    => 'publish',
                 'posts_per_page' => 20,
