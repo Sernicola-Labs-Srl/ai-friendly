@@ -631,7 +631,7 @@ function saifr_schema_get_offer_catalog_node( array $options ): array {
         ? sanitize_text_field( (string) $catalog_source['name'] )
         : sprintf(
             /* translators: %s: site name. */
-            __( 'Servizi %s', 'sernicola-labs-ai-friendly' ),
+            __( '%s services', 'sernicola-labs-ai-friendly' ),
             get_bloginfo( 'name' )
         );
 

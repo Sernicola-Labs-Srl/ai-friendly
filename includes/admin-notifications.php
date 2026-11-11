@@ -30,7 +30,7 @@ function saifr_maybe_notify_regeneration_errors( array $stats, string $trigger )
 
     $message = sprintf(
         /* translators: 1: error count, 2: trigger, 3: processed items, 4: regenerated items, 5: skipped items. */
-        __( 'AI Friendly: rigenerazione con %1$d errori (%2$s). Processati %3$d, rigenerati %4$d, saltati %5$d.', 'sernicola-labs-ai-friendly' ),
+        __( 'AI Friendly: regeneration with %1$d errors (%2$s). Processed %3$d, regenerated %4$d, skipped %5$d.', 'sernicola-labs-ai-friendly' ),
         $errors,
         $trigger,
         intval( $stats['processed'] ?? 0 ),
@@ -48,7 +48,7 @@ function saifr_maybe_notify_regeneration_errors( array $stats, string $trigger )
             $to = (string) get_option( 'admin_email', '' );
         }
         if ( is_email( $to ) ) {
-            wp_mail( $to, __( 'AI Friendly - Rigenerazione con errori', 'sernicola-labs-ai-friendly' ), $message );
+            wp_mail( $to, __( 'AI Friendly - Regeneration with errors', 'sernicola-labs-ai-friendly' ), $message );
         }
     }
 }

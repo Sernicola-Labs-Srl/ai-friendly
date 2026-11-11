@@ -145,8 +145,8 @@ function saifr_serve_markdown( string $rel_path ): void {
         status_header( 500 );
         header( 'Content-Type: text/plain; charset=UTF-8' );
         echo $debug_mode
-            ? esc_html__( 'Errore:', 'sernicola-labs-ai-friendly' ) . ' ' . esc_html( $e->getMessage() )
-            : esc_html__( 'Errore nella generazione del contenuto Markdown.', 'sernicola-labs-ai-friendly' );
+            ? esc_html__( 'Error:', 'sernicola-labs-ai-friendly' ) . ' ' . esc_html( $e->getMessage() )
+            : esc_html__( 'Error generating the Markdown content.', 'sernicola-labs-ai-friendly' );
         exit;
     }
 }
@@ -1093,7 +1093,7 @@ function saifr_reset_output_buffers(): void {
 function saifr_404(): never {
     status_header( 404 );
     header( 'Content-Type: text/plain; charset=UTF-8' );
-    echo esc_html__( 'Contenuto non trovato.', 'sernicola-labs-ai-friendly' );
+    echo esc_html__( 'Content not found.', 'sernicola-labs-ai-friendly' );
     exit;
 }
 
